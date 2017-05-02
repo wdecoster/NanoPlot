@@ -55,6 +55,7 @@ for dir in ['/storage/breva/complgen/bin/anaconda/lib/python2.7/site-packages/RS
 import pysam
 import nanoget
 import nanoplotter
+version=0.5
 
 def main():
 	'''
@@ -194,6 +195,9 @@ def getArgs():
 	parser.add_argument("--drop_outliers",
 						help="Drop outlier reads with extreme long length.",
 						action="store_true")
+	parser.add_argument("--version",
+						help="Print version and exit.",
+						action="store_true")
 	parser.add_argument("--prefix",
 						help="Specify an optional prefix to be used for the output files.",
 						default="",
@@ -208,6 +212,9 @@ def getArgs():
 	target.add_argument("--raw",
 						help="Data presented in a directory of raw fast5 files.")
 	args = parser.parse_args()
+	if args.version:
+		print("Nanoplot {}".format(version))
+		sys.exit(0)
 	return(args)
 
 
