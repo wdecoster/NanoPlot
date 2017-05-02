@@ -16,8 +16,6 @@ usage: NanoPlot.py [-h] [--dry | --fqout FQOUT] [--threads THREADS] [--time]
                    [--drop_outliers] [--prefix PREFIX]
                    [--fastq FASTQ | --fast5 FAST5 | --bam BAM | --raw RAW]
 
-Perform diagnostic plotting, QC analysis and fast5 extraction of Nanopore
-sequencing data.
 
 optional arguments:
   -h, --help         show this help message and exit  
