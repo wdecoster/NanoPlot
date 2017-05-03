@@ -161,25 +161,31 @@ def tasteFast5(fast5files):
 	Will open fast5 files and find the path to the most recent basecall.
 	As soon as a path is found the path is returned
 	This assumes all files are from the same dataset.
-	If no path is found in subset of files given (100), give error
+	If no path is found in subset of files given (100), give error and stop
+	Got some ideas from https://github.com/rrwick/Fast5-to-Fastq/blob/master/fast5_to_fastq.py
 	'''
 	for fast5file in fast5files:
 		try:
 			with h5py.File(fast5file, 'r') as hdf:
-				latestCall = [entry for entry in hdf["/Analyses"].keys() if entry.startswith('Basecall')][-1]
-				logging.info("Established {} as latest basecall in fast5 files".format(latestCall))
-				if latestCall.split('_')[1] == "1D":
-					lastcall = '/Analyses/' + latestCall + '/BaseCalled_template/Fastq'
-				else:
-					lastcall = '/Analyses/' + latestCall + '/BaseCalled_2D/Fastq'
+				names = get_hdf5_names(hdf)
+				latestFQ = sorted([x for x in names if x.upper().endswith('FASTQ')])[-1]
+				#latestCall = [entry for entry in hdf["/Analyses"].keys() if entry.startswith('Basecall')][-1]
+				logging.info("Established {} as latest basecall in fast5 files".format(latestFQ))
 				timepath = ["/Analyses/" + entry + "/BaseCalled_template/Events" for entry in hdf["/Analyses"].keys() if entry.startswith('Basecall') and "start_time" in hdf["/Analyses/" + entry + "/BaseCalled_template/Events"].attrs.keys()][0]
-				return(lastcall, timepath)
+				logging.info("Established {} as path to creation time of fast5 file".format(timepath))
+				return(latestFQ, timepath)
 		except KeyError:
 			logging.info("Encountered a file lacking basecall, trying the next to find the path to the latest basecalls.")
 			continue
 	else:
 		logging.error("No basecall was found in the first 100 reads.")
 		sys.exit("ERROR: a basecall could not be found in the first 100 reads.")
+
+
+def get_hdf5_names(hdf5_file):
+    names = []
+    hdf5_file.visit(names.append)
+    return names
 
 
 def extractFromFast5(params):
