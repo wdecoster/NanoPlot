@@ -43,7 +43,7 @@ import matplotlib.pyplot as plt
 import pysam
 import nanoget
 import nanoplotter
-version="0.5.1"
+version="0.5.2"
 
 def main():
 	'''
@@ -223,7 +223,7 @@ def initlogs():
 			level=logging.INFO)
 	except IOError:
 		sys.exit("ERROR: No writing permission to the directory.")
-	logging.info('Nanoplot started with arguments {}'.format(args))
+	logging.info('Nanoplot {} started with arguments {}'.format(version, args))
 	logging.info("{} cpu's are available".format(cpu_count()))
 	logging.info('Versions of key modules are:')
 	for module in [np, h5py, sns, pd, pysam]:
