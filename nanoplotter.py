@@ -48,8 +48,8 @@ def scatter(datadf, var, names, path, stat=None):
 		xlim=(0, maxvalx),
 		ylim=(0, maxvaly),
 		space=0,
-		joint_kws={"s": 1},
-		size=10)
+		size=10,
+		joint_kws={"s": 1})
 	plot.set_axis_labels(names[0], names[1])
 	plot.savefig(path + "_scatter.png", format='png', dpi=1000)
 
@@ -126,7 +126,8 @@ def lengthPlots(array, name, path, suffix=""):
 	For both, also create log-scaled plot
 	'''
 	maxvalx = np.amax(array)
-
+	n50 = getN50(np.sort(array))
+	logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
 	ax = sns.distplot(
 		a=array,
 		kde=True,
@@ -153,8 +154,11 @@ def lengthPlots(array, name, path, suffix=""):
 		kde=False,
 		hist=True,
 		color="#4CB391")
+
 	ax.set(xlabel='Read length', ylabel='Number of reads')
 	fig = ax.get_figure()
+	plt.axvline(n50)
+	plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
 	fig.savefig(path + "LengthHistogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
 	plt.close("all")
 
@@ -168,6 +172,13 @@ def lengthPlots(array, name, path, suffix=""):
 	fig.savefig(path + "LogLengthHistogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
 	plt.close("all")
 
+
+def getN50(a):
+	'''
+	Calculator function: Get read N50.
+	Based on https://github.com/PapenfussLab/Mungo/blob/master/bin/fasta_stats.py
+	'''
+	return a[np.where(np.cumsum(a)>=0.5*np.sum(a))[0][0]]
 
 def spatialHeatmap(array, title, path, filename, colour):
 	'''

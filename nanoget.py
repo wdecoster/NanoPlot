@@ -59,7 +59,7 @@ def processBam(bam, threads):
 	datadf["quals"] = np.array([x for y in [elem[2] for elem in output] for x in y])
 	datadf["aligned_quals"] = np.array([x for y in [elem[3] for elem in output] for x in y])
 	datadf["mapQ"] = np.array([x for y in [elem[4] for elem in output] for x in y])
-	datadf["editDistances"] = np.array([x for y in [elem[5] for elem in output] for x in y])
+	datadf["percentIdentity"] = np.array([x for y in [elem[5] for elem in output] for x in y])
 	assert datadf["lengths"].size == NumberOfmappedReads, "Unexpected difference in length of entries in datadict"
 	logging.info("Collected bam statistics.")
 	return datadf
@@ -83,7 +83,7 @@ def extractFromBam(params):
 	quals = []
 	alignedQuals = []
 	mapQ = []
-	editDistances = []
+	pID = []
 	for read in samfile.fetch(reference=chromosome, multiple_iterators=True):
 		lengths.append(read.query_length)
 		alignedLengths.append(read.query_alignment_length)
@@ -91,13 +91,19 @@ def extractFromBam(params):
 		alignedQuals.append(aveQualBam(read.query_alignment_qualities))
 		mapQ.append(read.mapping_quality)
 		try:
-			editDistances.append(read.get_tag("NM")/read.query_length)
+			pID.append((1- read.get_tag("NM")/read.query_alignment_length)*100)
 		except KeyError:
-			editDistances.append(
-				(sum([len(item) for item in re.split('[0-9^]', read.get_tag("MD"))]) +  # Parse MD string to get mismatches/deletions
-				sum([item[1] for item in read.cigartuples if item[0] == 1]))  # Parse cigar to get insertions
-				/read.query_alignment_length)
-	return (lengths, alignedLengths, quals, alignedQuals, mapQ, editDistances)
+			pID.append((1 -
+				( parseMD(read.get_tag("MD")) + parseCIGAR(read.cigartuples))
+				/read.query_alignment_length)*100)
+	return (lengths, alignedLengths, quals, alignedQuals, mapQ, pID)
+
+def parseMD(MDlist):
+	return sum([len(item) for item in re.split('[0-9^]', MDlist )])
+
+
+def parseCIGAR(cigartuples):
+	return sum([item[1] for item in cigartuples if item[0] == 1])
 
 
 def aveQualBam(quals):

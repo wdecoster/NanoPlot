@@ -55,7 +55,7 @@ for dir in ['/storage/breva/complgen/bin/anaconda/lib/python2.7/site-packages/RS
 import pysam
 import nanoget
 import nanoplotter
-version=0.5
+version=0.5.1
 
 def main():
 	'''
@@ -114,7 +114,7 @@ def main():
 		newNum = min(10000, len(datadf.index))
 		datadf = datadf.sample(newNum)
 		logging.info("Downsampled the dataset from {} to {} reads".format(prevNum, newNum))
-	sns.set_style("darkgrid")
+	#sns.set_style("darkgrid")
 	nanoplotter.scatter(
 		datadf=datadf,
 		var=["lengths", "quals"],
@@ -289,18 +289,18 @@ def bamplots(datadf, stamp):
 	stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 	nanoplotter.scatter(
 		datadf=datadf,
-		var=["editDistances", "quals"],
-		names=["Length-scaled edit distance compared to reference", "Sequenced read quality"],
-		path=os.path.join(args.outdir, args.prefix + "EditDistancevsAverageBaseQuality"),
+		var=["percentIdentity", "quals"],
+		names=["Percent identity", "Sequenced read quality"],
+		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
 		stat=stats.pearsonr)
-	stamp = timeStamp(stamp, "Creating editDistancesvsBaseQ plot")
+	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot")
 	nanoplotter.scatter(
 		datadf=removeLowMapQ(datadf),
-		var=["editDistances", "quals"],
-		names=["Length-scaled edit distance compared to reference", "Sequenced read quality"],
-		path=os.path.join(args.outdir, args.prefix + "EditDistancevsAverageBaseQuality_lowMappingQualityRemoved"),
+		var=["percentIdentity", "quals"],
+		names=["Percent identity", "Sequenced read quality"],
+		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality_lowMappingQualityRemoved"),
 		stat=stats.pearsonr)
-	stamp = timeStamp(stamp, "Creating editDistancesvsBaseQ plot with low mapping quality reads removed")
+	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot with low mapping quality reads removed")
 	if args.drop_outliers:
 		nanoplotter.lengthPlots(
 			array=removeLengthOutliers(datadf, "lengths")["lengths"],
