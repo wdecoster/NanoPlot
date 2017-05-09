@@ -33,7 +33,7 @@ optional arguments:
   --bam BAM          Data presented as a bam file.  
 
 # Companion script NanoFilt.py
-Script to perform filtering on quality and/or read length
+Script to perform filtering on quality and/or read length, and optional trimming after passing filters
 Reads from stdin, writes to stdout
 Intended to be used:
 -directly after fastq extraction
@@ -47,3 +47,5 @@ optional arguments:
   -h, --help            show this help message and exit  
   -q QUALITY, --quality QUALITY  Filter on a minimum average read quality score  
   -l LENGTH, --length LENGTH Filter on a minimum read length  
+  --headcrop HEADCROP   Trim n nucleotides from start of read  
+  --tailcrop TAILCROP   Trim n nucleotides from end of read
