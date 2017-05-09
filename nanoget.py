@@ -1,4 +1,3 @@
-#!/complgen/bin/anaconda/bin/python2.7
 # wdecoster
 
 from __future__ import division, print_function
@@ -12,10 +11,6 @@ import pandas as pd
 import numpy as np
 from Bio import SeqIO
 from multiprocessing import Pool
-# BAD WORKAROUND FOR AVOIDING IMPORT OF WRONG PYSAM MODULE
-for dir in ['/storage/breva/complgen/bin/anaconda/lib/python2.7/site-packages/RSeQC-2.6.3-py2.7-linux-x86_64.egg', '/complgen/bin/anaconda/lib/python2.7/site-packages/RSeQC-2.6.3-py2.7-linux-x86_64.egg']:
-	if dir in sys.path:
-		sys.path.remove(dir)
 import pysam
 
 

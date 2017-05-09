@@ -11,17 +11,9 @@ For basecalled fast5 files this script also performs fastq extraction
 '''
 
 # TODO
-# Apply filtering on fast5 to fastq conversion
-# Add trimming while writing
-# Add adapter detection
 # Create one html/pdf/markdown report containing all plots and stats
-# Recognize calibration strand DNA, access identity and accuracy
 # Asynchronously create plots up to --threads at a time
-# Add recursive option for search for fast5 files
-# Add option to remove basecalls from fast5, retaining raw reads
 # Add optional manual override of fastq path specifying the group
-# Overlay heatmaps http://stackoverflow.com/questions/31707033/change-certain-squares-in-a-seaborn-heatmap
-# Annotate heatmaps with information about spot on and waste channel http://stackoverflow.com/questions/33158075/custom-annotation-seaborn-heatmap
 # Raw fast5 reader for channel and time
 # implement optional interactive plots (plotly)
 # Does this work with pypy?
@@ -48,14 +40,10 @@ import numpy as np
 from multiprocessing import cpu_count
 from scipy import stats
 import matplotlib.pyplot as plt
-# BAD WORKAROUND FOR AVOIDING IMPORT OF WRONG PYSAM MODULE
-for dir in ['/storage/breva/complgen/bin/anaconda/lib/python2.7/site-packages/RSeQC-2.6.3-py2.7-linux-x86_64.egg', '/complgen/bin/anaconda/lib/python2.7/site-packages/RSeQC-2.6.3-py2.7-linux-x86_64.egg']:
-	if dir in sys.path:
-		sys.path.remove(dir)
 import pysam
 import nanoget
 import nanoplotter
-version=0.5.1
+version="0.5.1"
 
 def main():
 	'''

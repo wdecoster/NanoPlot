@@ -17,7 +17,7 @@ usage: NanoPlot.py [-h] [--dry | --fqout FQOUT] [--threads THREADS] [--time]
                    [--fastq FASTQ | --fast5 FAST5 | --bam BAM | --raw RAW]
 
 
-optional arguments:
+optional arguments:  
   -h, --help         show this help message and exit  
   --dry              Run on a directory of fast5 files without creating fastq output.  
   --fqout FQOUT      File to which output fastq should be written.  
