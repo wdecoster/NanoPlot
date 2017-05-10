@@ -108,7 +108,7 @@ def aveQualBam(quals):
 def processFast5(directory, threads, recursive):
 	'''
 	Processing function, calls worker function
-	Organize processing fast5 data, extraction and gathering statistics
+	Organize processing basecalled fast5 data, extraction and gathering statistics
 	'''
 	logging.info("Running in fast5 mode.")
 	if recursive:

@@ -14,7 +14,7 @@ Various plots are created automatically, some optionally.
 usage: NanoPlot.py [-h] [--dry | --fqout FQOUT] [--threads THREADS] [--time]
                    [--report] [--downsample] [--outdir OUTDIR] [--recursive]
                    [--drop_outliers] [--prefix PREFIX]
-                   [--fastq FASTQ | --fast5 FAST5 | --bam BAM | --raw RAW]
+                   [--fastq FASTQ | --fast5 FAST5 | --bam BAM]
 
 
 optional arguments:  

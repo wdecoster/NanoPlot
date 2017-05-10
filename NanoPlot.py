@@ -14,7 +14,6 @@ For basecalled fast5 files this script also performs fastq extraction
 # Create one html/pdf/markdown report containing all plots and stats
 # Asynchronously create plots up to --threads at a time
 # Add optional manual override of fastq path specifying the group
-# Raw fast5 reader for channel and time
 # implement optional interactive plots (plotly)
 # Does this work with pypy?
 # use pylint module
@@ -49,7 +48,6 @@ def main():
 	'''
 	Organization function: Get input and process accordingly.
 	Data can be:
-	-a directory of raw fast5 files
 	-a directory of basecalled fast5 files
 	-a uncompressed, bgzip, bzip2 or gzip compressed fastq file
 	-s sorted bam file
@@ -86,9 +84,6 @@ def main():
 		datadf, channelfails = nanoget.processFast5(args.fast5, args.threads, args.recursive)
 	elif args.bam:
 		datadf = nanoget.processBam(args.bam, args.threads)
-	elif args.raw:
-		logging.info("Running in raw mode.")
-		sys.exit("Not implemented yet!")
 	else:
 		logging.error("ARGUMENT ERROR: no input presented.")
 		sys.exit('''ARGUMENT ERROR: Required argument is either:\n \
@@ -102,7 +97,6 @@ def main():
 		newNum = min(10000, len(datadf.index))
 		datadf = datadf.sample(newNum)
 		logging.info("Downsampled the dataset from {} to {} reads".format(prevNum, newNum))
-	#sns.set_style("darkgrid")
 	nanoplotter.scatter(
 		datadf=datadf,
 		var=["lengths", "quals"],
@@ -168,9 +162,9 @@ def getArgs():
 	parser.add_argument("--time",
 						help="Give timestamps to stderr for optimization purposes",
 						action="store_true")
-	parser.add_argument("--report",
-						help="Summarize all plots in a html report.",
-						action="store_true")
+#	parser.add_argument("--report",
+#						help="Summarize all plots in a html report.",
+#						action="store_true")
 	parser.add_argument("--downsample",
 						help="Reduce dataset to 10000 reads by random sampling.",
 						action="store_true")
@@ -197,8 +191,6 @@ def getArgs():
 						help="Data presented in a directory of basecalled fast5 files.")
 	target.add_argument("--bam",
 						help="Data presented as a bam file.")
-	target.add_argument("--raw",
-						help="Data presented in a directory of raw fast5 files.")
 	args = parser.parse_args()
 	if args.version:
 		print("Nanoplot {}".format(version))
