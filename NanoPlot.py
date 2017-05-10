@@ -283,6 +283,13 @@ def bamplots(datadf, stamp):
 		stat=stats.pearsonr)
 	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot")
 	nanoplotter.scatter(
+		datadf=datadf,
+		var=["percentIdentity", "aligned_lengths"],
+		names=["Percent identity", "Aligned read quality"],
+		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
+		stat=stats.pearsonr)
+	stamp = timeStamp(stamp, "Creating PIDvsLength plot")
+	nanoplotter.scatter(
 		datadf=removeLowMapQ(datadf),
 		var=["percentIdentity", "quals"],
 		names=["Percent identity", "Sequenced read quality"],
