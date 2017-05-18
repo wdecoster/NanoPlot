@@ -1,4 +1,3 @@
-#!/complgen/bin/anaconda/bin/python2.7
 # wdecoster
 
 from __future__ import division, print_function
@@ -149,7 +148,8 @@ def lengthPlots(array, name, path, suffix=""):
 			hist=True,
 			color="#4CB391")
 		if plot == "LogLength":
-			ax.set(xticklabels=10**ax.get_xticks().astype(int))
+			pass
+			#ax.set(xticklabels=10**ax.get_xticks().astype(int))
 		else:
 			plt.axvline(n50)
 			plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)

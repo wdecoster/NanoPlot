@@ -1,4 +1,9 @@
 #wdecoster
+'''
+Example usage:
+zcat reads.fastq.gz | NanoFilt.py -q 10 -l 500 --headcrop 50 | bwa mem -t 48 -x ont2d genome.fa - | samtools sort -O BAM -@24 -o alignment.bam -
+'''
+
 
 from Bio import SeqIO
 import argparse
