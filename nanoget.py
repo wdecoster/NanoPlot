@@ -141,7 +141,7 @@ def processFast5(directory, threads, recursive):
 					quals.append(q)
 					channels.append(cID)
 					times.append(t)
-					print(fq)
+					print(fq)  # Note that stdout gets redirected with args.dry or args.fqout
 				else:
 					channelfails.append(results)
 		except KeyboardInterrupt:
@@ -152,7 +152,8 @@ def processFast5(directory, threads, recursive):
 	datadf["lengths"] = np.array(lengths)
 	datadf["quals"] = np.array(quals)
 	datadf["channelIDs"] = np.array(channels)
-	datadf["start_time"] = np.array(times)
+	a_time_stamps = np.array(times, dtype='datetime64[s]')
+	datadf["start_time"] = (a_time_stamps - np.amin(a_time_stamps))
 	logging.info("Collected fast5 statistics.")
 	logging.info("No basecall was made in {} fast5 files".format(len(channelfails)))
 	return (datadf, np.array(channelfails))
