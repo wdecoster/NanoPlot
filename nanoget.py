@@ -306,6 +306,6 @@ def processFastq_albacore(fastq):
 	datadf["quals"] = np.array(quals)
 	datadf["channelIDs"] = np.array(channels)
 	a_time_stamps = np.array(time_stamps, dtype='datetime64[s]')
-	datadf["start_time"] = (a_time_stamps - np.amin(a_time_stamps))
+	datadf["start_time"] = a_time_stamps - np.amin(a_time_stamps)
 	logging.info("Collected fastq statistics.")
 	return datadf
