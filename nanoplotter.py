@@ -74,44 +74,42 @@ def timePlots(df, path):
 	Plotting function
 	Making plots of time vs read length, time vs quality and cumulative yield
 	'''
-	df["time_h"] = df["start_time"] / 3600
-	bins = np.linspace(df.time_h.min(), df.time_h.max(), int(df.time_h.max())*30)
-	dfbinned = df.dropna().groupby(pd.cut(df.time_h, bins)).median()
-	dfs = df.sort_values("start_time")
-	dfs["onecounts"] = np.ones(shape=df.time_h.size)
-	dfs["cumyield_gb"] = dfs["lengths"].cumsum() / 10**9
+	dfs_sparse = df.sample(min(2000, len(df.index))).sort_values("start_time")
+	dfs_sparse["time_h"] = dfs_sparse["start_time"].astype('timedelta64[h]')
+
 	g = sns.JointGrid(
 		x='time_h',
 		y='quals',
-		data=dfbinned,
+		data=dfs_sparse,
 		space=0,
 		size=10,
-		xlim=(0, dfbinned.time_h.max()))
+		xlim=(0, dfs_sparse.time_h.max()))
 	g.plot_joint(plt.scatter, color="#4CB391")
-	g.ax_marg_y.hist(dfbinned['quals'].dropna(), orientation="horizontal", color="#4CB391")
+	g.ax_marg_y.hist(dfs_sparse['quals'].dropna(), orientation="horizontal", color="#4CB391")
 	g.set_axis_labels('Run tim (hours)', 'Median average basecall quality')
 	g.savefig(path + "TimeQualityScatterPlot.png", format='png', dpi=1000)
 
 	g = sns.JointGrid(
 		x='time_h',
 		y="lengths",
-		data=dfbinned,
+		data=dfs_sparse,
 		space=0,
 		size=10,
-		xlim=(0, df.time_h.max()))
+		xlim=(0, dfs_sparse.time_h.max()))
 	g.plot_joint(plt.scatter, color="#4CB391")
-	g.ax_marg_y.hist(dfbinned["lengths"].dropna(), orientation="horizontal", color="#4CB391")
+	g.ax_marg_y.hist(dfs_sparse["lengths"].dropna(), orientation="horizontal", color="#4CB391")
 	g.set_axis_labels('Run tim (hours)', 'Median read length')
 	g.savefig(path + "TimeLengthScatterPlot.png", format='png', dpi=1000)
 
+	dfs_sparse["cumyield_gb"] = dfs_sparse["lengths"].cumsum() / 10**9
 	g = sns.JointGrid(
 		x='time_h',
 		y="cumyield_gb",
-		data=dfs.sample(min(2000, len(dfs.index))),
+		data=dfs_sparse,
 		space=0,
 		size=10,
-		xlim=(0, df.time_h.max()),
-		ylim=(0, dfs.tail(1)["cumyield_gb"].item()))
+		xlim=(0, dfs_sparse.time_h.max()),
+		ylim=(0, dfs_sparse.tail(1)["cumyield_gb"].item()))
 	g.plot_joint(plt.scatter, color="#4CB391")
 	g.set_axis_labels('Run tim (hours)', 'Cumulative yield in gigabase')
 	g.savefig(path + "CumulativeYieldPlot.png", format='png', dpi=1000)
