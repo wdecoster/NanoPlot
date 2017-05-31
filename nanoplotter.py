@@ -132,7 +132,7 @@ def lengthPlots(array, name, path, suffix=""):
 	#if plot == "LogLength":
 	#	ax.set(xticklabels=10**ax.get_xticks().astype(int))
 	fig = ax.get_figure()
-	fig.savefig(path + plot + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
+	fig.savefig(path + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
 	plt.close("all")
 
 	ax = sns.distplot(
@@ -144,7 +144,7 @@ def lengthPlots(array, name, path, suffix=""):
 	plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
 	ax.set(xlabel='Read length', ylabel='Number of reads')
 	fig = ax.get_figure()
-	fig.savefig(path + plot + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
+	fig.savefig(path + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
 	plt.close("all")
 
 
