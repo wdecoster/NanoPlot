@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 import pysam
 import nanoget
 import nanoplotter
-version="0.6.0"
+version="0.7.0"
 
 def main():
 	'''
@@ -43,18 +43,11 @@ def main():
 	stamp = initlogs(time.time())
 	datadf, stamp = getInput(stamp)
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["lengths", "quals"],
+		x=datadf["lengths"],
+		y=datadf["quals"],
 		names=['Read lengths', 'Average read quality'],
 		path=os.path.join(args.outdir, args.prefix + "ReadlengthvsQualityScatterPlot"))
 	stamp = timeStamp(stamp, "Creating LengthvsQual plot")
-	if args.drop_outliers:
-		nanoplotter.scatter(
-			datadf=removeLengthOutliers(datadf, "lengths"),
-			var=["lengths", "quals"],
-			names=['Read lengths', 'Average read quality'],
-			path=os.path.join(args.outdir, args.prefix + "ReadlengthvsQualityScatterPlot_LengthOutliersRemoved"))
-		stamp = timeStamp(stamp, "Creating LengthvsQual plot without length-outliers")
 
 	if args.fastq or args.fast5 or args.fastq_albacore:
 		nanoplotter.lengthPlots(
@@ -62,13 +55,6 @@ def main():
 			name="Read length",
 			path=os.path.join(args.outdir, args.prefix))
 		stamp = timeStamp(stamp, "Creating length plots")
-		if args.drop_outliers:
-			nanoplotter.lengthPlots(
-				array=removeLengthOutliers(datadf, "lengths")["lengths"],
-				name="Read length",
-				path=os.path.join(args.outdir, args.prefix),
-				suffix="_LengthOutliersRemoved")
-			stamp = timeStamp(stamp, "Creating length plots without length-outliers")
 	if args.fast5 or args.fastq_albacore:
 		nanoplotter.spatialHeatmap(
 			array=datadf["channelIDs"],
@@ -126,7 +112,12 @@ def getInput(stamp):
 		newNum = min(10000, len(datadf.index))
 		logging.info("Downsampling the dataset from {} to {} reads".format(len(datadf.index), newNum))
 		datadf = datadf.sample(newNum)
+	if args.drop_outliers:
+		datadf=removeLengthOutliers(datadf, "lengths")
+	if args.loglength:
+		datadf["lengths"] = np.log10(datadf["lengths"])
 	return (datadf, stamp)
+
 
 def getArgs():
 	parser = argparse.ArgumentParser(description="Perform diagnostic plotting, QC analysis and fast5 extraction of Nanopore sequencing data.")
@@ -145,6 +136,9 @@ def getArgs():
 						action="store_true")
 	parser.add_argument("--downsample",
 						help="Reduce dataset to 10000 reads by random sampling.",
+						action="store_true")
+	parser.add_argument("--loglength",
+						help="Logarithmic scaling of lengths in plots.",
 						action="store_true")
 	parser.add_argument("--outdir",
 						help="Specify directory in which output has to be created.",
@@ -208,11 +202,6 @@ def removeLengthOutliers(df, columnname):
 	return(df[df[columnname] < (np.median(df[columnname]) + 3 * np.std(df[columnname]))])
 
 
-def removeLowMapQ(df):
-	'''Calculation function: Remove records with mapping quality < 10'''
-	return(df[df["mapQ"] > 10])
-
-
 def bamplots(datadf, stamp):
 	'''Call plotting functions specific for bam files'''
 	nanoplotter.lengthPlots(
@@ -225,74 +214,44 @@ def bamplots(datadf, stamp):
 		path=os.path.join(args.outdir, args.prefix))
 	stamp = timeStamp(stamp, "Creating length plots")
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["aligned_lengths", "aligned_quals"],
+		x=datadf["aligned_lengths"],
+		y=datadf["aligned_quals"],
 		names=["Aligned read lengths", "Aligned read quality"],
 		path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsAlignedQualityScatterPlot"))
 	stamp = timeStamp(stamp, "Creating LengthvsQual plot for aligned reads")
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["aligned_lengths", "lengths"],
+		x=datadf["aligned_lengths"],
+		y=datadf["lengths"],
 		names=["Aligned read lengths", "Sequenced read length"],
 		path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsSequencedReadLength"))
 	stamp = timeStamp(stamp, "Creating AlignedLengthvsLength plot")
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["mapQ", "quals"],
+		x=datadf["mapQ"],
+		y=datadf["quals"],
 		names=["Read mapping quality", "Sequenced read quality"],
 		path=os.path.join(args.outdir, args.prefix + "MappingQualityvsAverageBaseQuality"))
 	stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["mapQ", "lengths"],
+		x=datadf["mapQ"],
+		y=datadf["lengths"],
 		names=["Read mapping quality", "Sequenced read length"],
 		path=os.path.join(args.outdir, args.prefix + "MappingQualityvsReadLength"))
 	stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["percentIdentity", "quals"],
+		x=datadf["percentIdentity"],
+		y=datadf["quals"],
 		names=["Percent identity", "Sequenced read quality"],
 		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
 		stat=stats.pearsonr)
 	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot")
 	nanoplotter.scatter(
-		datadf=datadf,
-		var=["percentIdentity", "aligned_lengths"],
+		x=datadf["percentIdentity"],
+		y=datadf["aligned_lengths"],
 		names=["Percent identity", "Aligned read quality"],
 		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
 		stat=stats.pearsonr)
 	stamp = timeStamp(stamp, "Creating PIDvsLength plot")
-	nanoplotter.scatter(
-		datadf=removeLowMapQ(datadf),
-		var=["percentIdentity", "quals"],
-		names=["Percent identity", "Sequenced read quality"],
-		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality_lowMappingQualityRemoved"),
-		stat=stats.pearsonr)
-	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot with low mapping quality reads removed")
-	if args.drop_outliers:
-		nanoplotter.lengthPlots(
-			array=removeLengthOutliers(datadf, "lengths")["lengths"],
-			name="Sequenced read length",
-			path=os.path.join(args.outdir, args.prefix),
-			suffix="_LengthOutliersRemoved")
-		nanoplotter.lengthPlots(
-			array=removeLengthOutliers(datadf, "lengths")["aligned_lengths"],
-			name="Aligned read length",
-			path=os.path.join(args.outdir, args.prefix),
-			suffix="_LengthOutliersRemoved")
-		stamp = timeStamp(stamp, "Creating length plots without length-outliers")
-		nanoplotter.scatter(
-			datadf=removeLengthOutliers(datadf, "aligned_lengths"),
-			var=["aligned_lengths", "aligned_quals"],
-			names=["Aligned read lengths", "Aligned read quality"],
-			path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsAlignedQualityScatterPlot_LengthOutliersRemoved"))
-		stamp = timeStamp(stamp, "Creating LengthvsQual plot for aligned reads with length-outliers removed")
-		nanoplotter.scatter(
-			datadf=removeLengthOutliers(datadf, "lengths"),
-			var=["aligned_lengths", "lengths"],
-			names=["Aligned read lengths", "Sequenced read length"],
-			path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsSequencedReadLength_LengthOutliersRemoved"))
-		stamp = timeStamp(stamp, "Creating AlignedLengthvsLength plot with length-outliers removed")
+
 
 if __name__ == "__main__":
 	args = getArgs()
