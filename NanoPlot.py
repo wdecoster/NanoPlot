@@ -97,7 +97,6 @@ def getInput(stamp):
 		sys.exit('''ARGUMENT ERROR: Required argument is either:\n \
 					a (compressed) fastq file [--fastq]\n \
 					a directory of basecalled fast5 files [--fast5]\n \
-					a directory of raw fast5 files [--raw]\n \
 					a bam file [--bam].''')
 	stamp = timeStamp(stamp, "Gathering data")
 	if args.fast5:
