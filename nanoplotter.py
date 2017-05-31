@@ -12,7 +12,7 @@ with warnings.catch_warnings():
 	warnings.simplefilter("ignore")
 	import seaborn as sns
 
-def scatter(datadf, var, names, path, stat=None):
+def scatter(x, y, names, path, stat=None):
 	'''
 	Plotting function
 	Create three types of joint plots of length vs quality, containing marginal summaries
@@ -20,13 +20,12 @@ def scatter(datadf, var, names, path, stat=None):
 	-A hexagonal binned plot with histograms on axes
 	-A kernel density plot with density curves on axes, subsampled to 10000 reads if required
 	'''
-	logging.info("Creating length vs quality plots using statistics from {} reads.".format(datadf[var[1]].size))
-	maxvalx = np.amax(datadf[var[0]])
-	maxvaly = np.amax(datadf[var[1]])
+	logging.info("Creating length vs quality plots using statistics from {} reads.".format(x.size))
+	maxvalx = np.amax(x)
+	maxvaly = np.amax(y)
 	plot = sns.jointplot(
-		x=var[0],
-		y=var[1],
-		data=datadf,
+		x=x,
+		y=y,
 		kind="hex",
 		color="#4CB391",
 		stat_func=stat,
@@ -38,9 +37,8 @@ def scatter(datadf, var, names, path, stat=None):
 	plot.savefig(path + "_hex.png", format='png', dpi=1000)
 
 	plot = sns.jointplot(
-		x=var[0],
-		y=var[1],
-		data=datadf,
+		x=x,
+		y=y,
 		kind="scatter",
 		color="#4CB391",
 		stat_func=stat,
@@ -53,9 +51,8 @@ def scatter(datadf, var, names, path, stat=None):
 	plot.savefig(path + "_scatter.png", format='png', dpi=1000)
 
 	plot = sns.jointplot(
-		x=var[0],
-		y=var[1],
-		data=datadf.sample(min(10000, datadf[var[1]].size)),  # Sample to 10000 for kde plot if more reads present
+		x=x,
+		y=y,
 		kind="kde",
 		clip=((0, np.Inf), (0, np.Inf)),
 		xlim=(0, maxvalx),
@@ -126,35 +123,29 @@ def lengthPlots(array, name, path, suffix=""):
 	n50 = getN50(np.sort(array))
 	logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
 	logarray = np.log10(array)
-	for a, plot in [(array, "Length"), (logarray, "LogLength")]:
-		ax = sns.distplot(
-			a=a,
-			kde=True,
-			hist=False,
-			color="#4CB391",
-			kde_kws={"label": name, "clip": (0, maxvalx)})
-		if plot == "LogLength":
-			ax.set(xticklabels=10**ax.get_xticks().astype(int))
-		fig = ax.get_figure()
-		fig.savefig(path + plot + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
-		plt.close("all")
+	ax = sns.distplot(
+		a=array
+		kde=True,
+		hist=False,
+		color="#4CB391",
+		kde_kws={"label": name, "clip": (0, maxvalx)})
+	#if plot == "LogLength":
+	#	ax.set(xticklabels=10**ax.get_xticks().astype(int))
+	fig = ax.get_figure()
+	fig.savefig(path + plot + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
+	plt.close("all")
 
-	for a, plot in [(array, "Length"), (logarray, "LogLength")]:
-		ax = sns.distplot(
-			a=a,
-			kde=False,
-			hist=True,
-			color="#4CB391")
-		if plot == "LogLength":
-			pass
-			#ax.set(xticklabels=10**ax.get_xticks().astype(int))
-		else:
-			plt.axvline(n50)
-			plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
-		ax.set(xlabel='Read length', ylabel='Number of reads')
-		fig = ax.get_figure()
-		fig.savefig(path + plot + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
-		plt.close("all")
+	ax = sns.distplot(
+		a=array,
+		kde=False,
+		hist=True,
+		color="#4CB391")
+	plt.axvline(n50)
+	plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
+	ax.set(xlabel='Read length', ylabel='Number of reads')
+	fig = ax.get_figure()
+	fig.savefig(path + plot + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
+	plt.close("all")
 
 
 def getN50(a):
