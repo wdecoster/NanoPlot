@@ -124,7 +124,7 @@ def lengthPlots(array, name, path, suffix=""):
 	logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
 	logarray = np.log10(array)
 	ax = sns.distplot(
-		a=array
+		a=array,
 		kde=True,
 		hist=False,
 		color="#4CB391",
