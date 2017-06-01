@@ -32,6 +32,9 @@ def processBam(bam, threads):
 		pysam.index(bam)
 		samfile = pysam.AlignmentFile(bam, "rb")  # Need to reload the samfile after creating index
 		logging.info("No index for bam file could be found, created index.")
+	if not samfile.header['HD']['SO'] == 'coordinate':
+		logging.info("Bam file not sorted by coordinate!.")
+		sys.exit("Please use a bam file sorted by coordinate.")
 	NumberOfmappedReads = samfile.mapped
 	NumberOfunmappedReads = samfile.unmapped
 	logging.info("Bam file contains {} mapped and {} unmapped reads.".format(NumberOfmappedReads, NumberOfunmappedReads))
