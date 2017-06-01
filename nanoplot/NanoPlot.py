@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # wdecoster
 '''
 The main purpose of this script is to create plots for nanopore data.
