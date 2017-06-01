@@ -12,7 +12,7 @@ with warnings.catch_warnings():
 	warnings.simplefilter("ignore")
 	import seaborn as sns
 
-def scatter(x, y, names, path, stat=None):
+def scatter(x, y, names, path, stat=None, log=False):
 	'''
 	Plotting function
 	Create three types of joint plots of length vs quality, containing marginal summaries
@@ -34,6 +34,8 @@ def scatter(x, y, names, path, stat=None):
 		ylim=(0, maxvaly),
 		size=10)
 	plot.set_axis_labels(names[0], names[1])
+	if log:
+		plot.ax_joint.set_xticklabels(10**plot.ax_joint.get_xticks().astype(int))
 	plot.savefig(path + "_hex.png", format='png', dpi=1000)
 
 	plot = sns.jointplot(
@@ -48,6 +50,8 @@ def scatter(x, y, names, path, stat=None):
 		size=10,
 		joint_kws={"s": 1})
 	plot.set_axis_labels(names[0], names[1])
+	if log:
+		plot.ax_joint.set_xticklabels(10**plot.ax_joint.get_xticks().astype(int))
 	plot.savefig(path + "_scatter.png", format='png', dpi=1000)
 
 	plot = sns.jointplot(
@@ -62,6 +66,8 @@ def scatter(x, y, names, path, stat=None):
 		stat_func=stat,
 		size=10)
 	plot.set_axis_labels(names[0], names[1])
+	if log:
+		plot.ax_joint.set_xticklabels(10**plot.ax_joint.get_xticks().astype(int))
 	plot.savefig(path + "_kde.png", format='png', dpi=1000)
 	plt.close("all")
 
@@ -73,7 +79,6 @@ def timePlots(df, path):
 	'''
 	dfs_sparse = df.sample(min(2000, len(df.index))).sort_values("start_time")
 	dfs_sparse["time_h"] = dfs_sparse["start_time"].astype('timedelta64[h]')
-
 	g = sns.JointGrid(
 		x='time_h',
 		y='quals',
@@ -113,7 +118,7 @@ def timePlots(df, path):
 	plt.close("all")
 
 
-def lengthPlots(array, name, path, suffix=""):
+def lengthPlots(array, name, path, suffix="", log=False):
 	'''
 	Plotting function
 	Create density plots and histograms based on a numpy array (read lengths)
@@ -122,15 +127,15 @@ def lengthPlots(array, name, path, suffix=""):
 	maxvalx = np.amax(array)
 	n50 = getN50(np.sort(array))
 	logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
-	logarray = np.log10(array)
+
 	ax = sns.distplot(
 		a=array,
 		kde=True,
 		hist=False,
 		color="#4CB391",
 		kde_kws={"label": name, "clip": (0, maxvalx)})
-	#if plot == "LogLength":
-	#	ax.set(xticklabels=10**ax.get_xticks().astype(int))
+	if log:
+		ax.set(xticklabels=10**ax.get_xticks().astype(float))
 	fig = ax.get_figure()
 	fig.savefig(path + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
 	plt.close("all")
@@ -141,7 +146,11 @@ def lengthPlots(array, name, path, suffix=""):
 		hist=True,
 		color="#4CB391")
 	plt.axvline(n50)
-	plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
+	if log:
+		ax.set(xticklabels=10**ax.get_xticks().astype(float))
+		plt.annotate('N50', xy=(10**n50, np.amax([h.get_height() for h in ax.patches])), size=8)
+	else:
+		plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
 	ax.set(xlabel='Read length', ylabel='Number of reads')
 	fig = ax.get_figure()
 	fig.savefig(path + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
