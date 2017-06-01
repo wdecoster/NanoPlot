@@ -146,9 +146,9 @@ def filterData(datadf):
 		logBool = False
 	if args.downsample:
 		newNum = min(args.downsample, len(datadf.index))
-		datadf = datadf.sample(newNum)
 		lengthprefix.append("Downsampled_")
 		logging.info("Downsampling the dataset from {} to {} reads".format(len(datadf.index), newNum))
+		datadf = datadf.sample(newNum)
 	return(datadf, ''.join(lengthprefix), logBool)
 
 
