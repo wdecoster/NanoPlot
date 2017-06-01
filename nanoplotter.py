@@ -124,9 +124,13 @@ def lengthPlots(array, name, path, suffix="", log=False):
 	Create density plots and histograms based on a numpy array (read lengths)
 	For both, also create log-scaled plot
 	'''
+	import math
 	maxvalx = np.amax(array)
 	n50 = getN50(np.sort(array))
-	logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
+	if log:
+		logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, str(10**n50)))
+	else:
+		logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
 
 	ax = sns.distplot(
 		a=array,
@@ -135,7 +139,10 @@ def lengthPlots(array, name, path, suffix="", log=False):
 		color="#4CB391",
 		kde_kws={"label": name, "clip": (0, maxvalx)})
 	if log:
-		ax.set(xticklabels=10**ax.get_xticks().astype(float))
+		ticks = [10**i for i in range(10) if not 10**i > 10**math.ceil(math.log(10**maxvalx,10))]
+		ax.set(
+			xticks=np.log10(ticks),
+			xticklabels=ticks)
 	fig = ax.get_figure()
 	fig.savefig(path + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
 	plt.close("all")
@@ -147,10 +154,10 @@ def lengthPlots(array, name, path, suffix="", log=False):
 		color="#4CB391")
 	plt.axvline(n50)
 	if log:
-		ax.set(xticklabels=10**ax.get_xticks().astype(float))
-		plt.annotate('N50', xy=(10**n50, np.amax([h.get_height() for h in ax.patches])), size=8)
-	else:
-		plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
+		ax.set(
+			xticks=np.log10(ticks),
+			xticklabels=ticks)
+	plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
 	ax.set(xlabel='Read length', ylabel='Number of reads')
 	fig = ax.get_figure()
 	fig.savefig(path + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
