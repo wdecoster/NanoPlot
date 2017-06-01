@@ -8,9 +8,7 @@ import numpy as np
 import warnings
 from scipy import stats
 import matplotlib.pyplot as plt
-with warnings.catch_warnings():
-	warnings.simplefilter("ignore")
-	import seaborn as sns
+import seaborn as sns
 
 def scatter(x, y, names, path, stat=None, log=False):
 	'''
