@@ -1,6 +1,12 @@
 # NanoPlot
 Plotting scripts for nanopore sequencing data
 
+![Example plot](https://github.com/wdecoster/NanoPlot/blob/master/examples/scaled_Log_Downsampled_LengthvsQualityScatterPlot_kde.png)
+
+The example plot above shows a bivariate plot comparing log transformed read length with average basecall Phred quality score.
+
+More examples can be found in the [gallery on my blog 'Gigabase Or Gigabyte'.](https://gigabaseorgigabyte.wordpress.com/2017/06/01/example-gallery-of-nanoplot/)
+
 This script performs data extraction from Nanopore sequencing data in the following formats:
 - directories of basecalled fast5 files   
 - bam files  
@@ -8,7 +14,9 @@ This script performs data extraction from Nanopore sequencing data in the follow
 
 Fastq can be extracted while getting data from fast5 files, streaming to stdout or to a file.
 
-Various plots are created automatically, some optionally.
+Various plots are created automatically, more can be created optionally.
+
+The script is written for python3 but might also work for python2.7 (untested).
 
 ### USAGE:
 usage: NanoPlot.py [-h] [--dry | --fqout FQOUT] [--threads THREADS] [--time]
