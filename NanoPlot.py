@@ -38,24 +38,26 @@ def main():
 	if not os.path.exists(args.outdir):
 		os.makedirs(args.outdir)
 	stamp = initlogs(time.time())
-	datadf, lengthprefix, stamp = getInput(stamp)
+	datadf, lengthprefix, logBool, stamp = getInput(stamp)
 	nanoplotter.scatter(
 		x=datadf["readlengths"],
 		y=datadf["quals"],
 		names=['Read lengths', 'Average read quality'],
-		path=os.path.join(args.outdir, args.prefix + "LengthvsQualityScatterPlot"))
+		path=os.path.join(args.outdir, args.prefix + lengthprefix + "LengthvsQualityScatterPlot"),
+		log=logBool)
 	stamp = timeStamp(stamp, "Creating LengthvsQual plot")
 
 	if args.fastq or args.fast5 or args.fastq_albacore:
 		nanoplotter.lengthPlots(
 			array=datadf["readlengths"],
 			name="Read length",
-			path=os.path.join(args.outdir, args.prefix))
+			path=os.path.join(args.outdir, args.prefix + lengthprefix),
+			log=logBool)
 		stamp = timeStamp(stamp, "Creating length plots")
 	if args.fast5 or args.fastq_albacore:
 		nanoplotter.spatialHeatmap(
 			array=datadf["channelIDs"],
-			title="Number of reads generated per channel",
+			title="Number of reads gelength outliers for plottingnerated per channel",
 			path=os.path.join(args.outdir, args.prefix + "ActivityMap_"),
 			filename="ReadsPerChannel",
 			colour="Greens")
@@ -65,7 +67,7 @@ def main():
 			path=os.path.join(args.outdir, args.prefix))
 		stamp = timeStamp(stamp, "Creating timeplots")
 	if args.bam:
-		bamplots(datadf, stamp)
+		bamplots(datadf, lengthprefix, logBool, stamp)
 	logging.info("Succesfully processed all input.")
 
 
@@ -82,7 +84,7 @@ def getInput(stamp):
 	elif args.fast5:
 		if args.fqout:
 			sys.stdout = open(os.path.join(args.outdir, args.fqout), 'a')
-		elif args.dry:
+		elif arbamplotsgs.dry:
 			sys.stdout = open(os.devnull, 'w')
 		datadf, channelfails = nanoget.processFast5(args.fast5, min(cpu_count() - 1, args.threads), args.recursive)
 	elif args.bam:
@@ -104,34 +106,49 @@ def getInput(stamp):
 			filename="BasecallFailedPerChannel",
 			colour="OrRd")
 		stamp = timeStamp(stamp, "Creating spatialheatmap for basecall fails")
-	datadf, lengthprefix = filterData(datadf)
-	return (datadf, lengthprefix, stamp)
+	datadf, lengthprefix, logBool = filterData(datadf)
+	return (datadf, lengthprefix, logBool, stamp)
 
 
 def filterData(datadf):
+	'''
+	Perform filtering on the data based on arguments set on commandline
+	- use alighned length or sequenced length (bam mode only)
+	- drop outliers
+	- drop reads longer than args.maxlength
+	- use log10 scaled reads
+	- downsample reads to args.downsample
+	Return an accurate prefix which is added to plotnames using this filtered data
+	'''
 	lengthprefix = []
-	if args.downsample:
-		newNum = min(10000, len(datadf.index))
-		datadf = datadf.sample(newNum)
-		lengthprefix.append("Downsampled")
-		logging.info("Downsampling the dataset from {} to {} reads".format(len(datadf.index), newNum))
 	if args.alength and args.bam:
 		datadf["readlengths"] = datadf["aligned_lengths"]
-		lengthprefix.append("Aligned")
+		lengthprefix.append("Aligned_")
 		logging.info("Using aligned read lengths for plotting.")
 	else:
 		datadf["readlengths"] = datadf["lengths"]
-		lengthprefix.append("Sequenced")
 		logging.info("Using sequenced read lengths for plotting.")
 	if args.drop_outliers:
 		datadf=removeLengthOutliers(datadf, "readlengths")
-		lengthprefix.append("OutliersRemoved")
+		lengthprefix.append("OutliersRemoved_")
 		logging.info("Removing length outliers for plotting.")
+	if args.maxlength:
+		datadf=datadf[datadf["readlengths"] < args.maxlength]
+		lengthprefix.append("MaxLength" + str(args.maxlength) + '_')
+		logging.info("Removing reads longer than {}.".format(str(args.maxlength)))
 	if args.loglength:
 		datadf["readlengths"] = np.log10(datadf["readlengths"])
-		lengthprefix.append("Log")
+		lengthprefix.append("Log_")
 		logging.info("Using Log10 scaled read lengths.")
-	return(datadf, ' '.join(lengthprefix))
+		logBool = True
+	else:
+		logBool = False
+	if args.downsample:
+		newNum = min(args.downsample, len(datadf.index))
+		datadf = datadf.sample(newNum)
+		lengthprefix.append("Downsampled_")
+		logging.info("Downsampling the dataset from {} to {} reads".format(len(datadf.index), newNum))
+	return(datadf, ''.join(lengthprefix), logBool)
 
 
 def getArgs():
@@ -149,9 +166,15 @@ def getArgs():
 	parser.add_argument("--time",
 						help="Give timestamps to stderr for optimization purposes",
 						action="store_true")
-	parser.add_argument("--downsample",
-						help="Reduce dataset to 10000 reads by random sampling.",
+	parser.add_argument("--maxlength",
+						help="Drop reads longer than length specified.",
+						type=int)
+	parser.add_argument("--drop_outliers",
+						help="Drop outlier reads with extreme long length.",
 						action="store_true")
+	parser.add_argument("--downsample",
+						help="Reduce dataset to N reads by random sampling.",
+						type=int)
 	parser.add_argument("--loglength",
 						help="Logarithmic scaling of lengths in plots.",
 						action="store_true")
@@ -163,9 +186,6 @@ def getArgs():
 						default=".")
 	parser.add_argument("--recursive",
 						help="Recursively search the directory for fast5 files.",
-						action="store_true")
-	parser.add_argument("--drop_outliers",
-						help="Drop outlier reads with extreme long length.",
 						action="store_true")
 	parser.add_argument("--version",
 						help="Print version and exit.",
@@ -217,15 +237,16 @@ def initlogs(time0):
 
 def removeLengthOutliers(df, columnname):
 	'''Calculation function: Remove records with length-outliers'''
-	return(df[df[columnname] < (np.median(df[columnname]) + 3 * np.std(df[columnname]))])
+	return df[df[columnname] < (np.median(df[columnname]) + 3 * np.std(df[columnname]))]
 
 
-def bamplots(datadf, stamp):
+def bamplots(datadf, lengthprefix, logBool, stamp):
 	'''Call plotting functions specific for bam files'''
 	nanoplotter.lengthPlots(
 		array=datadf["readlengths"],
 		name="Read length",
-		path=os.path.join(args.outdir, args.prefix))
+		path=os.path.join(args.outdir, args.prefix + lengthprefix),
+		log=logBool)
 	stamp = timeStamp(stamp, "Creating length plots")
 	nanoplotter.scatter(
 		x=datadf["aligned_lengths"],
@@ -236,14 +257,15 @@ def bamplots(datadf, stamp):
 	nanoplotter.scatter(
 		x=datadf["mapQ"],
 		y=datadf["quals"],
-		names=["Read mapping quality", "Read quality"],
+		names=["Read mapping quality", "Average basecall quality"],
 		path=os.path.join(args.outdir, args.prefix + "MappingQualityvsAverageBaseQuality"))
 	stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 	nanoplotter.scatter(
-		x=datadf["mapQ"],
-		y=datadf["readlengths"],
-		names=["Read mapping quality", "Read length"],
-		path=os.path.join(args.outdir, args.prefix + "MappingQualityvsReadLength"))
+		x=datadf["readlengths"],
+		y=datadf["mapQ"],
+		names=["Read length", "Read mapping quality"],
+		path=os.path.join(args.outdir, args.prefix + lengthprefix + "MappingQualityvsReadLength"),
+		log=logBool)
 	stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 	nanoplotter.scatter(
 		x=datadf["percentIdentity"],
@@ -253,11 +275,12 @@ def bamplots(datadf, stamp):
 		stat=stats.pearsonr)
 	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot")
 	nanoplotter.scatter(
-		x=datadf["percentIdentity"],
-		y=datadf["aligned_lengths"],
-		names=["Percent identity", "Aligned read length"],
+		x=datadf["readlengths"],
+		y=datadf["percentIdentity"],
+		names=["Aligned read length", "Percent identity"],
 		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
-		stat=stats.pearsonr)
+		stat=stats.pearsonr,
+		log=logBool)
 	stamp = timeStamp(stamp, "Creating PIDvsLength plot")
 
 
