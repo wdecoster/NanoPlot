@@ -85,7 +85,7 @@ def getInput(stamp):
 	elif args.fast5:
 		if args.fqout:
 			sys.stdout = open(os.path.join(args.outdir, args.fqout), 'a')
-		elif arbamplotsgs.dry:
+		elif args.dry:
 			sys.stdout = open(os.devnull, 'w')
 		datadf, channelfails = nanoget.processFast5(args.fast5, min(cpu_count() - 1, args.threads), args.recursive)
 	elif args.bam:
