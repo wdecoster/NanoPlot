@@ -19,6 +19,7 @@ def scatter(x, y, names, path, stat=None, log=False):
 	-A kernel density plot with density curves on axes, subsampled to 10000 reads if required
 	'''
 	logging.info("Creating length vs quality plots using statistics from {} reads.".format(x.size))
+	sns.set(style="ticks")
 	maxvalx = np.amax(x)
 	maxvaly = np.amax(y)
 	plot = sns.jointplot(
@@ -31,11 +32,12 @@ def scatter(x, y, names, path, stat=None, log=False):
 		xlim=(0, maxvalx),
 		ylim=(0, maxvaly),
 		size=10)
+		#joint_kws={"extent": (0, maxvalx, 0, maxvaly)})
 	plot.set_axis_labels(names[0], names[1])
 	if log:
 		plot.ax_joint.set_xticklabels(10**plot.ax_joint.get_xticks().astype(int))
 	plot.savefig(path + "_hex.png", format='png', dpi=1000)
-
+	sns.set(style="darkgrid")
 	plot = sns.jointplot(
 		x=x,
 		y=y,
@@ -62,6 +64,7 @@ def scatter(x, y, names, path, stat=None, log=False):
 		space=0,
 		color="#4CB391",
 		stat_func=stat,
+		shade_lowest=False,
 		size=10)
 	plot.set_axis_labels(names[0], names[1])
 	if log:
