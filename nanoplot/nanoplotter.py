@@ -32,7 +32,6 @@ def scatter(x, y, names, path, stat=None, log=False):
 		xlim=(0, maxvalx),
 		ylim=(0, maxvaly),
 		size=10)
-		#joint_kws={"extent": (0, maxvalx, 0, maxvaly)})
 	plot.set_axis_labels(names[0], names[1])
 	if log:
 		plot.ax_joint.set_xticklabels(10**plot.ax_joint.get_xticks().astype(int))
@@ -172,7 +171,8 @@ def getN50(a):
 	'''
 	return a[np.where(np.cumsum(a)>=0.5*np.sum(a))[0][0]]
 
-def spatialHeatmap(array, title, path, filename, colour):
+
+def spatialHeatmap(array, title, path, colour):
 	'''
 	Plotting function
 	Taking channel information and creating post run channel activity plots
@@ -198,5 +198,5 @@ def spatialHeatmap(array, title, path, filename, colour):
 		linewidths=0.20)
 	ax.set_title(title)
 	fig = ax.get_figure()
-	fig.savefig(path + filename + ".png", format='png', dpi=1000)
+	fig.savefig(path + ".png", format='png', dpi=1000)
 	plt.close("all")
