@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from Bio import SeqIO
 from multiprocessing import Pool
+import dateutil.parser
 import pysam
 import nanomath
 
@@ -164,7 +165,6 @@ def processFastq_albacore(fastq):
 	Z indicates UTC time, T is the delimiter between date expression and time expression
 	dateutil.parser.parse("2016-07-15T14:23:22Z") # -> datetime.datetime(2016, 7, 15, 14, 23, 22, tzinfo=tzutc())
 	'''
-	import dateutil.parser
 	logging.info("Running in fastq mode, expecting additional information added by albacore.")
 	inputfastq = handlecompressedFastq(fastq)
 	datadf = pd.DataFrame()
