@@ -10,7 +10,7 @@ import numpy as np
 from Bio import SeqIO
 from multiprocessing import Pool
 import pysam
-
+import nanomath
 
 def processBam(bam, threads):
 	'''
@@ -85,8 +85,8 @@ def extractFromBam(params):
 	for read in samfile.fetch(reference=chromosome, multiple_iterators=True):
 		lengths.append(read.query_length)
 		alignedLengths.append(read.query_alignment_length)
-		quals.append(aveQualBam(read.query_qualities))
-		alignedQuals.append(aveQualBam(read.query_alignment_qualities))
+		quals.append(nanomath.aveQual(read.query_qualities))
+		alignedQuals.append(nanomath.aveQual(read.query_alignment_qualities))
 		mapQ.append(read.mapping_quality)
 		try:
 			pID.append((1- read.get_tag("NM")/read.query_alignment_length)*100)
@@ -103,10 +103,6 @@ def parseMD(MDlist):
 
 def parseCIGAR(cigartuples):
 	return sum([item[1] for item in cigartuples if item[0] == 1])
-
-
-def aveQualBam(quals):
-	return sum(quals) / len(quals)
 
 
 def handlecompressedFastq(inputfq):
@@ -147,16 +143,11 @@ def processFastq(fastq):
 	quals = []
 	for record in SeqIO.parse(inputfastq, "fastq"):
 		lengths.append(len(record))
-		quals.append(aveQualFastq(record.letter_annotations["phred_quality"]))
+		quals.append(nanomath.aveQual(record.letter_annotations["phred_quality"]))
 	datadf["lengths"] = np.array(lengths)
 	datadf["quals"] = np.array(quals)
 	logging.info("Collected fastq statistics.")
 	return datadf
-
-
-def aveQualFastq(quals):
-	'''	Calculation function: Receive the integer quality scores of a read and return the average quality for that read'''
-	return sum(quals) / len(quals)
 
 
 def processFastq_albacore(fastq):
@@ -179,7 +170,7 @@ def processFastq_albacore(fastq):
 	time_stamps = []
 	for record in SeqIO.parse(inputfastq, "fastq"):
 		lengths.append(len(record))
-		quals.append(aveQualFastq(record.letter_annotations["phred_quality"]))
+		quals.append(nanomath.nanomath.aveQual(record.letter_annotations["phred_quality"]))
 		for data in record.description.split(' '):  # This can easily be adapted to include more metrics using the same format
 			if data.startswith('ch='):
 				channels.append(int(data[3:]))
