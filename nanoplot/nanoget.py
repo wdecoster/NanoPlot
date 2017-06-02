@@ -1,8 +1,7 @@
 # wdecoster
 
-from __future__ import division, print_function
+from __future__ import division
 import sys
-import os
 import time
 import logging
 import re
@@ -46,7 +45,7 @@ def processBam(bam, threads):
 	try:
 		output = [results for results in pool.imap(extractFromBam, params)]
 	except KeyboardInterrupt:
-		print("Terminating worker threads")
+		sys.stderr.write("Terminating worker threads")
 		pool.terminate()
 		pool.join()
 		sys.exit()
@@ -134,6 +133,7 @@ def handlecompressedFastq(inputfq):
 			logging.error("INPUT ERROR: Unrecognized file extension")
 			sys.exit('''INPUT ERROR: Unrecognized file extension\n,
 						supported formats for --fastq are .gz, .bz2, .bgz, .fastq and .fq''')
+
 
 def processFastq(fastq):
 	'''
