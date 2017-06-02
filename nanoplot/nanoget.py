@@ -12,6 +12,7 @@ from multiprocessing import Pool
 import pysam
 import nanomath
 
+
 def processBam(bam, threads):
 	'''
 	Processing function: calls pool of worker functions
@@ -141,11 +142,14 @@ def processFastq(fastq):
 	datadf = pd.DataFrame()
 	lengths = []
 	quals = []
+	channelIDs = []
 	for record in SeqIO.parse(inputfastq, "fastq"):
 		lengths.append(len(record))
 		quals.append(nanomath.aveQual(record.letter_annotations["phred_quality"]))
+		channelIDs.append(int(record.description.split('_')[-3].replace('ch', '')))
 	datadf["lengths"] = np.array(lengths)
 	datadf["quals"] = np.array(quals)
+	datadf["channelIDs"] = np.array(channelIDs)
 	logging.info("Collected fastq statistics.")
 	return datadf
 
