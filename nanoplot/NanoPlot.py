@@ -138,7 +138,6 @@ def filterData(datadf):
 
 def getArgs():
 	parser = argparse.ArgumentParser(description="Perform diagnostic plotting, QC analysis Nanopore sequencing data and alignments.")
-	out = parser.add_mutually_exclusive_group()
 	parser.add_argument("--threads",
 						help="Set the allowed number of threads to be used by the script",
 						default=4,
@@ -171,7 +170,7 @@ def getArgs():
 						help="Specify an optional prefix to be used for the output files.",
 						default="",
 						type=str)
-	target = parser.add_mutually_exclusive_group()
+	target = parser.add_mutually_exclusive_group(required=True)
 	target.add_argument("--fastq",
 						help="Data presented is in fastq format.")
 	target.add_argument("--fastq_albacore",
