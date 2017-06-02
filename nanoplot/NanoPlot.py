@@ -16,7 +16,6 @@ import os
 import time
 import logging
 import datetime
-import re
 import seaborn as sns
 import pandas as pd
 import numpy as np
@@ -27,7 +26,7 @@ import pysam
 import nanoget
 import nanoplotter
 import nanomath
-version="0.8.1"
+version="0.8.2"
 
 
 def main():
@@ -39,6 +38,7 @@ def main():
 		os.makedirs(args.outdir)
 	stamp = initlogs(time.time())
 	datadf, lengthprefix, logBool, readlengthsPointer, tamp = getInput(stamp)
+
 	nanoplotter.scatter(
 		x=datadf[readlengthsPointer],
 		y=datadf["quals"],
@@ -46,22 +46,22 @@ def main():
 		path=os.path.join(args.outdir, args.prefix + lengthprefix + "LengthvsQualityScatterPlot"),
 		log=logBool)
 	stamp = timeStamp(stamp, "Creating LengthvsQual plot")
+	nanoplotter.lengthPlots(
+		array=datadf[readlengthsPointer],
+		name="Read length",
+		path=os.path.join(args.outdir, args.prefix + lengthprefix),
+		n50=nanomath.getN50(np.sort(datadf["lengths"])),
+		log=logBool)
+	stamp = timeStamp(stamp, "Creating length plots")
 
 	if args.fastq or args.fastq_albacore:
-		nanoplotter.lengthPlots(
-			array=datadf[readlengthsPointer],
-			name="Read length",
-			path=os.path.join(args.outdir, args.prefix + lengthprefix),
-			n50=nanomath.getN50(np.sort(datadf["lengths"])),
-			log=logBool)
-		stamp = timeStamp(stamp, "Creating length plots")
-	if args.fastq_albacore:
 		nanoplotter.spatialHeatmap(
 			array=datadf["channelIDs"],
 			title="Number of reads generated per channel",
 			path=os.path.join(args.outdir, args.prefix + "ActivityMap_ReadsPerChannel"),
 			colour="Greens")
 		stamp = timeStamp(stamp, "Creating spatialheatmap for succesfull basecalls")
+	if args.fastq_albacore:
 		nanoplotter.timePlots(
 			df=datadf,
 			path=os.path.join(args.outdir, args.prefix))
@@ -143,7 +143,7 @@ def getArgs():
 						default=4,
 						type=int)
 	parser.add_argument("--time",
-						help="Give timestamps to stderr for optimization purposes",
+						help="Give timestamps for optimization purposes",
 						action="store_true")
 	parser.add_argument("--maxlength",
 						help="Drop reads longer than length specified.",
@@ -187,7 +187,7 @@ def getArgs():
 def timeStamp(start, task):
 	now = time.time()
 	if args.time:
-		sys.stderr.write(task + " took {0:.2f} seconds\n".format(now - start))
+		print(task + " took {0:.2f} seconds\n".format(now - start))
 	logging.info("Task {0} took {1:.2f} seconds".format(task, now - start))
 	return now
 
@@ -211,13 +211,6 @@ def initlogs(time0):
 
 def bamplots(datadf, lengthprefix, logBool, readlengthsPointer, stamp):
 	'''Call plotting functions specific for bam files'''
-	nanoplotter.lengthPlots(
-		array=datadf[readlengthsPointer],
-		name="Read length",
-		path=os.path.join(args.outdir, args.prefix + lengthprefix),
-		n50=nanomath.getN50(np.sort(datadf["lengths"])),
-		log=logBool)
-	stamp = timeStamp(stamp, "Creating length plots")
 	nanoplotter.scatter(
 		x=datadf["aligned_lengths"],
 		y=datadf["lengths"],
