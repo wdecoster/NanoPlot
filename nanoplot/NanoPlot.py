@@ -238,12 +238,14 @@ def bamplots(datadf, lengthprefix, logBool, readlengthsPointer, stamp):
 		path=os.path.join(args.outdir, args.prefix + lengthprefix + "MappingQualityvsReadLength"),
 		log=logBool)
 	stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
+	minPID = np.amin(datadf["percentIdentity"])
 	nanoplotter.scatter(
 		x=datadf["percentIdentity"],
 		y=datadf["quals"],
 		names=["Percent identity", "Read quality"],
 		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
-		stat=stats.pearsonr)
+		stat=stats.pearsonr,
+		minvalx=minPID)
 	stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot")
 	nanoplotter.scatter(
 		x=datadf[readlengthsPointer],
@@ -251,10 +253,15 @@ def bamplots(datadf, lengthprefix, logBool, readlengthsPointer, stamp):
 		names=["Aligned read length", "Percent identity"],
 		path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
 		stat=stats.pearsonr,
-		log=logBool)
+		log=logBool,
+		minvaly=minPID)
 	stamp = timeStamp(stamp, "Creating PIDvsLength plot")
 
 
 if __name__ == "__main__":
-	args = getArgs()
-	main()
+	try:
+		args = getArgs()
+		main()
+	except Exception as e:
+		logging.error(e, exc_info=True)
+		raise
