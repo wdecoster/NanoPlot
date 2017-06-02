@@ -1,16 +1,15 @@
 # wdecoster
 
-from __future__ import division, print_function
+from __future__ import division
 import time
 import logging
 import pandas as pd
 import numpy as np
-import warnings
 from scipy import stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def scatter(x, y, names, path, stat=None, log=False):
+def scatter(x, y, names, path, stat=None, log=False, minvalx=0):
 	'''
 	Plotting function
 	Create three types of joint plots of length vs quality, containing marginal summaries
@@ -29,7 +28,7 @@ def scatter(x, y, names, path, stat=None, log=False):
 		color="#4CB391",
 		stat_func=stat,
 		space=0,
-		xlim=(0, maxvalx),
+		xlim=(minvalx, maxvalx),
 		ylim=(0, maxvaly),
 		size=10)
 	plot.set_axis_labels(names[0], names[1])
@@ -118,17 +117,15 @@ def timePlots(df, path):
 	plt.close("all")
 
 
-def lengthPlots(array, name, path, suffix="", log=False):
+def lengthPlots(array, name, path, n50, log=False):
 	'''
 	Plotting function
-	Create density plots and histograms based on a numpy array (read lengths)
-	For both, also create log-scaled plot
+	Create density plot and histogram based on a numpy array (read lengths or transformed read lengths)
 	'''
 	import math
 	maxvalx = np.amax(array)
-	n50 = getN50(np.sort(array))
 	if log:
-		logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, str(10**n50)))
+		logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
 	else:
 		logging.info("Creating length plots for {} from {} reads with read length N50 of {}.".format(name, array.size, n50))
 
@@ -144,7 +141,7 @@ def lengthPlots(array, name, path, suffix="", log=False):
 			xticks=np.log10(ticks),
 			xticklabels=ticks)
 	fig = ax.get_figure()
-	fig.savefig(path + "DensityCurve" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
+	fig.savefig(path + "DensityCurve" + name.replace(' ', '') + ".png", format='png', dpi=1000)
 	plt.close("all")
 
 	ax = sns.distplot(
@@ -152,24 +149,20 @@ def lengthPlots(array, name, path, suffix="", log=False):
 		kde=False,
 		hist=True,
 		color="#4CB391")
-	plt.axvline(n50)
+
 	if log:
 		ax.set(
 			xticks=np.log10(ticks),
 			xticklabels=ticks)
-	plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
+		plt.axvline(np.log10(n50))
+		plt.annotate('N50', xy=(np.log10(n50), np.amax([h.get_height() for h in ax.patches])), size=8)
+	else:
+		plt.axvline(n50)
+		plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
 	ax.set(xlabel='Read length', ylabel='Number of reads')
 	fig = ax.get_figure()
-	fig.savefig(path + "Histogram" + name.replace(' ', '') + suffix + ".png", format='png', dpi=1000)
+	fig.savefig(path + "Histogram" + name.replace(' ', '') + ".png", format='png', dpi=1000)
 	plt.close("all")
-
-
-def getN50(a):
-	'''
-	Calculator function: Get read N50.
-	Based on https://github.com/PapenfussLab/Mungo/blob/master/bin/fasta_stats.py
-	'''
-	return a[np.where(np.cumsum(a)>=0.5*np.sum(a))[0][0]]
 
 
 def spatialHeatmap(array, title, path, colour):
