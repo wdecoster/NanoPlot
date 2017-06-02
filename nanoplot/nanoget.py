@@ -2,7 +2,6 @@
 
 from __future__ import division, print_function
 import sys
-import h5py
 import os
 import time
 import logging
@@ -98,6 +97,7 @@ def extractFromBam(params):
 				/read.query_alignment_length)*100)
 	return (lengths, alignedLengths, quals, alignedQuals, mapQ, pID)
 
+
 def parseMD(MDlist):
 	return sum([len(item) for item in re.split('[0-9^]', MDlist )])
 
@@ -108,126 +108,6 @@ def parseCIGAR(cigartuples):
 
 def aveQualBam(quals):
 	return sum(quals) / len(quals)
-
-
-def processFast5(directory, threads, recursive):
-	'''
-	Processing function, calls worker function
-	Organize processing basecalled fast5 data, extraction and gathering statistics
-	'''
-	logging.info("Running in fast5 mode.")
-	if recursive:
-		fast5list = [os.path.join(root,f) for root, __, files in os.walk(directory) for f in files if f.endswith(".fast5")]
-	else:
-		fast5list = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith(".fast5")]
-	datadf = pd.DataFrame()
-	lengths = []
-	quals = []
-	channels = []
-	channelfails = []
-	times = []
-	if not fast5list:
-		logging.error("No fast5 file found in specified directory {}.".format(directory))
-		sys.exit("Not a single fast5 file found in specified directory {}".format(directory))
-	else:
-		logging.info("Found {} fast5 files.".format(len(fast5list)))
-		fqpath, timepath = tasteFast5(fast5list[:101])
-		logging.info("Set path to fastq data to {}".format(fqpath))
-		pool = Pool(processes=threads)
-		params = zip(fast5list, [fqpath] * len(fast5list), [timepath] * len(fast5list))
-		logging.info("Collecting fast5 statistics, using {} threads".format(threads))
-		try:
-			for results in pool.imap(extractFromFast5, params):
-				if isinstance(results, tuple):
-					l, q, cID, fq, t = results
-					lengths.append(l)
-					quals.append(q)
-					channels.append(cID)
-					times.append(t)
-					print(fq)  # Note that stdout gets redirected with args.dry or args.fqout
-				else:
-					channelfails.append(results)
-		except KeyboardInterrupt:
-				print("Terminating worker threads")
-				pool.terminate()
-				pool.join()
-				sys.exit()
-	datadf["lengths"] = np.array(lengths)
-	datadf["quals"] = np.array(quals)
-	datadf["channelIDs"] = np.array(channels)
-	a_time_stamps = np.array(times, dtype='datetime64[s]')
-	datadf["start_time"] = (a_time_stamps - np.amin(a_time_stamps))
-	logging.info("Collected fast5 statistics.")
-	logging.info("No basecall was made in {} fast5 files".format(len(channelfails)))
-	return (datadf, np.array(channelfails))
-
-
-def tasteFast5(fast5files):
-	'''
-	Helper function
-	Will open fast5 files and find the path to the most recent basecall.
-	As soon as a path is found the path is returned
-	This assumes all files are from the same dataset.
-	If no path is found in subset of files given (100), give error and stop
-	Got some ideas from https://github.com/rrwick/Fast5-to-Fastq/blob/master/fast5_to_fastq.py
-	'''
-	for fast5file in fast5files:
-		try:
-			with h5py.File(fast5file, 'r') as hdf:
-				names = get_hdf5_names(hdf)
-				latestFQ = sorted([x for x in names if x.upper().endswith('FASTQ')])[-1]
-				logging.info("Established {} as latest basecall in fast5 files".format(latestFQ))
-				timepath = ["/Analyses/" + entry + "/BaseCalled_template/Events" for entry in hdf["/Analyses"].keys() if entry.startswith('Basecall') and "start_time" in hdf["/Analyses/" + entry + "/BaseCalled_template/Events"].attrs.keys()][0]
-				logging.info("Established {} as path to creation time of fast5 file".format(timepath))
-				return(latestFQ, timepath)
-		except KeyError:
-			logging.info("Encountered a file lacking basecall, trying the next to find the path to the latest basecalls.")
-			continue
-	else:
-		logging.error("No basecall was found in the first 100 reads.")
-		sys.exit("ERROR: a basecall could not be found in the first 100 reads.")
-
-
-def get_hdf5_names(hdf5_file):
-    names = []
-    hdf5_file.visit(names.append)
-    return names
-
-
-def extractFromFast5(params):
-	'''
-	Worker function
-	Extracts fastq data from fast5 file, based on fqpath
-	Could break for older versions of the fast5 format!
-	fastq is printed to stdout,
-	aveQualFast5() gets data and returns tuple of length, average quality and channel_number
-	'''
-	fast5file, fqpath, timepath = params
-	with h5py.File(fast5file, 'r') as hdf:
-		try:
-			return(aveQualFast5(
-				hdf[fqpath][()].rstrip(),
-				hdf["/UniqueGlobalKey/channel_id"].attrs['channel_number'],
-				hdf[timepath].attrs['start_time']))
-		except KeyError:
-			return(int(hdf["/UniqueGlobalKey/channel_id"].attrs['channel_number']))
-
-
-def aveQualFast5(fastq, channelID, time):
-	'''
-	Calculation function
-	Receive the phred ascii quality scores of a read and return the length and average float quality for that read
-	ASCII codes are !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
-	which translate to integers 0-93 by getting ord() of ascii minus 33
-	the channelID and time are simply here to get packed in the returned tuple
-	'''
-	quals = fastq.split(b'\n')[3].decode("utf-8")
-	return(
-		len(quals),
-		sum([ord(elem) - 33 for elem in quals]) / len(quals),
-		int(channelID),
-		fastq.decode("utf-8"),
-		int(time))
 
 
 def handlecompressedFastq(inputfq):
