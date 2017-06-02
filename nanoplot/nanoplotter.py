@@ -9,7 +9,7 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def scatter(x, y, names, path, stat=None, log=False, minvalx=0):
+def scatter(x, y, names, path, stat=None, log=False, minvalx=0, minvaly=0):
 	'''
 	Plotting function
 	Create three types of joint plots of length vs quality, containing marginal summaries
@@ -17,7 +17,7 @@ def scatter(x, y, names, path, stat=None, log=False, minvalx=0):
 	-A hexagonal binned plot with histograms on axes
 	-A kernel density plot with density curves on axes, subsampled to 10000 reads if required
 	'''
-	logging.info("Creating length vs quality plots using statistics from {} reads.".format(x.size))
+	logging.info("Creating {} vs {} plots using statistics from {} reads.".format(names[0], names[1], x.size))
 	sns.set(style="ticks")
 	maxvalx = np.amax(x)
 	maxvaly = np.amax(y)
@@ -29,7 +29,7 @@ def scatter(x, y, names, path, stat=None, log=False, minvalx=0):
 		stat_func=stat,
 		space=0,
 		xlim=(minvalx, maxvalx),
-		ylim=(0, maxvaly),
+		ylim=(minvaly, maxvaly),
 		size=10)
 	plot.set_axis_labels(names[0], names[1])
 	if log:
@@ -42,8 +42,8 @@ def scatter(x, y, names, path, stat=None, log=False, minvalx=0):
 		kind="scatter",
 		color="#4CB391",
 		stat_func=stat,
-		xlim=(0, maxvalx),
-		ylim=(0, maxvaly),
+		xlim=(minvalx, maxvalx),
+		ylim=(minvaly, maxvaly),
 		space=0,
 		size=10,
 		joint_kws={"s": 1})
@@ -57,8 +57,8 @@ def scatter(x, y, names, path, stat=None, log=False, minvalx=0):
 		y=y,
 		kind="kde",
 		clip=((0, np.Inf), (0, np.Inf)),
-		xlim=(0, maxvalx),
-		ylim=(0, maxvaly),
+		xlim=(minvalx, maxvalx),
+		ylim=(minvaly, maxvaly),
 		space=0,
 		color="#4CB391",
 		stat_func=stat,
