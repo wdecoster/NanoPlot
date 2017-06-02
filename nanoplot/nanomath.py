@@ -16,3 +16,8 @@ def removeLengthOutliers(df, columnname):
     Calculation function: Remove records with length-outliers
     '''
 	return df[df[columnname] < (np.median(df[columnname]) + 3 * np.std(df[columnname]))]
+
+
+def aveQual(quals):
+	'''	Calculation function: Receive the integer quality scores of a read and return the average quality for that read'''
+	return sum(quals) / len(quals)
