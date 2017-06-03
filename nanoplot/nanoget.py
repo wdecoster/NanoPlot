@@ -11,7 +11,7 @@ from Bio import SeqIO
 from multiprocessing import Pool
 import dateutil.parser
 import pysam
-import nanomath
+import nanoplot.nanomath as nanomath
 
 
 def processBam(bam, threads):
@@ -174,7 +174,7 @@ def processFastq_albacore(fastq):
 	time_stamps = []
 	for record in SeqIO.parse(inputfastq, "fastq"):
 		lengths.append(len(record))
-		quals.append(nanomath.nanomath.aveQual(record.letter_annotations["phred_quality"]))
+		quals.append(nanomath.aveQual(record.letter_annotations["phred_quality"]))
 		for data in record.description.split(' '):  # This can easily be adapted to include more metrics using the same format
 			if data.startswith('ch='):
 				channels.append(int(data[3:]))
