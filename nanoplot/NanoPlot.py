@@ -23,10 +23,10 @@ from multiprocessing import cpu_count
 from scipy import stats
 import matplotlib.pyplot as plt
 import pysam
-import nanoplot.nanoget as nanoget
-import nanoplot.nanoplotter as nanoplotter
-import nanoplot.nanomath as nanomath
-__version__="0.9.0"
+import nanoget
+import nanoplotter
+import nanomath
+__version__="0.9.1"
 
 
 def main():
