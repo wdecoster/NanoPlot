@@ -8,7 +8,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='NanoPlot',
-    version='0.9.0',
+    version='0.9.1',
     description='Plotting suit for Oxford Nanopore sequencing data and alignments',
     long_description='Plotting suit for Oxford Nanopore sequencing data, reading data from fastq and bam files.',
     url='https://github.com/wdecoster/NanoPlot',
@@ -35,6 +35,9 @@ setup(
         'matplotlib',
         'python-dateutil',
         'seaborn'
+        'nanoplotter',
+        'nanoget',
+        'nanomath'
         ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
