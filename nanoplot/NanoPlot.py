@@ -26,7 +26,7 @@ import pysam
 import nanoget
 import nanoplotter
 import nanomath
-__version__="0.9.2"
+__version__="0.9.3"
 
 
 def main():
@@ -156,10 +156,12 @@ def filterData(datadf, args):
 		logging.info("Removing length outliers for plotting.")
 	if args.maxlength:
 		datadf=datadf[datadf[readlengthsPointer] < args.maxlength]
-		lengthprefix.append("MaxLength" + str(args.maxlength) + '_')
+		lengthprefix.append("MaxLength-" + str(args.maxlength) + '_')
 		logging.info("Removing reads longer than {}.".format(str(args.maxlength)))
+
 	if args.loglength:
-		datadf[readlengthsPointer] = np.log10(datadf[readlengthsPointer])
+		datadf["log_" + readlengthsPointer] = np.log10(datadf[readlengthsPointer])
+		readlengthsPointer = "log_" + readlengthsPointer
 		lengthprefix.append("Log_")
 		logging.info("Using Log10 scaled read lengths.")
 		logBool = True
