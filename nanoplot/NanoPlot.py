@@ -232,7 +232,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 		minPID = np.amin(datadf["percentIdentity"])
 		nanoplotter.scatter(
 			x=datadf["percentIdentity"],
-			y=datadf["quals"],
+			y=datadf["aligned_quals"],
 			names=["Percent identity", "Read quality"],
 			path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
 			stat=stats.pearsonr,
