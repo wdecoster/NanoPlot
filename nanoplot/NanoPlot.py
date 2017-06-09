@@ -21,12 +21,14 @@ import pandas as pd
 import numpy as np
 from multiprocessing import cpu_count
 from scipy import stats
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pysam
 import nanoget
 import nanoplotter
 import nanomath
-__version__="0.9.3"
+__version__="0.9.4"
 
 
 def main():
