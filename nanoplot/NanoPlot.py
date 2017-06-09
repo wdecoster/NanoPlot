@@ -118,7 +118,7 @@ def getInput(stamp, args):
 	Handle is passed to the proper functions to get DataFrame with metrics
 	'''
 	if args.fastq:
-		datadf = nanoget.processFastq(args.fastq)
+		datadf = nanoget.processFastqPlain(args.fastq)
 	elif args.bam:
 		datadf = nanoget.processBam(args.bam, min(cpu_count() - 1, args.threads))
 	elif args.fastq_rich:
