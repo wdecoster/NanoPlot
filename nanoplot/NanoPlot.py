@@ -16,14 +16,14 @@ import os
 import time
 import logging
 import datetime
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
 from multiprocessing import cpu_count
 from scipy import stats
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import pysam
 import nanoget
 import nanoplotter
