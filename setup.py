@@ -5,10 +5,11 @@ from codecs import open
 from os import path
 
 here = path.abspath(path.dirname(__file__))
+exec(open('yourpackage/version.py').read())
 
 setup(
     name='NanoPlot',
-    version='0.9.6',
+    version=__version__,
     description='Plotting suit for Oxford Nanopore sequencing data and alignments',
     long_description='Plotting suit for Oxford Nanopore sequencing data, reading data from fastq and bam files.',
     url='https://github.com/wdecoster/NanoPlot',

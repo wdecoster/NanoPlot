@@ -28,7 +28,7 @@ import pysam
 import nanoget
 import nanoplotter
 import nanomath
-__version__="0.9.5"
+from .version import __version__
 
 
 def main():
