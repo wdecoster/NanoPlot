@@ -105,7 +105,7 @@ def initlogs(time0, args):
 	logging.info('Nanoplot {} started with arguments {}'.format(__version__, args))
 	logging.info("{} cpu's are available".format(cpu_count()))
 	logging.info('Versions of key modules are:')
-	for module in [np, sns, pd, pysam]:
+	for module in [np, sns, pd, pysam, nanoget, nanoplotter, nanomath]:
 		logging.info('{}: {}'.format(module, module.__version__))
 	return time0
 
