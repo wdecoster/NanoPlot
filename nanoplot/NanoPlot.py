@@ -129,7 +129,7 @@ def getInput(stamp, args):
 	elif args.summary:
 		datadf = nanoget.processSumary(args.summary)
 	stamp = timeStamp(stamp, "Gathering data")
-	getStats(datadf, args.outdir)
+	nanomath.writeStats(datadf, os.path.join(outdir, "NanoStats.txt"))
 	stamp = timeStamp(stamp, "Calculating statistics")
 	datadf, lengthprefix, logBool, readlengthsPointer = filterData(datadf, args)
 	return (datadf, lengthprefix, logBool, readlengthsPointer, stamp)
@@ -182,30 +182,6 @@ def timeStamp(start, task):
 	logging.info("Task {0} took {1:.2f} seconds".format(task, now - start))
 	return now
 
-
-def getStats(datadf, outdir):
-	'''
-	Call calculation function and write to file
-	'''
-	statdict = nanomath.readstats(np.array(datadf["lengths"]), np.array(datadf["quals"]))
-	with open(os.path.join(outdir, "NanoStats.txt"), 'wt') as output:
-		output.write("Number of reads:\t{}\n".format(statdict["NumberOfReads"]))
-		output.write("Total bases:\t{}\n".format(statdict["TotalBases"]))
-		output.write("Median read length:\t{}\n".format(statdict["MedianLength"]))
-		output.write("Mean read length:\t{}\n".format(round(statdict["MeanLength"],2)))
-		output.write("Readlength N50:\t{}\n".format(nanomath.getN50(datadf["lengths"])))
-		output.write("\n")
-		output.write("Top 5 read lengths and their average basecall quality score:\n")
-		for length, qual in sorted(statdict["MaxLengthsAndQ"], key=lambda x: x[0], reverse=True):
-			output.write("Length: {}bp\tQ: {}\n".format(length, round(qual, 2)))
-		output.write("\n")
-		output.write("Top 5 average basecall quality scores and their read lengths:\n")
-		for length, qual in sorted(statdict["MaxQualsAndL"], key=lambda x: x[1], reverse=True):
-			output.write("Length: {}bp\tQ: {}\n".format(length, round(qual, 2)))
-		output.write("\n")
-		output.write("Number of reads and fraction above quality cutoffs:\n")
-		for q in sorted(statdict["QualGroups"].keys()):
-			output.write("Q{}:\t{}\t{}%\n".format(q, statdict["QualGroups"][q][0], round(100*statdict["QualGroups"][q][1],2)))
 
 def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 	'''Call plotting functions'''
