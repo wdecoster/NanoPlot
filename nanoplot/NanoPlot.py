@@ -77,6 +77,9 @@ def getArgs():
 	parser.add_argument("--alength",
 						help="Use aligned read lengths rather than sequenced length (bam mode)",
 						action="store_true")
+	parser.add_argument("-c", "--color",
+						help="Specify a color for the plots, must be a valid matplotlib color",
+						default="#4CB391")
 	parser.add_argument("-o", "--outdir",
 						help="Specify directory in which output has to be created.",
 						default=".")
@@ -129,7 +132,7 @@ def getInput(stamp, args):
 	elif args.summary:
 		datadf = nanoget.processSumary(args.summary)
 	stamp = timeStamp(stamp, "Gathering data")
-	nanomath.writeStats(datadf, os.path.join(outdir, "NanoStats.txt"))
+	nanomath.writeStats(datadf, os.path.join(args.outdir, "NanoStats.txt"))
 	stamp = timeStamp(stamp, "Calculating statistics")
 	datadf, lengthprefix, logBool, readlengthsPointer = filterData(datadf, args)
 	return (datadf, lengthprefix, logBool, readlengthsPointer, stamp)
@@ -185,11 +188,13 @@ def timeStamp(start, task):
 
 def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 	'''Call plotting functions'''
+	color = nanoplotter.checkvalidColor(args.color)
 	nanoplotter.lengthPlots(
 		array=datadf[readlengthsPointer],
 		name="Read length",
 		path=os.path.join(args.outdir, args.prefix + lengthprefix),
 		n50=nanomath.getN50(np.sort(datadf["lengths"])),
+		color=color,
 		log=logBool)
 	stamp = timeStamp(stamp, "Creating length plots")
 	nanoplotter.scatter(
@@ -197,6 +202,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 		y=datadf["quals"],
 		names=['Read lengths', 'Average read quality'],
 		path=os.path.join(args.outdir, args.prefix + lengthprefix + "LengthvsQualityScatterPlot"),
+		color=color,
 		log=logBool)
 	stamp = timeStamp(stamp, "Creating LengthvsQual plot")
 	if args.fastq_rich or args.summary:
@@ -204,30 +210,34 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 			array=datadf["channelIDs"],
 			title="Number of reads generated per channel",
 			path=os.path.join(args.outdir, args.prefix + "ActivityMap_ReadsPerChannel"),
-			colour="Greens")
+			color=color)
 		stamp = timeStamp(stamp, "Creating spatialheatmap for succesfull basecalls")
 		nanoplotter.timePlots(
 			df=datadf,
-			path=os.path.join(args.outdir, args.prefix))
+			path=os.path.join(args.outdir, args.prefix),
+			color=color)
 		stamp = timeStamp(stamp, "Creating timeplots")
 	if args.bam:
 		nanoplotter.scatter(
 			x=datadf["aligned_lengths"],
 			y=datadf["lengths"],
 			names=["Aligned read lengths", "Sequenced read length"],
-			path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsSequencedReadLength"))
+			path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsSequencedReadLength"),
+			color=color)
 		stamp = timeStamp(stamp, "Creating AlignedLengthvsLength plot")
 		nanoplotter.scatter(
 			x=datadf["mapQ"],
 			y=datadf["quals"],
 			names=["Read mapping quality", "Average basecall quality"],
-			path=os.path.join(args.outdir, args.prefix + "MappingQualityvsAverageBaseQuality"))
+			path=os.path.join(args.outdir, args.prefix + "MappingQualityvsAverageBaseQuality"),
+			color=color)
 		stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 		nanoplotter.scatter(
 			x=datadf[readlengthsPointer],
 			y=datadf["mapQ"],
 			names=["Read length", "Read mapping quality"],
 			path=os.path.join(args.outdir, args.prefix + lengthprefix + "MappingQualityvsReadLength"),
+			color=color,
 			log=logBool)
 		stamp = timeStamp(stamp, "Creating MapQvsBaseQ plot")
 		minPID = np.amin(datadf["percentIdentity"])
@@ -236,6 +246,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 			y=datadf["aligned_quals"],
 			names=["Percent identity", "Read quality"],
 			path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
+			color=color,
 			stat=stats.pearsonr,
 			minvalx=minPID)
 		stamp = timeStamp(stamp, "Creating PIDvsBaseQ plot")
@@ -244,6 +255,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 			y=datadf["percentIdentity"],
 			names=["Aligned read length", "Percent identity"],
 			path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
+			color=color,
 			stat=stats.pearsonr,
 			log=logBool,
 			minvaly=minPID)
