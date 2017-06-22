@@ -56,7 +56,8 @@ General arguments:
     -t, --threads THREADS   Set the allowed number of threads to be used by the script
     -o, --outdir OUTDIR     Specify directory in which output has to be created.
     -p, --prefix PREFIX     Specify an optional prefix to be used for the output files.
-    -c, --color COLOR       Specify a color for the plots, must be a valid matplotlib color (see color_options.txt)
+    -c, --color COLOR       Specify a color for the plots
+                            must be a valid matplotlib color (see color_options.txt)
 ```
 
 
