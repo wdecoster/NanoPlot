@@ -210,7 +210,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args, stamp):
 			array=datadf["channelIDs"],
 			title="Number of reads generated per channel",
 			path=os.path.join(args.outdir, args.prefix + "ActivityMap_ReadsPerChannel"),
-			color=color)
+			color="Greens")
 		stamp = timeStamp(stamp, "Creating spatialheatmap for succesfull basecalls")
 		nanoplotter.timePlots(
 			df=datadf,
