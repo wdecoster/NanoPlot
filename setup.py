@@ -36,9 +36,9 @@ setup(
         'matplotlib',
         'python-dateutil',
         'seaborn',
-        'nanoplotter',
-        'nanoget',
-        'nanomath'
+        'nanoplotter>=0.12.8',
+        'nanoget>=0.10.0',
+        'nanomath>=0.12.0'
         ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
