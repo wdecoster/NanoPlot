@@ -42,6 +42,7 @@ def main():
 	try:
 		args = getArgs()
 		initlogs(args)
+		args.format = nanoplotter.checkvalidFormat(args.format)
 		datadf, lengthprefix, logBool, readlengthsPointer = getInput(args)
 		makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args)
 		logging.info("Succesfully processed all input.")
@@ -85,6 +86,17 @@ def getArgs():
 						help="Specify an optional prefix to be used for the output files.",
 						default="",
 						type=str)
+	parser.add_argument("-f", "--format",
+						help="Specify the output format of the plots.",
+						default="png",
+						type=str,
+						choices=['eps', 'jpeg', 'jpg', 'pdf', 'pgf', 'png', 'ps', 'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
+	parser.add_argument("--plots",
+						help="Specify which bivariate plots have to be made.",
+						default=['kde', 'hex', 'dot'],
+						type=str,
+						nargs='*',
+						choices=['kde', 'hex', 'dot'])
 	target = parser.add_mutually_exclusive_group(required=True)
 	target.add_argument("--fastq",
 						help="Data is in default fastq format.")
@@ -100,7 +112,6 @@ def getArgs():
 def initlogs(args):
 	try:
 		if not os.path.exists(args.outdir):
-			logging.info("Output directory doesn't exist - creating {}.".format(args.outdir))
 			os.makedirs(args.outdir)
 		start_time = dt.fromtimestamp(time()).strftime('%Y%m%d_%H%M')
 		logging.basicConfig(
@@ -110,6 +121,7 @@ def initlogs(args):
 	except IOError:
 		sys.exit("ERROR: No writing permission to the output directory.")
 	logging.info('Nanoplot {} started with arguments {}'.format(__version__, args))
+	logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
 	logging.info('Versions of key modules are:')
 	for module in [np, sns, pd, pysam, nanoget, matplotlib, nanoplotter, nanomath]:
 		logging.info('{}: {}'.format(module, module.__version__))
@@ -185,12 +197,14 @@ def filterData(datadf, args):
 def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 	'''Call plotting functions'''
 	color = nanoplotter.checkvalidColor(args.color)
+	plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot"]}
 	nanoplotter.lengthPlots(
 		array=datadf[readlengthsPointer],
 		name="Read length",
 		path=os.path.join(args.outdir, args.prefix + lengthprefix),
 		n50=nanomath.getN50(np.sort(datadf["lengths"])),
 		color=color,
+		format=args.format,
 		log=logBool)
 	logging.info("Created length plots")
 	nanoplotter.scatter(
@@ -199,19 +213,23 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 		names=['Read lengths', 'Average read quality'],
 		path=os.path.join(args.outdir, args.prefix + lengthprefix + "LengthvsQualityScatterPlot"),
 		color=color,
+		format=args.format,
+		plots=plotdict,
 		log=logBool)
-	logging.info("Creating LengthvsQual plot")
+	logging.info("Created LengthvsQual plot")
 	if args.fastq_rich or args.summary:
 		nanoplotter.spatialHeatmap(
 			array=datadf["channelIDs"],
 			title="Number of reads generated per channel",
 			path=os.path.join(args.outdir, args.prefix + "ActivityMap_ReadsPerChannel"),
-			color="Greens")
+			color="Greens",
+			format=args.format)
 		logging.info("Created spatialheatmap for succesfull basecalls.")
 		nanoplotter.timePlots(
 			df=datadf,
 			path=os.path.join(args.outdir, args.prefix),
-			color=color)
+			color=color,
+			format=args.format)
 		logging.info("Created timeplots.")
 	if args.bam:
 		nanoplotter.scatter(
@@ -219,6 +237,8 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 			y=datadf["lengths"],
 			names=["Aligned read lengths", "Sequenced read length"],
 			path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsSequencedReadLength"),
+			format=args.format,
+			plots=plotdict,
 			color=color)
 		logging.info("Created AlignedLength vs Length plot.")
 		nanoplotter.scatter(
@@ -226,7 +246,9 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 			y=datadf["quals"],
 			names=["Read mapping quality", "Average basecall quality"],
 			path=os.path.join(args.outdir, args.prefix + "MappingQualityvsAverageBaseQuality"),
-			color=color)
+			color=color,
+			format=args.format,
+			plots=plotdict)
 		logging.info("Created MapQvsBaseQ plot.")
 		nanoplotter.scatter(
 			x=datadf[readlengthsPointer],
@@ -234,6 +256,8 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 			names=["Read length", "Read mapping quality"],
 			path=os.path.join(args.outdir, args.prefix + lengthprefix + "MappingQualityvsReadLength"),
 			color=color,
+			format=args.format,
+			plots=plotdict,
 			log=logBool)
 		logging.info("Created MapQvsBaseQ plot.")
 		minPID = np.amin(datadf["percentIdentity"])
@@ -243,6 +267,8 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 			names=["Percent identity", "Read quality"],
 			path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
 			color=color,
+			format=args.format,
+			plots=plotdict,
 			stat=stats.pearsonr,
 			minvalx=minPID)
 		logging.info("Created Percent ID Base quality plot.")
@@ -252,6 +278,8 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
 			names=["Aligned read length", "Percent identity"],
 			path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
 			color=color,
+			format=args.format,
+			plots=plotdict,
 			stat=stats.pearsonr,
 			log=logBool,
 			minvaly=minPID)
