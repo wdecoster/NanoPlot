@@ -143,7 +143,7 @@ def getInput(args):
 	elif args.fastq_rich:
 		datadf = nanoget.processFastq_rich(args.fastq_rich)
 	elif args.summary:
-		datadf = nanoget.processSumary(args.summary)
+		datadf = nanoget.processSummary(args.summary)
 	logging.info("Gathered metrics for plotting")
 	nanomath.writeStats(datadf, os.path.join(args.outdir, "NanoStats.txt"))
 	logging.info("Calculated statistics")
