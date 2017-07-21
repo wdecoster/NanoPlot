@@ -145,7 +145,7 @@ def getInput(args):
 	elif args.summary:
 		datadf = nanoget.processSummary(args.summary)
 	logging.info("Gathered metrics for plotting")
-	nanomath.writeStats(datadf, os.path.join(args.outdir, "NanoStats.txt"))
+	nanomath.writeStats(datadf, os.path.join(args.outdir, args.prefix + "NanoStats.txt"))
 	logging.info("Calculated statistics")
 	datadf, lengthprefix, logBool, readlengthsPointer = filterData(datadf, args)
 	logging.info("Processed the metrics, optionally filtering.")
