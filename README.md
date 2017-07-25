@@ -46,6 +46,8 @@ Each of these options can take one or multiple files e.g.
 
 
 Arguments for optional filtering:
+    --readtype              Specify read type to extract from summary file
+                            Options: 1D (default), 2D
     --maxlength MAXLENGTH   Drop reads longer than length N.
     --downsample DOWNSAMPLE Reduce dataset to N reads by random sampling.
     --drop_outliers         Drop outlier reads with extreme long length.
