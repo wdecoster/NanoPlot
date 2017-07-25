@@ -73,6 +73,10 @@ def getArgs():
 	parser.add_argument("--loglength",
 						help="Logarithmic scaling of lengths in plots.",
 						action="store_true")
+	parser.add_argument("--readtype",
+						help="Which read type to extract information about from summary. Options are 1D or 2D",
+						default="1D",
+						choices=['1D', '2D'])
 	parser.add_argument("--alength",
 						help="Use aligned read lengths rather than sequenced length (bam mode)",
 						action="store_true")
@@ -147,7 +151,7 @@ def getInput(args):
 	elif args.fastq_rich:
 		datadf = pd.concat([nanoget.processFastq_rich(inp) for inp in args.fastq_rich], ignore_index=True)
 	elif args.summary:
-		datadf = pd.concat([nanoget.processSummary(inp) for inp in args.summary], ignore_index=True)
+		datadf = pd.concat([nanoget.processSummary(inp, args.readtype) for inp in args.summary], ignore_index=True)
 	logging.info("Gathered metrics for plotting")
 	nanomath.writeStats(datadf, os.path.join(args.outdir, args.prefix + "NanoStats.txt"))
 	logging.info("Calculated statistics")
