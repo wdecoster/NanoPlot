@@ -3,15 +3,15 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-
+import pypandoc
 here = path.abspath(path.dirname(__file__))
 exec(open('nanoplot/version.py').read())
 
 setup(
     name='NanoPlot',
     version=__version__,
-    description='Plotting suit for Oxford Nanopore sequencing data and alignments',
-    long_description='Plotting suit for Oxford Nanopore sequencing data, reading data from fastq and bam files.',
+    description='Plotting suite for Oxford Nanopore sequencing data and alignments',
+    long_description=pypandoc.convert(path.join(here, 'README.md'), 'rst'),
     url='https://github.com/wdecoster/NanoPlot',
     author='Wouter De Coster',
     author_email='decosterwouter@gmail.com',
