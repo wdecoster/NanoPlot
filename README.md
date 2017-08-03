@@ -21,6 +21,14 @@ This script performs data extraction from Oxford Nanopore sequencing data in the
 Upgrade to a newer version using:  
 `pip install NanoPlot --upgrade`
 
+or
+
+[![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)
+```bash
+conda install -c bioconda nanoplot
+```
+
+
 The script is written for python3 but also seems to work for python2.7.
 
 ### USAGE:
