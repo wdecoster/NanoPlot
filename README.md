@@ -27,7 +27,8 @@ or
 ```bash
 conda install -c bioconda nanoplot
 ```
-
+### Status
+[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
 
 The script is written for python3 but also seems to work for python2.7.
 
