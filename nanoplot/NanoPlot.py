@@ -75,9 +75,9 @@ def getArgs():
                         help="Logarithmic scaling of lengths in plots.",
                         action="store_true")
     parser.add_argument("--readtype",
-                        help="Which read type to extract information about from summary. Options are 1D or 2D",
+                        help="Which read type to extract information about from summary. Options are 1D, 2D, 1D2",
                         default="1D",
-                        choices=['1D', '2D'])
+                        choices=['1D', '2D', '1D2'])
     parser.add_argument("--alength",
                         help="Use aligned read lengths rather than sequenced length (bam mode)",
                         action="store_true")
@@ -164,7 +164,7 @@ def getInput(args):
 def filterData(datadf, args):
     '''
     Perform filtering on the data based on arguments set on commandline
-    - use alighned length or sequenced length (bam mode only)
+    - use aligned length or sequenced length (bam mode only)
     - drop outliers
     - drop reads longer than args.maxlength
     - use log10 scaled reads
