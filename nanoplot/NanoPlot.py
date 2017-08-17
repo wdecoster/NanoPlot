@@ -20,7 +20,6 @@ import logging
 from datetime import datetime as dt
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
