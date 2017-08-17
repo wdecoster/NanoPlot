@@ -213,7 +213,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
         path=os.path.join(args.outdir, args.prefix + lengthprefix),
         n50=nanomath.getN50(np.sort(datadf["lengths"])),
         color=color,
-        format=args.format,
+        figformat=args.format,
         log=logBool)
     logging.info("Created length plots")
     nanoplotter.scatter(
@@ -222,7 +222,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
         names=['Read lengths', 'Average read quality'],
         path=os.path.join(args.outdir, args.prefix + lengthprefix + "LengthvsQualityScatterPlot"),
         color=color,
-        format=args.format,
+        figformat=args.format,
         plots=plotdict,
         log=logBool)
     logging.info("Created LengthvsQual plot")
@@ -232,13 +232,13 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             title="Number of reads generated per channel",
             path=os.path.join(args.outdir, args.prefix + "ActivityMap_ReadsPerChannel"),
             color="Greens",
-            format=args.format)
+            figformat=args.format)
         logging.info("Created spatialheatmap for succesfull basecalls.")
         nanoplotter.timePlots(
             df=datadf,
             path=os.path.join(args.outdir, args.prefix),
             color=color,
-            format=args.format)
+            figformat=args.format)
         logging.info("Created timeplots.")
     if args.bam:
         nanoplotter.scatter(
@@ -246,7 +246,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             y=datadf["lengths"],
             names=["Aligned read lengths", "Sequenced read length"],
             path=os.path.join(args.outdir, args.prefix + "AlignedReadlengthvsSequencedReadLength"),
-            format=args.format,
+            figformat=args.format,
             plots=plotdict,
             color=color)
         logging.info("Created AlignedLength vs Length plot.")
@@ -256,7 +256,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             names=["Read mapping quality", "Average basecall quality"],
             path=os.path.join(args.outdir, args.prefix + "MappingQualityvsAverageBaseQuality"),
             color=color,
-            format=args.format,
+            figformat=args.format,
             plots=plotdict)
         logging.info("Created MapQvsBaseQ plot.")
         nanoplotter.scatter(
@@ -265,7 +265,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             names=["Read length", "Read mapping quality"],
             path=os.path.join(args.outdir, args.prefix + lengthprefix + "MappingQualityvsReadLength"),
             color=color,
-            format=args.format,
+            figformat=args.format,
             plots=plotdict,
             log=logBool)
         logging.info("Created MapQvsBaseQ plot.")
@@ -276,7 +276,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             names=["Percent identity", "Read quality"],
             path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAverageBaseQuality"),
             color=color,
-            format=args.format,
+            figformat=args.format,
             plots=plotdict,
             stat=stats.pearsonr,
             minvalx=minPID)
@@ -287,7 +287,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             names=["Aligned read length", "Percent identity"],
             path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
             color=color,
-            format=args.format,
+            figformat=args.format,
             plots=plotdict,
             stat=stats.pearsonr,
             log=logBool,
