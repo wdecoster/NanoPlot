@@ -26,7 +26,8 @@ or
 [![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)   
 `conda install -c bioconda nanoplot`
 ### STATUS
-[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
+[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot) [![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
+
 
 The script is written for python3 but also seems to work for python2.7.
 
