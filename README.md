@@ -25,6 +25,7 @@ or
 
 [![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)   
 `conda install -c bioconda nanoplot`
+
 ### STATUS
 [![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot) [![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
 
