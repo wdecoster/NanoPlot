@@ -18,18 +18,18 @@ import os
 from time import time
 import logging
 from datetime import datetime as dt
-import matplotlib
-matplotlib.use('Agg')
-import seaborn as sns
+import pysam
+import nanoget
+import nanomath
 import pandas as pd
 import numpy as np
 from multiprocessing import cpu_count
 from scipy import stats
-import pysam
-import nanoget
-import nanoplotter
-import nanomath
 from .version import __version__
+import matplotlib
+matplotlib.use('Agg')
+import seaborn as sns
+import nanoplotter
 
 
 def main():
