@@ -2,7 +2,7 @@
 # wdecoster
 '''
 The main purpose of this script is to create plots for nanopore data.
-Input data can be given as
+Input data can be given as one or multiple of:
 -compressed, standard or streamed fastq file
 -compressed, standard or streamed fastq file,
  with additional information added by albacore or MinKNOW
