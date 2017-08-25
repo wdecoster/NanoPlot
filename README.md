@@ -1,10 +1,18 @@
 # NanoPlot
 Plotting tool for Oxford Nanopore sequencing data and alignments.  
-In addition to various plots also a NanoStats file is created summarizing key features of the dataset.
+
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/wouter_decoster.svg?style=social&label=Follow%20%40wouter_decoster)](https://twitter.com/wouter_decoster)
+[![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)
+[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
+[![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
+
+
 
 ![Example plot](https://github.com/wdecoster/NanoPlot/blob/master/examples/scaled_Log_Downsampled_LengthvsQualityScatterPlot_kde.png)
 
 The example plot above shows a bivariate plot comparing log transformed read length with average basecall Phred quality score. More examples can be found in the [gallery on my blog 'Gigabase Or Gigabyte'.](https://gigabaseorgigabyte.wordpress.com/2017/06/01/example-gallery-of-nanoplot/)
+
+In addition to various plots also a NanoStats file is created summarizing key features of the dataset.
 
 This script performs data extraction from Oxford Nanopore sequencing data in the following formats:  
 - fastq files  
@@ -27,7 +35,8 @@ or
 `conda install -c bioconda nanoplot`
 
 ### STATUS
-[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot) [![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
+[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
+[![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
 
 
 The script is written for python3 but also seems to work for python2.7.
