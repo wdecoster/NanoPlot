@@ -159,7 +159,7 @@ def getInput(args):
     '''
     if args.fastq:
         datadf = pd.concat(
-            [nanoget.processFastqPlain(inp) for inp in args.fastq],
+            [nanoget.processFastqPlain(inp, args.threads) for inp in args.fastq],
             ignore_index=True)
     elif args.bam:
         datadf = pd.concat(
