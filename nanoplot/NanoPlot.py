@@ -118,7 +118,20 @@ def getArgs():
     target.add_argument("--bam",
                         help="Data as a sorted bam file.",
                         nargs='*')
-    return parser.parse_args()
+    target.add_argument("--listcolors",
+                        help="List the colors which are available for plotting",
+                        action="store_true")
+    args = parser.parse_args()
+    if args.listcolors:
+        listcolors()
+    return args
+
+
+def listcolors():
+    parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+    colours = open(os.path.join(parent_directory, "color_options.txt")).readlines()
+    print("{}".format(", ".join([c.strip() for c in colours])))
+    sys.exit(0)
 
 
 def make_output_dir(path):
