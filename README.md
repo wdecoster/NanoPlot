@@ -91,6 +91,7 @@ General arguments:
     -h, --help              show this help message and exit
     -v, --version           Print version and exit.
     -t, --threads THREADS   Max number of threads to be used by the script
+    --listcolors            Give a list of all colors which can be used for plotting
 ```
 
 
