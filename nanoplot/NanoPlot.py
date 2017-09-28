@@ -129,7 +129,7 @@ def getArgs():
 
 def listcolors():
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    colours = open(os.path.join(parent_directory, "color_options.txt")).readlines()
+    colours = open(os.path.join(parent_directory, "extra/color_options.txt")).readlines()
     print("{}".format(", ".join([c.strip() for c in colours])))
     sys.exit(0)
 
