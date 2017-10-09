@@ -12,7 +12,7 @@ Input data can be given as one or multiple of:
 
 
 from __future__ import division, print_function
-import argparse
+from argparse import ArgumentParser
 import sys
 import os
 from time import time
@@ -38,21 +38,21 @@ def main():
     -gets inputdata
     -calls plotting function
     '''
-    args = getArgs()
+    args = get_args()
     try:
         make_output_dir(args.outdir)
-        initlogs(args)
-        args.format = nanoplotter.checkvalidFormat(args.format)
-        datadf, lengthprefix, logBool, readlengthsPointer = getInput(args)
-        makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args)
+        init_logs(args)
+        args.format = nanoplotter.check_valid_format(args.format)
+        datadf, length_prefix, logBool, read_lengths_pointer = get_input(args)
+        make_plots(datadf, length_prefix, logBool, read_lengths_pointer, args)
         logging.info("Succesfully processed all input.")
     except Exception as e:
         logging.error(e, exc_info=True)
         raise
 
 
-def getArgs():
-    parser = argparse.ArgumentParser(description="Perform diagnostic plotting and QC analysis for \
+def get_args():
+    parser = ArgumentParser(description="Perform diagnostic plotting and QC analysis for \
                                                   Oxford Nanopore sequencing data and alignments.")
     parser.add_argument("-v", "--version",
                         help="Print version and exit.",
@@ -123,11 +123,11 @@ def getArgs():
                         action="store_true")
     args = parser.parse_args()
     if args.listcolors:
-        listcolors()
+        list_colors()
     return args
 
 
-def listcolors():
+def list_colors():
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
     colours = open(os.path.join(parent_directory, "extra/color_options.txt")).readlines()
     print("{}".format(", ".join([c.strip() for c in colours])))
@@ -142,7 +142,7 @@ def make_output_dir(path):
         sys.exit("ERROR: No writing permission to the output directory.")
 
 
-def initlogs(args):
+def init_logs(args):
     '''
     Initiate log file
     Log arguments and module versions
@@ -159,7 +159,7 @@ def initlogs(args):
         logging.info('{}: {}'.format(module, module.__version__))
 
 
-def getInput(args):
+def get_input(args):
     '''
     Get input and process accordingly.
     Data can be:
@@ -172,28 +172,28 @@ def getInput(args):
     '''
     if args.fastq:
         datadf = pd.concat(
-            [nanoget.processFastqPlain(inp, args.threads) for inp in args.fastq],
+            [nanoget.process_fastq_plain(inp, args.threads) for inp in args.fastq],
             ignore_index=True)
     elif args.bam:
         datadf = pd.concat(
-            [nanoget.processBam(inp, args.threads) for inp in args.bam],
+            [nanoget.process_bam(inp, args.threads) for inp in args.bam],
             ignore_index=True)
     elif args.fastq_rich:
         datadf = pd.concat(
-            [nanoget.processFastq_rich(inp) for inp in args.fastq_rich],
+            [nanoget.process_fastq_rich(inp) for inp in args.fastq_rich],
             ignore_index=True)
     elif args.summary:
         datadf = pd.concat(
-            [nanoget.processSummary(inp, args.readtype) for inp in args.summary],
+            [nanoget.process_summary(inp, args.readtype) for inp in args.summary],
             ignore_index=True)
     logging.info("Gathered metrics for plotting")
-    nanomath.writeStats(datadf, os.path.join(args.outdir, args.prefix + "NanoStats.txt"))
+    nanomath.write_stats(datadf, os.path.join(args.outdir, args.prefix + "NanoStats.txt"))
     logging.info("Calculated statistics")
-    datadf, lengthprefix, logBool, readlengthsPointer = filterData(datadf, args)
-    return (datadf, lengthprefix, logBool, readlengthsPointer)
+    datadf, length_prefix, logBool, read_lengths_pointer = filter_data(datadf, args)
+    return (datadf, length_prefix, logBool, read_lengths_pointer)
 
 
-def filterData(datadf, args):
+def filter_data(datadf, args):
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
@@ -203,75 +203,75 @@ def filterData(datadf, args):
     - downsample reads to args.downsample
     Return an accurate prefix which is added to plotnames using this filtered data
     '''
-    lengthprefix = []
+    length_prefix = []
     if args.alength and args.bam:
-        readlengthsPointer = "aligned_lengths"
-        lengthprefix.append("Aligned_")
+        read_lengths_pointer = "aligned_lengths"
+        length_prefix.append("Aligned_")
         logging.info("Using aligned read lengths for plotting.")
     else:
-        readlengthsPointer = "lengths"
+        read_lengths_pointer = "lengths"
         logging.info("Using sequenced read lengths for plotting.")
     if args.drop_outliers:
-        datadf = nanomath.removeLengthOutliers(datadf, readlengthsPointer)
-        lengthprefix.append("OutliersRemoved_")
+        datadf = nanomath.remove_length_outliers(datadf, read_lengths_pointer)
+        length_prefix.append("OutliersRemoved_")
         logging.info("Removing length outliers for plotting.")
     if args.maxlength:
-        datadf = datadf[datadf[readlengthsPointer] < args.maxlength]
-        lengthprefix.append("MaxLength-" + str(args.maxlength) + '_')
+        datadf = datadf[datadf[read_lengths_pointer] < args.maxlength]
+        length_prefix.append("MaxLength-" + str(args.maxlength) + '_')
         logging.info("Removing reads longer than {}.".format(str(args.maxlength)))
     if args.loglength:
-        datadf["log_" + readlengthsPointer] = np.log10(datadf[readlengthsPointer])
-        readlengthsPointer = "log_" + readlengthsPointer
-        lengthprefix.append("Log_")
+        datadf["log_" + read_lengths_pointer] = np.log10(datadf[read_lengths_pointer])
+        read_lengths_pointer = "log_" + read_lengths_pointer
+        length_prefix.append("Log_")
         logging.info("Using Log10 scaled read lengths.")
         logBool = True
     else:
         logBool = False
     if args.downsample:
         newNum = min(args.downsample, len(datadf.index))
-        lengthprefix.append("Downsampled_")
+        length_prefix.append("Downsampled_")
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), newNum))
         datadf = datadf.sample(newNum)
     logging.info("Processed the metrics, optionally performed filtering.")
-    return(datadf, ''.join(lengthprefix), logBool, readlengthsPointer)
+    return(datadf, ''.join(length_prefix), logBool, read_lengths_pointer)
 
 
-def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
+def make_plots(datadf, length_prefix, logBool, read_lengths_pointer, args):
     '''
     Call plotting functions from nanoplotter
-    readlengthsPointer is a column in the DataFrame specifying which lengths to use
+    read_lengths_pointer is a column in the DataFrame specifying which lengths to use
     '''
-    color = nanoplotter.checkvalidColor(args.color)
+    color = nanoplotter.check_valid_color(args.color)
     plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot"]}
-    nanoplotter.lengthPlots(
-        array=datadf[readlengthsPointer],
+    nanoplotter.length_plots(
+        array=datadf[read_lengths_pointer],
         name="Read length",
-        path=os.path.join(args.outdir, args.prefix + lengthprefix),
-        n50=nanomath.getN50(np.sort(datadf["lengths"])),
+        path=os.path.join(args.outdir, args.prefix + length_prefix),
+        n50=nanomath.get_N50(np.sort(datadf["lengths"])),
         color=color,
         figformat=args.format,
         log=logBool)
     logging.info("Created length plots")
     nanoplotter.scatter(
-        x=datadf[readlengthsPointer],
+        x=datadf[read_lengths_pointer],
         y=datadf["quals"],
         names=['Read lengths', 'Average read quality'],
-        path=os.path.join(args.outdir, args.prefix + lengthprefix + "LengthvsQualityScatterPlot"),
+        path=os.path.join(args.outdir, args.prefix + length_prefix + "LengthvsQualityScatterPlot"),
         color=color,
         figformat=args.format,
         plots=plotdict,
         log=logBool)
     logging.info("Created LengthvsQual plot")
     if args.fastq_rich or args.summary:
-        nanoplotter.spatialHeatmap(
+        nanoplotter.spatial_heatmap(
             array=datadf["channelIDs"],
             title="Number of reads generated per channel",
             path=os.path.join(args.outdir, args.prefix + "ActivityMap_ReadsPerChannel"),
             color="Greens",
             figformat=args.format)
         logging.info("Created spatialheatmap for succesfull basecalls.")
-        nanoplotter.timePlots(
+        nanoplotter.time_plots(
             df=datadf,
             path=os.path.join(args.outdir, args.prefix),
             color=color,
@@ -297,10 +297,10 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             plots=plotdict)
         logging.info("Created MapQvsBaseQ plot.")
         nanoplotter.scatter(
-            x=datadf[readlengthsPointer],
+            x=datadf[read_lengths_pointer],
             y=datadf["mapQ"],
             names=["Read length", "Read mapping quality"],
-            path=os.path.join(args.outdir, args.prefix + lengthprefix +
+            path=os.path.join(args.outdir, args.prefix + length_prefix +
                               "MappingQualityvsReadLength"),
             color=color,
             figformat=args.format,
@@ -320,7 +320,7 @@ def makePlots(datadf, lengthprefix, logBool, readlengthsPointer, args):
             minvalx=minPID)
         logging.info("Created Percent ID vs Base quality plot.")
         nanoplotter.scatter(
-            x=datadf[readlengthsPointer],
+            x=datadf[read_lengths_pointer],
             y=datadf["percentIdentity"],
             names=["Aligned read length", "Percent identity"],
             path=os.path.join(args.outdir, args.prefix + "PercentIdentityvsAlignedReadLength"),
