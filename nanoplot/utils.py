@@ -33,6 +33,3 @@ def init_logs(args):
         level=logging.INFO)
     logging.info('Nanoplot {} started with arguments {}'.format(__version__, args))
     logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
-    logging.info('Versions of key modules are:')
-    for module in [np, sns, pd, pysam, matplotlib, nanoget, nanoplotter, nanomath]:
-        logging.info('{}: {}'.format(module, module.__version__))
