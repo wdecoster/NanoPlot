@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # wdecoster
+
 '''
 The main purpose of this script is to create plots for nanopore data.
 Input data can be given as one or multiple of:
@@ -41,8 +42,9 @@ def main():
         utils.make_output_dir(args.outdir)
         utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
-        datadf, settings = get_input(args)
+        settings = dict()
         settings["path"] = path.join(args.outdir, args.prefix)
+        datadf, settings = get_input(args, settings)
         make_plots(datadf, settings, args)
         logging.info("Succesfully processed all input.")
     except Exception as e:
@@ -126,7 +128,7 @@ def get_args():
     return args
 
 
-def get_input(args):
+def get_input(args, settings):
     '''
     Get input and process accordingly.
     Data can be:
@@ -154,13 +156,13 @@ def get_input(args):
             [nanoget.process_summary(inp, args.readtype) for inp in args.summary],
             ignore_index=True)
     logging.info("Gathered metrics for plotting")
-    nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt"))
+    nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
     logging.info("Calculated statistics")
-    datadf, settings=filter_data(datadf, args)
+    datadf, settings = filter_data(datadf, args, settings)
     return (datadf, settings)
 
 
-def filter_data(datadf, args):
+def filter_data(datadf, args, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
@@ -170,39 +172,38 @@ def filter_data(datadf, args):
     - downsample reads to args.downsample
     Return an accurate prefix which is added to plotnames using this filtered data
     '''
-    settings=dict()
-    length_prefix_list=list()
+    length_prefix_list = list()
     if args.alength and args.bam:
-        settings["lengths_pointer"]="aligned_lengths"
+        settings["lengths_pointer"] = "aligned_lengths"
         length_prefix_list.append("Aligned_")
         logging.info("Using aligned read lengths for plotting.")
     else:
-        settings["lengths_pointer"]="lengths"
+        settings["lengths_pointer"] = "lengths"
         logging.info("Using sequenced read lengths for plotting.")
     if args.drop_outliers:
-        datadf=nanomath.remove_length_outliers(datadf, settings["lengths_pointer"])
+        datadf = nanomath.remove_length_outliers(datadf, settings["lengths_pointer"])
         length_prefix_list.append("OutliersRemoved_")
         logging.info("Removing length outliers for plotting.")
     if args.maxlength:
-        datadf=datadf[datadf[settings["lengths_pointer"]] < args.maxlength]
+        datadf = datadf[datadf[settings["lengths_pointer"]] < args.maxlength]
         length_prefix_list.append("MaxLength-" + str(args.maxlength) + '_')
         logging.info("Removing reads longer than {}.".format(str(args.maxlength)))
     if args.loglength:
-        datadf["log_" + settings["lengths_pointer"]]=np.log10(datadf[settings["lengths_pointer"]])
-        settings["lengths_pointer"]="log_" + settings["lengths_pointer"]
+        datadf["log_" + settings["lengths_pointer"]] = np.log10(datadf[settings["lengths_pointer"]])
+        settings["lengths_pointer"] = "log_" + settings["lengths_pointer"]
         length_prefix_list.append("Log_")
         logging.info("Using Log10 scaled read lengths.")
-        settings["logBool"]=True
+        settings["logBool"] = True
     else:
-        settings["logBool"]=False
+        settings["logBool"] = False
     if args.downsample:
-        newNum=min(args.downsample, len(datadf.index))
+        newNum = min(args.downsample, len(datadf.index))
         length_prefix_list.append("Downsampled_")
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), newNum))
-        datadf=datadf.sample(newNum)
+        datadf = datadf.sample(newNum)
     logging.info("Processed the metrics, optionally performed filtering.")
-    settings["length_prefix"]=''.join(length_prefix_list)
+    settings["length_prefix"] = ''.join(length_prefix_list)
     return(datadf, settings)
 
 
@@ -211,12 +212,12 @@ def make_plots(datadf, settings, args):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
-    color=nanoplotter.check_valid_color(args.color)
-    plotdict={type: args.plots.count(type) for type in ["kde", "hex", "dot"]}
+    color = nanoplotter.check_valid_color(args.color)
+    plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot"]}
     nanoplotter.length_plots(
-        array = datadf[settings["lengths_pointer"]],
-        name = "Read length",
-        path = settings["path"] + settings["length_prefix"]),
+        array=datadf[settings["lengths_pointer"]],
+        name="Read length",
+        path=settings["path"] + settings["length_prefix"],
         n50=nanomath.get_N50(np.sort(datadf["lengths"])),
         color=color,
         figformat=args.format,
@@ -226,7 +227,7 @@ def make_plots(datadf, settings, args):
         x=datadf[settings["lengths_pointer"]],
         y=datadf["quals"],
         names=['Read lengths', 'Average read quality'],
-        path=+ settings["length_prefix"] + "LengthvsQualityScatterPlot"),
+        path=settings["path"] + settings["length_prefix"] + "LengthvsQualityScatterPlot",
         color=color,
         figformat=args.format,
         plots=plotdict,
@@ -236,13 +237,13 @@ def make_plots(datadf, settings, args):
         nanoplotter.spatial_heatmap(
             array=datadf["channelIDs"],
             title="Number of reads generated per channel",
-            path=settings["path"] + "ActivityMap_ReadsPerChannel"),
+            path=settings["path"] + "ActivityMap_ReadsPerChannel",
             color="Greens",
             figformat=args.format)
         logging.info("Created spatialheatmap for succesfull basecalls.")
         nanoplotter.time_plots(
             df=datadf,
-            path=settings["path"]),
+            path=settings["path"],
             color=color,
             figformat=args.format)
         logging.info("Created timeplots.")
@@ -251,7 +252,7 @@ def make_plots(datadf, settings, args):
             x=datadf["aligned_lengths"],
             y=datadf["lengths"],
             names=["Aligned read lengths", "Sequenced read length"],
-            path=settings["path"] + "AlignedReadlengthvsSequencedReadLength"),
+            path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
             figformat=args.format,
             plots=plotdict,
             color=color)
@@ -260,7 +261,7 @@ def make_plots(datadf, settings, args):
             x=datadf["mapQ"],
             y=datadf["quals"],
             names=["Read mapping quality", "Average basecall quality"],
-            path=settings["path"] + "MappingQualityvsAverageBaseQuality"),
+            path=settings["path"] + "MappingQualityvsAverageBaseQuality",
             color=color,
             figformat=args.format,
             plots=plotdict)
@@ -269,18 +270,18 @@ def make_plots(datadf, settings, args):
             x=datadf[settings["lengths_pointer"]],
             y=datadf["mapQ"],
             names=["Read length", "Read mapping quality"],
-            path=settings["path"] + settings["length_prefix"] + "MappingQualityvsReadLength"),
+            path=settings["path"] + settings["length_prefix"] + "MappingQualityvsReadLength",
             color=color,
             figformat=args.format,
             plots=plotdict,
             log=settings["logBool"])
         logging.info("Created Mapping quality vs read length plot.")
-        minPID=np.amin(datadf["percentIdentity"])
+        minPID = np.amin(datadf["percentIdentity"])
         nanoplotter.scatter(
             x=datadf["percentIdentity"],
             y=datadf["aligned_quals"],
             names=["Percent identity", "Read quality"],
-            path=settings["path"] + "PercentIdentityvsAverageBaseQuality"),
+            path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
             color=color,
             figformat=args.format,
             plots=plotdict,
@@ -291,7 +292,7 @@ def make_plots(datadf, settings, args):
             x=datadf[settings["lengths_pointer"]],
             y=datadf["percentIdentity"],
             names=["Aligned read length", "Percent identity"],
-            path=settings["path"] + "PercentIdentityvsAlignedReadLength"),
+            path=settings["path"] + "PercentIdentityvsAlignedReadLength",
             color=color,
             figformat=args.format,
             plots=plotdict,
