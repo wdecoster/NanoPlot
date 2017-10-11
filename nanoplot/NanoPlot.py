@@ -16,7 +16,6 @@ from __future__ import division, print_function
 from argparse import ArgumentParser
 from os import path
 import logging
-import pysam
 import nanoget
 import nanomath
 import pandas as pd
@@ -24,9 +23,6 @@ import numpy as np
 from scipy import stats
 import nanoplot.utils as utils
 from .version import __version__
-import matplotlib
-matplotlib.use('Agg')
-import seaborn as sns
 import nanoplotter
 
 
