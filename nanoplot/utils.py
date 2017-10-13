@@ -21,7 +21,7 @@ def make_output_dir(path):
         sys.exit("ERROR: No writing permission to the output directory.")
 
 
-def init_logs(args):
+def init_logs(args, tool="NanoPlot"):
     '''
     Initiate log file
     Log arguments and module versions
@@ -29,7 +29,7 @@ def init_logs(args):
     start_time = dt.fromtimestamp(time()).strftime('%Y%m%d_%H%M')
     logging.basicConfig(
         format='%(asctime)s %(message)s',
-        filename=os.path.join(args.outdir, args.prefix + "Nanoplot_" + start_time + ".log"),
+        filename=os.path.join(args.outdir, args.prefix + tool + "_" + start_time + ".log"),
         level=logging.INFO)
-    logging.info('Nanoplot {} started with arguments {}'.format(__version__, args))
+    logging.info('{}} {} started with arguments {}'.format(tool, __version__, args))
     logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
