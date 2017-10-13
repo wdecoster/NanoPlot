@@ -31,5 +31,5 @@ def init_logs(args, tool="NanoPlot"):
         format='%(asctime)s %(message)s',
         filename=os.path.join(args.outdir, args.prefix + tool + "_" + start_time + ".log"),
         level=logging.INFO)
-    logging.info('{}} {} started with arguments {}'.format(tool, __version__, args))
+    logging.info('{} {} started with arguments {}'.format(tool, __version__, args))
     logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
