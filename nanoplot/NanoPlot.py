@@ -40,7 +40,13 @@ def main():
         args.format = nanoplotter.check_valid_format(args.format)
         settings = dict()
         settings["path"] = path.join(args.outdir, args.prefix)
-        datadf = get_input(args)
+        datadf = nanoget.get_input(
+            source=[s.split('.')[1] for s in ["args.fastq", "args.bam",
+                                              "args.fastq_rich", "args.summary"] if eval(s)],
+            files=[f for f in [args.fastq, args.bam, args.fastq_rich, args.summary] if f][0],
+            threads=args.threads,
+            readtype=args.readtype,
+            combine="simple")
         nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, args, settings)
