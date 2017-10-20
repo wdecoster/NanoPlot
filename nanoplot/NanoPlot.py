@@ -40,9 +40,10 @@ def main():
         args.format = nanoplotter.check_valid_format(args.format)
         settings = dict()
         settings["path"] = path.join(args.outdir, args.prefix)
+        sources = [args.fastq, args.bam, args.fastq_rich, args.summary]
+        sourcename = ["fastq", "bam", "fastq_rich", "summary"]
         datadf = nanoget.get_input(
-            source=[s.split('.')[1] for s in ["args.fastq", "args.bam",
-                                              "args.fastq_rich", "args.summary"] if eval(s)],
+            source=[n for n, s in zip(sourcename, sources) if s][0],
             files=[f for f in [args.fastq, args.bam, args.fastq_rich, args.summary] if f][0],
             threads=args.threads,
             readtype=args.readtype,
