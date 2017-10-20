@@ -40,7 +40,10 @@ def main():
         args.format = nanoplotter.check_valid_format(args.format)
         settings = dict()
         settings["path"] = path.join(args.outdir, args.prefix)
-        datadf, settings = get_input(args, settings)
+        datadf = get_input(args)
+        nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
+        logging.info("Calculated statistics")
+        datadf, settings = filter_data(datadf, args, settings)
         make_plots(datadf, settings, args)
         logging.info("Succesfully processed all input.")
     except Exception as e:
@@ -124,7 +127,7 @@ def get_args():
     return args
 
 
-def get_input(args, settings):
+def get_input(args):
     '''
     Get input and process accordingly.
     Data can be:
@@ -152,10 +155,7 @@ def get_input(args, settings):
             [nanoget.process_summary(inp, args.readtype) for inp in args.summary],
             ignore_index=True)
     logging.info("Gathered metrics for plotting")
-    nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
-    logging.info("Calculated statistics")
-    datadf, settings = filter_data(datadf, args, settings)
-    return (datadf, settings)
+    return datadf
 
 
 def filter_data(datadf, args, settings):
