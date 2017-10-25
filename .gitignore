@@ -1,2 +1,4 @@
 .remote-sync.json
 nanoplot/__pycache__/
+NanoPlot.egg-info/
+README.rst
