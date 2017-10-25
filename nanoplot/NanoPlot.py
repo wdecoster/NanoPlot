@@ -43,7 +43,7 @@ def main():
         sourcename = ["fastq", "bam", "fastq_rich", "fastq_minimal", "summary"]
         datadf = nanoget.get_input(
             source=[n for n, s in zip(sourcename, sources) if s][0],
-            files=[f for f in [args.fastq, args.bam, args.fastq_rich, args.summary] if f][0],
+            files=[f for f in sources if f][0],
             threads=args.threads,
             readtype=args.readtype,
             combine="simple")
