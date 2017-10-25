@@ -194,17 +194,18 @@ def make_plots(datadf, settings, args):
         figformat=args.format,
         log=settings["logBool"])
     logging.info("Created length plots")
-    nanoplotter.scatter(
-        x=datadf[settings["lengths_pointer"]],
-        y=datadf["quals"],
-        names=['Read lengths', 'Average read quality'],
-        path=settings["path"] + settings["length_prefix"] + "LengthvsQualityScatterPlot",
-        color=color,
-        figformat=args.format,
-        plots=plotdict,
-        log=settings["logBool"])
-    logging.info("Created LengthvsQual plot")
-    if args.fastq_rich or args.summary:
+    if "quals" in datadf:
+        nanoplotter.scatter(
+            x=datadf[settings["lengths_pointer"]],
+            y=datadf["quals"],
+            names=['Read lengths', 'Average read quality'],
+            path=settings["path"] + settings["length_prefix"] + "LengthvsQualityScatterPlot",
+            color=color,
+            figformat=args.format,
+            plots=plotdict,
+            log=settings["logBool"])
+        logging.info("Created LengthvsQual plot")
+    if "channelIDs" in datadf:
         nanoplotter.spatial_heatmap(
             array=datadf["channelIDs"],
             title="Number of reads generated per channel",
@@ -212,6 +213,7 @@ def make_plots(datadf, settings, args):
             color="Greens",
             figformat=args.format)
         logging.info("Created spatialheatmap for succesfull basecalls.")
+    if "start_time" in datadf:
         nanoplotter.time_plots(
             df=datadf,
             path=settings["path"],
