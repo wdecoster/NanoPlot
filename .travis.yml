@@ -10,3 +10,6 @@ python:
 install: "pip install NanoPlot"
 # command to run tests
 script: NanoPlot -h
+
+notifications:
+  email: false
