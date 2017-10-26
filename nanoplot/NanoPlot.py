@@ -109,7 +109,7 @@ def get_args():
                         default=['kde', 'hex', 'dot'],
                         type=str,
                         nargs='*',
-                        choices=['kde', 'hex', 'dot'])
+                        choices=['kde', 'hex', 'dot', 'pauvre'])
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--fastq",
                         help="Data is in default fastq format.",
@@ -189,7 +189,7 @@ def make_plots(datadf, settings, args):
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
     color = nanoplotter.check_valid_color(args.color)
-    plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot"]}
+    plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     nanoplotter.length_plots(
         array=datadf[settings["lengths_pointer"]],
         name="Read length",
