@@ -46,11 +46,19 @@ def main():
             files=[f for f in sources if f][0],
             threads=args.threads,
             readtype=args.readtype,
-            combine="simple")
+            combine="simple",
+            barcoded="args.barcoded")
         nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, args, settings)
-        make_plots(datadf, settings, args)
+        if args.barcoded:
+            for barc in list(datadf["barcode"].unique()):
+                settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
+                dfbarc = datadf[datadf["barcode"] == barc]
+                nanomath.write_stats(dfbarc, settings["path"] + "NanoStats.txt")
+                make_plots(dfbarc, settings, args)
+        else:
+            make_plots(datadf, settings, args)
         logging.info("Succesfully processed all input.")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -110,6 +118,9 @@ def get_args():
                         type=str,
                         nargs='*',
                         choices=['kde', 'hex', 'dot', 'pauvre'])
+    parser.add_argument("--barcoded",
+                        help="Use if you want to split the summary file by barcode",
+                        action="store_true")
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--fastq",
                         help="Data is in default fastq format.",
