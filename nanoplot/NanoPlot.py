@@ -59,7 +59,7 @@ def main():
 
 def get_args():
     parser = ArgumentParser(description="Perform diagnostic plotting and QC analysis for \
-                                                  Oxford Nanopore sequencing data and alignments.")
+                                         Oxford Nanopore sequencing data and alignments.")
     parser.add_argument("-v", "--version",
                         help="Print version and exit.",
                         action="version",
