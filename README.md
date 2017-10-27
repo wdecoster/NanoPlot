@@ -94,8 +94,8 @@ Optional output arguments:
                             options are: eps, jpg, pdf, png, ps, svg
                             default: png
     --plots PLOTS           Specify which type of bivariate plots have to be made
-                            options are: hex, kde, dot (multiple can be specified together)
-                            default: all
+                            options are: hex, kde, dot, pauvre (multiple can be specified together)
+                            default: hex, kde, dot
 
 
 General arguments:
@@ -105,7 +105,7 @@ General arguments:
     --listcolors            Give a list of all colors which can be used for plotting
 ```
 
-
+This script now also provides read length vs mean quality plots in the '[pauvre](https://github.com/conchoecia/pauvre)'-style from [@conchoecia](https://github.com/conchoecia).
 
 ## [ACKNOWLEDGMENTS](https://github.com/wdecoster/NanoPlot/blob/master/ACKNOWLEDGMENTS.MD)
 
