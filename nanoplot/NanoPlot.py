@@ -118,6 +118,10 @@ def get_args():
     filtering.add_argument("--alength",
                            help="Use aligned read lengths rather than sequenced length (bam mode)",
                            action="store_true")
+    filtering.add_argument("--minqual",
+                           help="Drop reads with an average quality lower than specified.",
+                           type=int,
+                           metavar='N')
     filtering.add_argument("--readtype",
                            help="Which read type to extract information about from summary. \
                                  Options are 1D, 2D, 1D2",
@@ -199,13 +203,27 @@ def filter_data(datadf, args, settings):
         settings["lengths_pointer"] = "lengths"
         logging.info("Using sequenced read lengths for plotting.")
     if args.drop_outliers:
+        num_reads_prior = len(datadf)
         datadf = nanomath.remove_length_outliers(datadf, settings["lengths_pointer"])
         length_prefix_list.append("OutliersRemoved_")
-        logging.info("Removing length outliers for plotting.")
+        num_reads_post = len(datadf)
+        logging.info("Removing {} length outliers for plotting.".format(
+            str(num_reads_prior - num_reads_post)))
     if args.maxlength:
+        num_reads_prior = len(datadf)
         datadf = datadf[datadf[settings["lengths_pointer"]] < args.maxlength]
         length_prefix_list.append("MaxLength-" + str(args.maxlength) + '_')
-        logging.info("Removing reads longer than {}.".format(str(args.maxlength)))
+        num_reads_post = len(datadf)
+        logging.info("Removing {} reads longer than {}bp.".format(
+            str(num_reads_prior - num_reads_post),
+            str(args.maxlength)))
+    if args.minqual:
+        num_reads_prior = len(datadf)
+        datadf = datadf[datadf["quals"] > args.minqual]
+        num_reads_post = len(datadf)
+        logging.info("Removing {} reads with quality below Q{}.".format(
+            str(num_reads_prior - num_reads_post),
+            str(args.minqual)))
     if args.loglength:
         datadf["log_" + settings["lengths_pointer"]] = np.log10(datadf[settings["lengths_pointer"]])
         settings["lengths_pointer"] = "log_" + settings["lengths_pointer"]
@@ -215,12 +233,12 @@ def filter_data(datadf, args, settings):
     else:
         settings["logBool"] = False
     if args.downsample:
-        newNum = min(args.downsample, len(datadf.index))
+        new_size = min(args.downsample, len(datadf.index))
         length_prefix_list.append("Downsampled_")
         logging.info("Downsampling the dataset from {} to {} reads".format(
-            len(datadf.index), newNum))
-        datadf = datadf.sample(newNum)
-    logging.info("Processed the metrics, optionally performed filtering.")
+            len(datadf.index), new_size))
+        datadf = datadf.sample(new_size)
+    logging.info("Processed the reads, optionally filtered. {} reads left".format(str(len(datadf))))
     settings["length_prefix"] = ''.join(length_prefix_list)
     return(datadf, settings)
 
