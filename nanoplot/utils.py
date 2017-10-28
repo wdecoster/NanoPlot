@@ -27,9 +27,13 @@ def init_logs(args, tool="NanoPlot"):
     Log arguments and module versions
     '''
     start_time = dt.fromtimestamp(time()).strftime('%Y%m%d_%H%M')
+    handlers = [logging.FileHandler(
+        os.path.join(args.outdir, args.prefix + tool + "_" + start_time + ".log"))]
+    if args.verbose:
+        handlers.append(logging.StreamHandler())
     logging.basicConfig(
         format='%(asctime)s %(message)s',
-        filename=os.path.join(args.outdir, args.prefix + tool + "_" + start_time + ".log"),
+        handlers=handlers,
         level=logging.INFO)
     logging.info('{} {} started with arguments {}'.format(tool, __version__, args))
     logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
