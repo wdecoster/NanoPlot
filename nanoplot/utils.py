@@ -4,6 +4,41 @@ from datetime import datetime as dt
 from time import time
 import logging
 from nanoplot.version import __version__
+from argparse import HelpFormatter, Action
+import textwrap as _textwrap
+
+
+class CustomHelpFormatter(HelpFormatter):
+    def _format_action_invocation(self, action):
+        if not action.option_strings or action.nargs == 0:
+            return super()._format_action_invocation(action)
+        default = self._get_default_metavar_for_optional(action)
+        args_string = self._format_args(action, default)
+        return ', '.join(action.option_strings) + ' ' + args_string
+
+    def _fill_text(self, text, width, indent):
+        return ''.join(indent + line for line in text.splitlines(keepends=True))
+
+    def _split_lines(self, text, width):
+        text = self._whitespace_matcher.sub(' ', text).strip()
+        return _textwrap.wrap(text, 80)
+
+
+class Action_Print_Colors(Action):
+    def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
+        super(Action_Print_Colors, self).__init__(
+            option_strings=option_strings,
+            dest=dest,
+            default=default,
+            nargs=0,
+            help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        list_colors()
+
+
+def custom_formatter(prog):
+    return CustomHelpFormatter(prog)
 
 
 def list_colors():

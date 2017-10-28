@@ -66,86 +66,114 @@ def main():
 
 
 def get_args():
-    parser = ArgumentParser(description="Perform diagnostic plotting and QC analysis for \
-                                         Oxford Nanopore sequencing data and alignments.")
-    parser.add_argument("-v", "--version",
-                        help="Print version and exit.",
-                        action="version",
-                        version='NanoPlot {}'.format(__version__))
-    parser.add_argument("-t", "--threads",
-                        help="Set the allowed number of threads to be used by the script",
-                        default=4,
-                        type=int)
-    parser.add_argument("--verbose",
-                        help="Write log messages also to terminal.",
-                        action="store_true")
-    parser.add_argument("--maxlength",
-                        help="Drop reads longer than length specified.",
-                        type=int)
-    parser.add_argument("--drop_outliers",
-                        help="Drop outlier reads with extreme long length.",
-                        action="store_true")
-    parser.add_argument("--downsample",
-                        help="Reduce dataset to N reads by random sampling.",
-                        type=int)
-    parser.add_argument("--loglength",
-                        help="Logarithmic scaling of lengths in plots.",
-                        action="store_true")
-    parser.add_argument("--readtype",
-                        help="Which read type to extract information about from summary. \
-                             Options are 1D, 2D, 1D2",
-                        default="1D",
-                        choices=['1D', '2D', '1D2'])
-    parser.add_argument("--alength",
-                        help="Use aligned read lengths rather than sequenced length (bam mode)",
-                        action="store_true")
-    parser.add_argument("-c", "--color",
+    epilog = """EXAMPLES:
+    Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed
+    NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
+    NanoPlot --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000
+    """
+    parser = ArgumentParser(
+        description="Creates various plots for Oxford Nanopore sequencing data.".upper(),
+        epilog=epilog,
+        formatter_class=utils.custom_formatter,
+        add_help=False)
+    general = parser.add_argument_group(
+        title='General options')
+    general.add_argument("-h", "--help",
+                         action="help",
+                         help="show the help and exit")
+    general.add_argument("-v", "--version",
+                         help="Print version and exit.",
+                         action="version",
+                         version='NanoPlot {}'.format(__version__))
+    general.add_argument("-t", "--threads",
+                         help="Set the allowed number of threads to be used by the script",
+                         default=4,
+                         type=int)
+    general.add_argument("--verbose",
+                         help="Write log messages also to terminal.",
+                         action="store_true")
+    general.add_argument("-o", "--outdir",
+                         help="Specify directory in which output has to be created.",
+                         default=".")
+    general.add_argument("-p", "--prefix",
+                         help="Specify an optional prefix to be used for the output files.",
+                         default="",
+                         type=str)
+    filtering = parser.add_argument_group(
+        title='Options for filtering or transforming input prior to plotting')
+    filtering.add_argument("--maxlength",
+                           help="Drop reads longer than length specified.",
+                           type=int,
+                           metavar='N')
+    filtering.add_argument("--drop_outliers",
+                           help="Drop outlier reads with extreme long length.",
+                           action="store_true")
+    filtering.add_argument("--downsample",
+                           help="Reduce dataset to N reads by random sampling.",
+                           type=int,
+                           metavar='N')
+    filtering.add_argument("--loglength",
+                           help="Logarithmic scaling of lengths in plots.",
+                           action="store_true")
+    filtering.add_argument("--alength",
+                           help="Use aligned read lengths rather than sequenced length (bam mode)",
+                           action="store_true")
+    filtering.add_argument("--readtype",
+                           help="Which read type to extract information about from summary. \
+                                 Options are 1D, 2D, 1D2",
+                           default="1D",
+                           choices=['1D', '2D', '1D2'])
+    filtering.add_argument("--barcoded",
+                           help="Use if you want to split the summary file by barcode",
+                           action="store_true")
+    visual = parser.add_argument_group(
+        title='Options for customizing the plots created')
+    visual.add_argument("-c", "--color",
                         help="Specify a color for the plots, must be a valid matplotlib color",
                         default="#4CB391")
-    parser.add_argument("-o", "--outdir",
-                        help="Specify directory in which output has to be created.",
-                        default=".")
-    parser.add_argument("-p", "--prefix",
-                        help="Specify an optional prefix to be used for the output files.",
-                        default="",
-                        type=str)
-    parser.add_argument("-f", "--format",
+    visual.add_argument("-f", "--format",
                         help="Specify the output format of the plots.",
                         default="png",
                         type=str,
                         choices=['eps', 'jpeg', 'jpg', 'pdf', 'pgf', 'png', 'ps',
                                  'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
-    parser.add_argument("--plots",
+    visual.add_argument("--plots",
                         help="Specify which bivariate plots have to be made.",
                         default=['kde', 'hex', 'dot'],
                         type=str,
                         nargs='*',
                         choices=['kde', 'hex', 'dot', 'pauvre'])
-    parser.add_argument("--barcoded",
-                        help="Use if you want to split the summary file by barcode",
-                        action="store_true")
-    target = parser.add_mutually_exclusive_group(required=True)
-    target.add_argument("--fastq",
-                        help="Data is in default fastq format.",
-                        nargs='*')
-    target.add_argument("--fastq_rich",
-                        help="Data is in fastq format generated by albacore or MinKNOW \
+    visual.add_argument("--listcolors",
+                        help="List the colors which are available for plotting and exit.",
+                        action=utils.Action_Print_Colors,
+                        default=False)
+    target = parser.add_argument_group(
+        title="Input data sources, one of these is required.")
+    mtarget = target.add_mutually_exclusive_group(
+        required=True)
+    mtarget.add_argument("--fastq",
+                         help="Data is in one or more default fastq file(s).",
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--fastq_rich",
+                         help="Data is in one or more fastq file(s) generated by albacore or MinKNOW \
                              with additional information concerning channel and time.",
-                        nargs='*')
-    target.add_argument("--fastq_minimal",
-                        help="Data is in fastq format generated by albacore or MinKNOW \
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--fastq_minimal",
+                         help="Data is in one or more fastq file(s) generated by albacore or MinKNOW \
                              with additional information concerning channel and time. \
                              Minimal data is extracted swiftly without elaborate checks.",
-                        nargs='*')
-    target.add_argument("--summary",
-                        help="Data is a summary file generated by albacore.",
-                        nargs='*')
-    target.add_argument("--bam",
-                        help="Data as a sorted bam file.",
-                        nargs='*')
-    target.add_argument("--listcolors",
-                        help="List the colors which are available for plotting",
-                        action="store_true")
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--summary",
+                         help="Data is in one or more summary file(s) generated by albacore.",
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--bam",
+                         help="Data is in one or more sorted bam file(s).",
+                         nargs='+',
+                         metavar="file")
     args = parser.parse_args()
     if args.listcolors:
         utils.list_colors()
