@@ -76,7 +76,7 @@ Each of these options can take one or multiple files e.g.
 Arguments for optional filtering:
     --readtype              Specify read type to extract from summary file
                             Options: 1D (default), 2D or 1D2
-     --barcoded             Use if you want to split the summary file by barcode
+    --barcoded             Use if you want to split the summary file by barcode
     --maxlength MAXLENGTH   Drop reads longer than length N.
     --downsample DOWNSAMPLE Reduce dataset to N reads by random sampling.
     --drop_outliers         Drop outlier reads with extreme long length.
@@ -105,10 +105,18 @@ General arguments:
     --listcolors            Give a list of all colors which can be used for plotting
 ```
 
+### EXAMPLES
+```bash
+Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed  
+NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
+NanoPlot -t 12 --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000 -o bamplots_downsampled
+```
+
 This script now also provides read length vs mean quality plots in the '[pauvre](https://github.com/conchoecia/pauvre)'-style from [@conchoecia](https://github.com/conchoecia).
 
 ## [ACKNOWLEDGMENTS](https://github.com/wdecoster/NanoPlot/blob/master/ACKNOWLEDGMENTS.MD)
 
+I welcome all suggestions, bug reports, feature requests and contributions. Please leave an [issue](https://github.com/wdecoster/NanoPlot/issues) or open a pull request. I will usually respond within a day, or rarely within a few days.
 
 ## COMPANION SCRIPTS
 - [NanoComp](https://github.com/wdecoster/nanocomp): comparing multiple runs  
