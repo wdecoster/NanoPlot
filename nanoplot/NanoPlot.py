@@ -151,6 +151,9 @@ def get_args():
                         help="List the colors which are available for plotting and exit.",
                         action=utils.Action_Print_Colors,
                         default=False)
+    visual.add_argument("--no-N50",
+                        help="Hide the N50 mark in the read length histogram",
+                        action="store_true")
     target = parser.add_argument_group(
         title="Input data sources, one of these is required.")
     mtarget = target.add_mutually_exclusive_group(
@@ -250,11 +253,15 @@ def make_plots(datadf, settings, args):
     '''
     color = nanoplotter.check_valid_color(args.color)
     plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot", 'pauvre']}
+    if args.no_N50:
+        n50 = None
+    else:
+        n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
     nanoplotter.length_plots(
         array=datadf[settings["lengths_pointer"]],
         name="Read length",
         path=settings["path"] + settings["length_prefix"],
-        n50=nanomath.get_N50(np.sort(datadf["lengths"])),
+        n50=n50,
         color=color,
         figformat=args.format,
         log=settings["logBool"])
