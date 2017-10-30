@@ -23,6 +23,7 @@ from scipy import stats
 import nanoplot.utils as utils
 from .version import __version__
 import nanoplotter
+import pickle
 
 
 def main():
@@ -41,13 +42,20 @@ def main():
         settings["path"] = path.join(args.outdir, args.prefix)
         sources = [args.fastq, args.bam, args.fastq_rich, args.fastq_minimal, args.summary]
         sourcename = ["fastq", "bam", "fastq_rich", "fastq_minimal", "summary"]
-        datadf = nanoget.get_input(
-            source=[n for n, s in zip(sourcename, sources) if s][0],
-            files=[f for f in sources if f][0],
-            threads=args.threads,
-            readtype=args.readtype,
-            combine="simple",
-            barcoded=args.barcoded)
+        if args.pickle:
+            datadf = pickle.load(open(args.pickle, 'rb'))
+        else:
+            datadf = nanoget.get_input(
+                source=[n for n, s in zip(sourcename, sources) if s][0],
+                files=[f for f in sources if f][0],
+                threads=args.threads,
+                readtype=args.readtype,
+                combine="simple",
+                barcoded=args.barcoded)
+        if args.store:
+            pickle.dump(
+                obj=datadf,
+                file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
         nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, args, settings)
@@ -91,6 +99,9 @@ def get_args():
                          type=int)
     general.add_argument("--verbose",
                          help="Write log messages also to terminal.",
+                         action="store_true")
+    general.add_argument("--store",
+                         help="Store the extracted data in a pickle file for future plotting.",
                          action="store_true")
     general.add_argument("-o", "--outdir",
                          help="Specify directory in which output has to be created.",
@@ -181,6 +192,9 @@ def get_args():
                          help="Data is in one or more sorted bam file(s).",
                          nargs='+',
                          metavar="file")
+    mtarget.add_argument("--pickle",
+                         help="Data is a pickle file stored earlier.",
+                         metavar="pickle")
     args = parser.parse_args()
     if args.listcolors:
         utils.list_colors()
