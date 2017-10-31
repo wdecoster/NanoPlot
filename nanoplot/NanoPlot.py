@@ -24,6 +24,7 @@ import nanoplot.utils as utils
 from .version import __version__
 import nanoplotter
 import pickle
+import sys
 
 
 def main():
@@ -66,7 +67,9 @@ def main():
                 nanomath.write_stats(dfbarc, settings["path"] + "NanoStats.txt")
                 make_plots(dfbarc, settings, args)
         else:
-            make_plots(datadf, settings, args)
+            plots = make_plots(datadf, settings, args)
+        if args.report:
+            make_report(plots)
         logging.info("Succesfully processed all input.")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -102,6 +105,9 @@ def get_args():
                          action="store_true")
     general.add_argument("--store",
                          help="Store the extracted data in a pickle file for future plotting.",
+                         action="store_true")
+    general.add_argument("--report",
+                         help="Create a html report containing all plots and stats.",
                          action="store_true")
     general.add_argument("-o", "--outdir",
                          help="Specify directory in which output has to be created.",
@@ -198,6 +204,10 @@ def get_args():
     args = parser.parse_args()
     if args.listcolors:
         utils.list_colors()
+    if args.report and args.barcoded:
+        sys.exit("Error:\nMaking a report of a barcoded experiment is currently not supported.\n"
+                 "Please let me know if you think that would be useful. "
+                 "I would be happy to take a look at implementing that feature.")
     return args
 
 
@@ -267,98 +277,129 @@ def make_plots(datadf, settings, args):
     '''
     color = nanoplotter.check_valid_color(args.color)
     plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot", 'pauvre']}
+    plots = []
     if args.no_N50:
         n50 = None
     else:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
-    nanoplotter.length_plots(
-        array=datadf[settings["lengths_pointer"]],
-        name="Read length",
-        path=settings["path"] + settings["length_prefix"],
-        n50=n50,
-        color=color,
-        figformat=args.format,
-        log=settings["logBool"])
+    plots.extend(
+        nanoplotter.length_plots(
+            array=datadf[settings["lengths_pointer"]],
+            name="Read length",
+            path=settings["path"] + settings["length_prefix"],
+            n50=n50,
+            color=color,
+            figformat=args.format,
+            log=settings["logBool"])
+    )
     logging.info("Created length plots")
     if "quals" in datadf:
-        nanoplotter.scatter(
-            x=datadf[settings["lengths_pointer"]],
-            y=datadf["quals"],
-            names=['Read lengths', 'Average read quality'],
-            path=settings["path"] + settings["length_prefix"] + "LengthvsQualityScatterPlot",
-            color=color,
-            figformat=args.format,
-            plots=plotdict,
-            log=settings["logBool"])
+        plots.extend(
+            nanoplotter.scatter(
+                x=datadf[settings["lengths_pointer"]],
+                y=datadf["quals"],
+                names=['Read lengths', 'Average read quality'],
+                path=settings["path"] + settings["length_prefix"] + "LengthvsQualityScatterPlot",
+                color=color,
+                figformat=args.format,
+                plots=plotdict,
+                log=settings["logBool"])
+        )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
-        nanoplotter.spatial_heatmap(
-            array=datadf["channelIDs"],
-            title="Number of reads generated per channel",
-            path=settings["path"] + "ActivityMap_ReadsPerChannel",
-            color="Greens",
-            figformat=args.format)
+        plots.extend(
+            nanoplotter.spatial_heatmap(
+                array=datadf["channelIDs"],
+                title="Number of reads generated per channel",
+                path=settings["path"] + "ActivityMap_ReadsPerChannel",
+                color="Greens",
+                figformat=args.format)
+        )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
-        nanoplotter.time_plots(
-            df=datadf,
-            path=settings["path"],
-            color=color,
-            figformat=args.format)
+        plots.extend(
+            nanoplotter.time_plots(
+                df=datadf,
+                path=settings["path"],
+                color=color,
+                figformat=args.format)
+        )
         logging.info("Created timeplots.")
     if args.bam:
-        nanoplotter.scatter(
-            x=datadf["aligned_lengths"],
-            y=datadf["lengths"],
-            names=["Aligned read lengths", "Sequenced read length"],
-            path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
-            figformat=args.format,
-            plots=plotdict,
-            color=color)
+        plots.extend(
+            nanoplotter.scatter(
+                x=datadf["aligned_lengths"],
+                y=datadf["lengths"],
+                names=["Aligned read lengths", "Sequenced read length"],
+                path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
+                figformat=args.format,
+                plots=plotdict,
+                color=color)
+        )
         logging.info("Created AlignedLength vs Length plot.")
-        nanoplotter.scatter(
-            x=datadf["mapQ"],
-            y=datadf["quals"],
-            names=["Read mapping quality", "Average basecall quality"],
-            path=settings["path"] + "MappingQualityvsAverageBaseQuality",
-            color=color,
-            figformat=args.format,
-            plots=plotdict)
+        plots.extend(
+            nanoplotter.scatter(
+                x=datadf["mapQ"],
+                y=datadf["quals"],
+                names=["Read mapping quality", "Average basecall quality"],
+                path=settings["path"] + "MappingQualityvsAverageBaseQuality",
+                color=color,
+                figformat=args.format,
+                plots=plotdict)
+        )
         logging.info("Created MapQvsBaseQ plot.")
-        nanoplotter.scatter(
-            x=datadf[settings["lengths_pointer"]],
-            y=datadf["mapQ"],
-            names=["Read length", "Read mapping quality"],
-            path=settings["path"] + settings["length_prefix"] + "MappingQualityvsReadLength",
-            color=color,
-            figformat=args.format,
-            plots=plotdict,
-            log=settings["logBool"])
+        plots.extend(
+            nanoplotter.scatter(
+                x=datadf[settings["lengths_pointer"]],
+                y=datadf["mapQ"],
+                names=["Read length", "Read mapping quality"],
+                path=settings["path"] + settings["length_prefix"] + "MappingQualityvsReadLength",
+                color=color,
+                figformat=args.format,
+                plots=plotdict,
+                log=settings["logBool"])
+        )
         logging.info("Created Mapping quality vs read length plot.")
         minPID = np.amin(datadf["percentIdentity"])
-        nanoplotter.scatter(
-            x=datadf["percentIdentity"],
-            y=datadf["aligned_quals"],
-            names=["Percent identity", "Read quality"],
-            path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
-            color=color,
-            figformat=args.format,
-            plots=plotdict,
-            stat=stats.pearsonr,
-            minvalx=minPID)
+        plots.extend(
+            nanoplotter.scatter(
+                x=datadf["percentIdentity"],
+                y=datadf["aligned_quals"],
+                names=["Percent identity", "Read quality"],
+                path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
+                color=color,
+                figformat=args.format,
+                plots=plotdict,
+                stat=stats.pearsonr,
+                minvalx=minPID)
+        )
         logging.info("Created Percent ID vs Base quality plot.")
-        nanoplotter.scatter(
-            x=datadf[settings["lengths_pointer"]],
-            y=datadf["percentIdentity"],
-            names=["Aligned read length", "Percent identity"],
-            path=settings["path"] + "PercentIdentityvsAlignedReadLength",
-            color=color,
-            figformat=args.format,
-            plots=plotdict,
-            stat=stats.pearsonr,
-            log=settings["logBool"],
-            minvaly=minPID)
+        plots.extend(
+            nanoplotter.scatter(
+                x=datadf[settings["lengths_pointer"]],
+                y=datadf["percentIdentity"],
+                names=["Aligned read length", "Percent identity"],
+                path=settings["path"] + "PercentIdentityvsAlignedReadLength",
+                color=color,
+                figformat=args.format,
+                plots=plotdict,
+                stat=stats.pearsonr,
+                log=settings["logBool"],
+                minvaly=minPID)
+        )
         logging.info("Created Percent ID vs Length plot")
+    return plots
+
+
+def make_report(plots):
+    html_head = """<!DOCTYPE html><html><head><meta charset="UTF-8"><title>test</title></head>"""
+    html_content = []
+    for plot in plots:
+        html_content.append("<h2>" + plot.title + "</h2>" + plot.encode())
+    html_body = "<body><h1>NanoPlot report</h1>" + ''.join(html_content) + "</body></html>"
+    html_str = html_head + html_body
+    with open("fat.html", "w") as html_file:
+        html_file.write(html_str)
 
 
 if __name__ == "__main__":
