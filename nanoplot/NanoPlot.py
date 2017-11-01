@@ -73,6 +73,10 @@ def main():
         logging.info("Succesfully processed all input.")
     except Exception as e:
         logging.error(e, exc_info=True)
+        print("\n\n\nIf you read this then NanoPlot has crashed :-(")
+        print("Please report this issue at https://github.com/wdecoster/NanoPlot/issues")
+        print("If you include the log file that would be really helpful.")
+        print("Thanks!\n\n\n")
         raise
 
 
