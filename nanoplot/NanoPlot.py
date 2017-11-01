@@ -69,7 +69,7 @@ def main():
         else:
             plots = make_plots(datadf, settings, args)
         if args.report:
-            make_report(plots)
+            make_report(plots, settings["path"] + "NanoStats.txt")
         logging.info("Succesfully processed all input.")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -391,12 +391,55 @@ def make_plots(datadf, settings, args):
     return plots
 
 
-def make_report(plots):
-    html_head = """<!DOCTYPE html><html><head><meta charset="UTF-8"><title>test</title></head>"""
-    html_content = []
+def make_report(plots, statsfile):
+    '''
+    Creates a fat html report based on the previously created files
+    plots is a list of Plot objects defined by a path and title
+    statsfile is the file to which the stats have been saved,
+    which is parsed to a table (rather dodgy)
+    '''
+    html_head = """<!DOCTYPE html>
+    <html>
+        <head>
+        <meta charset="UTF-8">
+            <style>
+            table, th, td {
+                text-align: left;
+                padding: 2px;
+                /* border: 1px solid black;
+                border-collapse: collapse; */
+            }
+            h2 {
+                line-height: 0pt;
+            }
+            </style>
+            <title>NanoPlot Report</title>
+        </head>"""
+    html_content = ["\n<body>\n<h1>NanoPlot report</h1>"]
+    with open(statsfile) as stats:
+        html_content.append('\n<table>')
+        for line in stats:
+            html_content.append('')
+            linesplit = line.strip().split('\t')
+            if line.startswith('Data'):
+                html_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2">' +
+                                    line.strip() + '</td>\n</tr>')
+                break
+            if len(linesplit) > 1:
+                data = ''.join(["<td>" + e + "</td>" for e in linesplit])
+                html_content.append("<tr>\n\t" + data + "\n</tr>")
+            else:
+                html_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2"><b>' +
+                                    line.strip() + '</b></td>\n</tr>')
+        for line in stats:
+            html_content.append('\n<tr>\n\t<td colspan="2">' +
+                                line.strip() + '</td>\n</tr>')
+        html_content.append('</table>')
+    html_content.append('\n<br>\n<br>\n<br>\n<br>')
     for plot in plots:
-        html_content.append("<h2>" + plot.title + "</h2>" + plot.encode())
-    html_body = "<body><h1>NanoPlot report</h1>" + ''.join(html_content) + "</body></html>"
+        html_content.append("\n<h2>" + plot.title + "</h2>\n" + plot.encode())
+        html_content.append('\n<br>\n<br>\n<br>\n<br>')
+    html_body = '\n'.join(html_content) + "</body></html>"
     html_str = html_head + html_body
     with open("fat.html", "w") as html_file:
         html_file.write(html_str)
