@@ -9,7 +9,7 @@ python:
 # command to install dependencies
 install: "pip install NanoPlot"
 # command to run tests
-script: NanoPlot -h
+script: bash test.sh
 
 notifications:
   email: false
