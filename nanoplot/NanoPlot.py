@@ -25,6 +25,7 @@ from .version import __version__
 import nanoplotter
 import pickle
 import sys
+from textwrap import wrap
 
 
 def main():
@@ -37,7 +38,7 @@ def main():
     args = get_args()
     try:
         utils.make_output_dir(args.outdir)
-        utils.init_logs(args)
+        logfile = utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
         settings = dict()
         settings["path"] = path.join(args.outdir, args.prefix)
@@ -69,8 +70,8 @@ def main():
         else:
             plots = make_plots(datadf, settings, args)
         if args.report:
-            make_report(plots, settings["path"] + "NanoStats.txt")
-        logging.info("Succesfully processed all input.")
+            make_report(plots, settings["path"] + "NanoStats.txt", logfile)
+        logging.info("Finished!.")
     except Exception as e:
         logging.error(e, exc_info=True)
         print("\n\n\nIf you read this then NanoPlot has crashed :-(")
@@ -395,13 +396,14 @@ def make_plots(datadf, settings, args):
     return plots
 
 
-def make_report(plots, statsfile):
+def make_report(plots, statsfile, logfile):
     '''
     Creates a fat html report based on the previously created files
     plots is a list of Plot objects defined by a path and title
     statsfile is the file to which the stats have been saved,
     which is parsed to a table (rather dodgy)
     '''
+    logging.info("Writing html report.")
     html_head = """<!DOCTYPE html>
     <html>
         <head>
@@ -420,6 +422,7 @@ def make_report(plots, statsfile):
             <title>NanoPlot Report</title>
         </head>"""
     html_content = ["\n<body>\n<h1>NanoPlot report</h1>"]
+    html_content.append("<h2>Summary statistics</h2>")
     with open(statsfile) as stats:
         html_content.append('\n<table>')
         for line in stats:
@@ -440,9 +443,16 @@ def make_report(plots, statsfile):
                                 line.strip() + '</td>\n</tr>')
         html_content.append('</table>')
     html_content.append('\n<br>\n<br>\n<br>\n<br>')
+    html_content.append("<h2>Plots</h2>")
     for plot in plots:
-        html_content.append("\n<h2>" + plot.title + "</h2>\n" + plot.encode())
+        html_content.append("\n<h3>" + plot.title + "</h3>\n" + plot.encode())
         html_content.append('\n<br>\n<br>\n<br>\n<br>')
+    html_content.append("<h2>Log file</h2>")
+    with open(logfile) as logs:
+        html_content.append('<pre>')
+        for line in logs:
+            html_content.append('\n'.join(wrap(line.rstrip(), width=150)))
+        html_content.append('</pre>')
     html_body = '\n'.join(html_content) + "</body></html>"
     html_str = html_head + html_body
     with open("fat.html", "w") as html_file:
