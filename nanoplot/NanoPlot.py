@@ -289,13 +289,12 @@ def make_plots(datadf, settings, args):
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
     plots.extend(
         nanoplotter.length_plots(
-            array=datadf[settings["lengths_pointer"]],
+            array=datadf["lengths"],
             name="Read length",
             path=settings["path"] + settings["length_prefix"],
             n50=n50,
             color=color,
-            figformat=args.format,
-            log=settings["logBool"])
+            figformat=args.format)
     )
     logging.info("Created length plots")
     if "quals" in datadf:

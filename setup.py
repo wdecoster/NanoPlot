@@ -36,7 +36,7 @@ setup(
                       'matplotlib',
                       'python-dateutil',
                       'seaborn',
-                      'nanoplotter>=0.21.0',
+                      'nanoplotter>=0.22.0',
                       'nanoget>=0.19.3',
                       'nanomath>=0.14.2'
                       ],
