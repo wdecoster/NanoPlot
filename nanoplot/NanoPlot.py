@@ -71,7 +71,7 @@ def main():
             plots = make_plots(datadf, settings, args)
         if args.report:
             make_report(plots, settings["path"] + "NanoStats.txt", logfile)
-        logging.info("Finished!.")
+        logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
         print("\n\n\nIf you read this then NanoPlot has crashed :-(")
