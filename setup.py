@@ -27,7 +27,7 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     keywords='nanopore sequencing plotting quality control',
-    packages=find_packages() + ['extra'],
+    packages=find_packages() + ['extra', 'scripts'],
     install_requires=['biopython',
                       'pysam>0.10.0.0',
                       'pandas',
