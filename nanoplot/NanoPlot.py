@@ -363,7 +363,7 @@ def make_plots(datadf, settings, args):
                 log=settings["logBool"])
         )
         logging.info("Created Mapping quality vs read length plot.")
-        minPID = np.amin(datadf["percentIdentity"])
+        minPID = np.percentile(datadf["percentIdentity"], 1)
         plots.extend(
             nanoplotter.scatter(
                 x=datadf["percentIdentity"],
