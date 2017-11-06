@@ -328,7 +328,7 @@ def make_plots(datadf, settings, args):
                 figformat=args.format)
         )
         logging.info("Created timeplots.")
-    if args.bam:
+    if "aligned_lengths" in datadf and "lengths" in datadf:
         plots.extend(
             nanoplotter.scatter(
                 x=datadf["aligned_lengths"],
@@ -340,6 +340,7 @@ def make_plots(datadf, settings, args):
                 color=color)
         )
         logging.info("Created AlignedLength vs Length plot.")
+    if "maqpQ" in datadf:
         plots.extend(
             nanoplotter.scatter(
                 x=datadf["mapQ"],
@@ -363,6 +364,7 @@ def make_plots(datadf, settings, args):
                 log=settings["logBool"])
         )
         logging.info("Created Mapping quality vs read length plot.")
+    if "percentIdentity" in datadf:
         minPID = np.percentile(datadf["percentIdentity"], 1)
         plots.extend(
             nanoplotter.scatter(
