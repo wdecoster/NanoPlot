@@ -12,7 +12,6 @@ Input data can be given as one or multiple of:
 '''
 
 
-from __future__ import division, print_function
 from argparse import ArgumentParser
 from os import path
 import logging
