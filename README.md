@@ -101,7 +101,7 @@ Options for customizing the plots created:
                         Specify the output format of the plots.
   --plots [{kde,hex,dot,pauvre} [{kde,hex,dot,pauvre} ...]]
                         Specify which bivariate plots have to be made.
-  --listcolors          List the colors which are available for plotting and exit.```
+  --listcolors          List the colors which are available for plotting and exit.
 ```
 
 ### EXAMPLES
