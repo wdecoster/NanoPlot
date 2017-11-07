@@ -102,13 +102,14 @@ Options for customizing the plots created:
   --plots [{kde,hex,dot,pauvre} [{kde,hex,dot,pauvre} ...]]
                         Specify which bivariate plots have to be made.
   --listcolors          List the colors which are available for plotting and exit.```
+```
 
 ### EXAMPLES
 ```bash
 Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed  
 NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
-NanoPlot -t 12 --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000 -o bamplots_downsampled```
-
+NanoPlot -t 12 --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000 -o bamplots_downsampled
+```
 This script now also provides read length vs mean quality plots in the '[pauvre](https://github.com/conchoecia/pauvre)'-style from [@conchoecia](https://github.com/conchoecia).
 
 ## [ACKNOWLEDGMENTS](https://github.com/wdecoster/NanoPlot/blob/master/ACKNOWLEDGMENTS.MD)
