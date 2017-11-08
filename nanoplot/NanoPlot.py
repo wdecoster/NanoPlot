@@ -290,7 +290,7 @@ def make_plots(datadf, settings, args):
         nanoplotter.length_plots(
             array=datadf["lengths"],
             name="Read length",
-            path=settings["path"] + settings["length_prefix"],
+            path=settings["path"],
             n50=n50,
             color=color,
             figformat=args.format)
