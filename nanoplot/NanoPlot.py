@@ -455,7 +455,7 @@ def make_report(plots, statsfile, logfile):
         html_content.append('</pre>')
     html_body = '\n'.join(html_content) + "</body></html>"
     html_str = html_head + html_body
-    with open("NanoPlot-report.html", "w") as html_file:
+    with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
         html_file.write(html_str)
 
 
