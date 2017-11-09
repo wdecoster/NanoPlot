@@ -6,17 +6,17 @@ os:
 python:
   - "3.4"
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
+  - "3.5-dev"
   - "3.6"
-  - "3.6-dev" # 3.6 development branch
-# command to install dependencies
+  - "3.6-dev"
+
 before install:
   - pip install pypandoc
   - pandoc --from=markdown --to=rst --output=README.rst README.md
 
 install:
   - pip install -e .
-# command to run tests
+
 script:
   - bash scripts/test.sh
 
