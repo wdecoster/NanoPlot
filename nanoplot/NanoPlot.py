@@ -69,7 +69,7 @@ def main():
         else:
             plots = make_plots(datadf, settings, args)
         if args.report:
-            make_report(plots, settings["path"] + "NanoStats.txt", logfile)
+            make_report(plots, settings["path"], logfile)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -396,7 +396,7 @@ def make_plots(datadf, settings, args):
     return plots
 
 
-def make_report(plots, statsfile, logfile):
+def make_report(plots, path, logfile):
     '''
     Creates a fat html report based on the previously created files
     plots is a list of Plot objects defined by a path and title
@@ -423,7 +423,7 @@ def make_report(plots, statsfile, logfile):
         </head>"""
     html_content = ["\n<body>\n<h1>NanoPlot report</h1>"]
     html_content.append("<h2>Summary statistics</h2>")
-    with open(statsfile) as stats:
+    with open(path + "NanoStats.txt") as stats:
         html_content.append('\n<table>')
         for line in stats:
             html_content.append('')
@@ -455,7 +455,7 @@ def make_report(plots, statsfile, logfile):
         html_content.append('</pre>')
     html_body = '\n'.join(html_content) + "</body></html>"
     html_str = html_head + html_body
-    with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
+    with open(path + "NanoPlot-report.html", "w") as html_file:
         html_file.write(html_str)
 
 
