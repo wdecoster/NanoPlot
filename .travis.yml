@@ -11,8 +11,7 @@ python:
   - "3.6-dev"
 
 before_install:
-  - pip install pypandoc
-  - pandoc --from=markdown --to=rst --output=README.rst README.md
+  - cp README.md README.rst
 
 install:
   - pip install -e .
