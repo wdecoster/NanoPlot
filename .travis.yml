@@ -10,7 +10,7 @@ python:
   - "3.6"
   - "3.6-dev"
 
-before install:
+before_install:
   - pip install pypandoc
   - pandoc --from=markdown --to=rst --output=README.rst README.md
 
