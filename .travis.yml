@@ -10,6 +10,10 @@ python:
   - "3.6"
   - "3.6-dev" # 3.6 development branch
 # command to install dependencies
+before install:
+  - pip install pypandoc
+  - pandoc --from=markdown --to=rst --output=README.rst README.md
+
 install:
   - pip install -e .
 # command to run tests
