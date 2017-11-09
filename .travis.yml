@@ -2,7 +2,6 @@ language: python
 
 os:
   - linux
-  - osx
 
 python:
   - "3.4"
@@ -11,9 +10,11 @@ python:
   - "3.6"
   - "3.6-dev" # 3.6 development branch
 # command to install dependencies
-install: "pip install NanoPlot"
+install:
+  - pip install -e .
 # command to run tests
-script: bash scripts/test.sh
+script:
+  - bash scripts/test.sh
 
 notifications:
   email: false
