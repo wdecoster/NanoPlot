@@ -33,11 +33,10 @@ setup(
                       'pandas',
                       'numpy',
                       'scipy',
-                      'matplotlib',
                       'python-dateutil',
                       'seaborn',
-                      'nanoplotter>=0.22.0',
-                      'nanoget>=0.19.3',
+                      'nanoplotter>=0.25.0',
+                      'nanoget>=1.0.2',
                       'nanomath>=0.14.2'
                       ],
     package_data={'NanoPlot': []},
