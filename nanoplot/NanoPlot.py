@@ -175,6 +175,10 @@ def get_args():
     visual.add_argument("--no-N50",
                         help="Hide the N50 mark in the read length histogram",
                         action="store_true")
+    visual.add_argument("--title",
+                        help="Add a title to all plots, requires quoting if using spaces",
+                        type=str,
+                        default=None)
     target = parser.add_argument_group(
         title="Input data sources, one of these is required.")
     mtarget = target.add_mutually_exclusive_group(
@@ -293,7 +297,8 @@ def make_plots(datadf, settings, args):
             path=settings["path"],
             n50=n50,
             color=color,
-            figformat=args.format)
+            figformat=args.format,
+            title=args.title)
     )
     logging.info("Created length plots")
     if "quals" in datadf:
@@ -306,14 +311,15 @@ def make_plots(datadf, settings, args):
                 color=color,
                 figformat=args.format,
                 plots=plotdict,
-                log=settings["logBool"])
+                log=settings["logBool"],
+                title=args.title)
         )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
         plots.extend(
             nanoplotter.spatial_heatmap(
                 array=datadf["channelIDs"],
-                title="Number of reads generated per channel",
+                title=args.title,
                 path=settings["path"] + "ActivityMap_ReadsPerChannel",
                 color="Greens",
                 figformat=args.format)
@@ -325,7 +331,8 @@ def make_plots(datadf, settings, args):
                 df=datadf,
                 path=settings["path"],
                 color=color,
-                figformat=args.format)
+                figformat=args.format,
+                title=args.title)
         )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
@@ -337,7 +344,8 @@ def make_plots(datadf, settings, args):
                 path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
                 figformat=args.format,
                 plots=plotdict,
-                color=color)
+                color=color,
+                title=args.title)
         )
         logging.info("Created AlignedLength vs Length plot.")
     if "maqpQ" in datadf:
@@ -349,7 +357,8 @@ def make_plots(datadf, settings, args):
                 path=settings["path"] + "MappingQualityvsAverageBaseQuality",
                 color=color,
                 figformat=args.format,
-                plots=plotdict)
+                plots=plotdict,
+                title=args.title)
         )
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
@@ -361,7 +370,8 @@ def make_plots(datadf, settings, args):
                 color=color,
                 figformat=args.format,
                 plots=plotdict,
-                log=settings["logBool"])
+                log=settings["logBool"],
+                title=args.title)
         )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
@@ -376,7 +386,8 @@ def make_plots(datadf, settings, args):
                 figformat=args.format,
                 plots=plotdict,
                 stat=stats.pearsonr,
-                minvalx=minPID)
+                minvalx=minPID,
+                title=args.title)
         )
         logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
@@ -390,7 +401,8 @@ def make_plots(datadf, settings, args):
                 plots=plotdict,
                 stat=stats.pearsonr,
                 log=settings["logBool"],
-                minvaly=minPID)
+                minvaly=minPID,
+                title=args.title)
         )
         logging.info("Created Percent ID vs Length plot")
     return plots
