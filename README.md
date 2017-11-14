@@ -101,6 +101,8 @@ Options for customizing the plots created:
                         Specify the output format of the plots.
   --plots [{kde,hex,dot,pauvre} [{kde,hex,dot,pauvre} ...]]
                         Specify which bivariate plots have to be made.
+  --no-N50              Hide the N50 mark in the read length histogram
+  --title TITLE         Add a title to all plots, requires quoting if using spaces
   --listcolors          List the colors which are available for plotting and exit.
 ```
 
