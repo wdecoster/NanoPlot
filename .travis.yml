@@ -21,3 +21,6 @@ script:
 
 notifications:
   email: false
+  webhooks:
+    urls:
+        - https://webhooks.gitter.im/e/4b1c45cea6826ce475c2
