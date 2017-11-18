@@ -57,6 +57,8 @@ def main():
             pickle.dump(
                 obj=datadf,
                 file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
+        if args.raw:
+            datadf.to_csv("NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
         nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, args, settings)
@@ -109,6 +111,9 @@ def get_args():
                          action="store_true")
     general.add_argument("--store",
                          help="Store the extracted data in a pickle file for future plotting.",
+                         action="store_true")
+    general.add_argument("--raw",
+                         help="Store the extracted data in tab separated file.",
                          action="store_true")
     general.add_argument("--report",
                          help="Create a html report containing all plots and stats.",
