@@ -57,10 +57,7 @@ def make_output_dir(path):
 
 
 def init_logs(args, tool="NanoPlot"):
-    '''
-    Initiate log file
-    Log arguments and module versions
-    '''
+    """Initiate log file and log arguments."""
     start_time = dt.fromtimestamp(time()).strftime('%Y%m%d_%H%M')
     logname = os.path.join(args.outdir, args.prefix + tool + "_" + start_time + ".log")
     handlers = [logging.FileHandler(logname)]
