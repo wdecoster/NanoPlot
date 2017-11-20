@@ -15,7 +15,7 @@ Input data can be given as one or multiple of:
 from argparse import ArgumentParser
 from os import path
 import logging
-import nanoget
+from nanoget import get_input
 import nanomath
 import numpy as np
 from scipy import stats
@@ -39,14 +39,14 @@ def main():
         utils.make_output_dir(args.outdir)
         logfile = utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
-        settings = dict()
+        settings = vars(args)
         settings["path"] = path.join(args.outdir, args.prefix)
         sources = [args.fastq, args.bam, args.fastq_rich, args.fastq_minimal, args.summary]
         sourcename = ["fastq", "bam", "fastq_rich", "fastq_minimal", "summary"]
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         else:
-            datadf = nanoget.get_input(
+            datadf = get_input(
                 source=[n for n, s in zip(sourcename, sources) if s][0],
                 files=[f for f in sources if f][0],
                 threads=args.threads,
@@ -61,7 +61,7 @@ def main():
             datadf.to_csv("NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
         nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
         logging.info("Calculated statistics")
-        datadf, settings = filter_data(datadf, args, settings)
+        datadf, settings = filter_data(datadf, settings)
         if args.barcoded:
             for barc in list(datadf["barcode"].unique()):
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
@@ -224,7 +224,7 @@ def get_args():
     return args
 
 
-def filter_data(datadf, args, settings):
+def filter_data(datadf, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
@@ -235,36 +235,36 @@ def filter_data(datadf, args, settings):
     Return an accurate prefix which is added to plotnames using this filtered data
     '''
     length_prefix_list = list()
-    if args.alength and args.bam:
+    if settings["alength"] and settings["bam"]:
         settings["lengths_pointer"] = "aligned_lengths"
         length_prefix_list.append("Aligned_")
         logging.info("Using aligned read lengths for plotting.")
     else:
         settings["lengths_pointer"] = "lengths"
         logging.info("Using sequenced read lengths for plotting.")
-    if args.drop_outliers:
+    if settings["drop_outliers"]:
         num_reads_prior = len(datadf)
         datadf = nanomath.remove_length_outliers(datadf, settings["lengths_pointer"])
         length_prefix_list.append("OutliersRemoved_")
         num_reads_post = len(datadf)
         logging.info("Removing {} length outliers for plotting.".format(
             str(num_reads_prior - num_reads_post)))
-    if args.maxlength:
+    if settings["maxlength"]:
         num_reads_prior = len(datadf)
-        datadf = datadf[datadf[settings["lengths_pointer"]] < args.maxlength]
-        length_prefix_list.append("MaxLength-" + str(args.maxlength) + '_')
+        datadf = datadf[datadf[settings["lengths_pointer"]] < settings["maxlength"]]
+        length_prefix_list.append("MaxLength-" + str(settings["maxlength"]) + '_')
         num_reads_post = len(datadf)
         logging.info("Removing {} reads longer than {}bp.".format(
             str(num_reads_prior - num_reads_post),
-            str(args.maxlength)))
-    if args.minqual:
+            str(settings["maxlength"])))
+    if settings["minqual"]:
         num_reads_prior = len(datadf)
-        datadf = datadf[datadf["quals"] > args.minqual]
+        datadf = datadf[datadf["quals"] > settings["minqual"]]
         num_reads_post = len(datadf)
         logging.info("Removing {} reads with quality below Q{}.".format(
             str(num_reads_prior - num_reads_post),
-            str(args.minqual)))
-    if args.loglength:
+            str(settings["minqual"])))
+    if settings["loglength"]:
         datadf["log_" + settings["lengths_pointer"]] = np.log10(datadf[settings["lengths_pointer"]])
         settings["lengths_pointer"] = "log_" + settings["lengths_pointer"]
         length_prefix_list.append("Log_")
@@ -272,8 +272,8 @@ def filter_data(datadf, args, settings):
         settings["logBool"] = True
     else:
         settings["logBool"] = False
-    if args.downsample:
-        new_size = min(args.downsample, len(datadf.index))
+    if settings["downsample"]:
+        new_size = min(settings["downsample"], len(datadf.index))
         length_prefix_list.append("Downsampled_")
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), new_size))
@@ -283,15 +283,15 @@ def filter_data(datadf, args, settings):
     return(datadf, settings)
 
 
-def make_plots(datadf, settings, args):
+def make_plots(datadf, settings):
     '''
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
-    color = nanoplotter.check_valid_color(args.color)
-    plotdict = {type: args.plots.count(type) for type in ["kde", "hex", "dot", 'pauvre']}
+    color = nanoplotter.check_valid_color(settings["color"])
+    plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
-    if args.no_N50:
+    if settings["no_N50"]:
         n50 = None
     else:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
@@ -302,8 +302,8 @@ def make_plots(datadf, settings, args):
             path=settings["path"],
             n50=n50,
             color=color,
-            figformat=args.format,
-            title=args.title)
+            figformat=settings["format"],
+            title=settings["title"])
     )
     logging.info("Created length plots")
     if "quals" in datadf:
@@ -314,20 +314,20 @@ def make_plots(datadf, settings, args):
                 names=['Read lengths', 'Average read quality'],
                 path=settings["path"] + settings["length_prefix"] + "LengthvsQualityScatterPlot",
                 color=color,
-                figformat=args.format,
+                figformat=settings["format"],
                 plots=plotdict,
                 log=settings["logBool"],
-                title=args.title)
+                title=settings["title"])
         )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
         plots.extend(
             nanoplotter.spatial_heatmap(
                 array=datadf["channelIDs"],
-                title=args.title,
+                title=settings["title"],
                 path=settings["path"] + "ActivityMap_ReadsPerChannel",
                 color="Greens",
-                figformat=args.format)
+                figformat=settings["format"])
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
@@ -336,8 +336,8 @@ def make_plots(datadf, settings, args):
                 df=datadf,
                 path=settings["path"],
                 color=color,
-                figformat=args.format,
-                title=args.title)
+                figformat=settings["format"],
+                title=settings["title"])
         )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
@@ -347,10 +347,10 @@ def make_plots(datadf, settings, args):
                 y=datadf["lengths"],
                 names=["Aligned read lengths", "Sequenced read length"],
                 path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
-                figformat=args.format,
+                figformat=settings["format"],
                 plots=plotdict,
                 color=color,
-                title=args.title)
+                title=settings["title"])
         )
         logging.info("Created AlignedLength vs Length plot.")
     if "maqpQ" in datadf:
@@ -361,9 +361,9 @@ def make_plots(datadf, settings, args):
                 names=["Read mapping quality", "Average basecall quality"],
                 path=settings["path"] + "MappingQualityvsAverageBaseQuality",
                 color=color,
-                figformat=args.format,
+                figformat=settings["format"],
                 plots=plotdict,
-                title=args.title)
+                title=settings["title"])
         )
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
@@ -373,10 +373,10 @@ def make_plots(datadf, settings, args):
                 names=["Read length", "Read mapping quality"],
                 path=settings["path"] + settings["length_prefix"] + "MappingQualityvsReadLength",
                 color=color,
-                figformat=args.format,
+                figformat=settings["format"],
                 plots=plotdict,
                 log=settings["logBool"],
-                title=args.title)
+                title=settings["title"])
         )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
@@ -388,11 +388,11 @@ def make_plots(datadf, settings, args):
                 names=["Percent identity", "Read quality"],
                 path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
                 color=color,
-                figformat=args.format,
+                figformat=settings["format"],
                 plots=plotdict,
                 stat=stats.pearsonr,
                 minvalx=minPID,
-                title=args.title)
+                title=settings["title"])
         )
         logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
@@ -402,12 +402,12 @@ def make_plots(datadf, settings, args):
                 names=["Aligned read length", "Percent identity"],
                 path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                 color=color,
-                figformat=args.format,
+                figformat=settings["format"],
                 plots=plotdict,
                 stat=stats.pearsonr,
                 log=settings["logBool"],
                 minvaly=minPID,
-                title=args.title)
+                title=settings["title"])
         )
         logging.info("Created Percent ID vs Length plot")
     return plots
