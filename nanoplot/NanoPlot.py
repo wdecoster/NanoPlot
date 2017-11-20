@@ -474,6 +474,7 @@ def make_report(plots, path, logfile):
     html_str = html_head + html_body
     with open(path + "NanoPlot-report.html", "w") as html_file:
         html_file.write(html_str)
+    return path + "NanoPlot-report.html"
 
 
 if __name__ == "__main__":
