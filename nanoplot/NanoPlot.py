@@ -67,9 +67,9 @@ def main():
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
                 dfbarc = datadf[datadf["barcode"] == barc]
                 nanomath.write_stats(dfbarc, settings["path"] + "NanoStats.txt")
-                make_plots(dfbarc, settings, args)
+                make_plots(dfbarc, settings)
         else:
-            plots = make_plots(datadf, settings, args)
+            plots = make_plots(datadf, settings)
         if args.report:
             make_report(plots, settings["path"], logfile)
         logging.info("Finished!")
