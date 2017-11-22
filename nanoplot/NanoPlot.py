@@ -70,8 +70,7 @@ def main():
                 make_plots(dfbarc, settings)
         else:
             plots = make_plots(datadf, settings)
-        if args.report:
-            make_report(plots, settings["path"], logfile)
+        make_report(plots, settings["path"], logfile)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -114,9 +113,6 @@ def get_args():
                          action="store_true")
     general.add_argument("--raw",
                          help="Store the extracted data in tab separated file.",
-                         action="store_true")
-    general.add_argument("--report",
-                         help="Create a html report containing all plots and stats.",
                          action="store_true")
     general.add_argument("-o", "--outdir",
                          help="Specify directory in which output has to be created.",

@@ -34,12 +34,16 @@ or
 [![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)   
 `conda install -c bioconda nanoplot`
 
-### STATUS
-[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
-[![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
-
-
 The script is written for python3.
+
+### OUTPUT
+NanoPlot creates:
+- a statistical summary
+- a number of plots
+- a html summary file
+
+
+
 
 ### USAGE
 ```
@@ -60,7 +64,6 @@ General options:
   --verbose             Write log messages also to terminal.
   --store               Store the extracted data in a pickle file for future plotting using the --pickle input option
   --raw                 Store the extracted data in tab separated file.
-  --report              Create a html report containing all plots and stats.
   -o, --outdir OUTDIR   Specify directory in which output has to be created.
   -p, --prefix PREFIX   Specify an optional prefix to be used for the output files.
 
