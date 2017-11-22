@@ -63,12 +63,15 @@ def main():
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, settings)
         if args.barcoded:
+            plots = []
             for barc in list(datadf["barcode"].unique()):
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
                 dfbarc = datadf[datadf["barcode"] == barc]
                 nanomath.write_stats(dfbarc, settings["path"] + "NanoStats.txt")
                 settings["title"] = barc
-                make_plots(dfbarc, settings)
+                plots.extend(
+                    make_plots(dfbarc, settings)
+                )
         else:
             plots = make_plots(datadf, settings)
         make_report(plots, settings["path"], logfile)
