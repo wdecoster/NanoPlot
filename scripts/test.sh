@@ -18,7 +18,7 @@ echo ""
 echo ""
 echo ""
 echo "testing fastq rich:"
-NanoPlot --fastq_rich nanotest/reads.fastq.gz --report --verbose --downsample 800
+NanoPlot --fastq_rich nanotest/reads.fastq.gz --verbose --downsample 800
 echo ""
 echo ""
 echo ""
