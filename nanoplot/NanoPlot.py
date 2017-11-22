@@ -67,6 +67,7 @@ def main():
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
                 dfbarc = datadf[datadf["barcode"] == barc]
                 nanomath.write_stats(dfbarc, settings["path"] + "NanoStats.txt")
+                settings["title"] = barc
                 make_plots(dfbarc, settings)
         else:
             plots = make_plots(datadf, settings)
@@ -213,10 +214,6 @@ def get_args():
     args = parser.parse_args()
     if args.listcolors:
         utils.list_colors()
-    if args.report and args.barcoded:
-        sys.exit("Error:\nMaking a report of a barcoded experiment is currently not supported.\n"
-                 "Please let me know if you think that would be useful. "
-                 "I would be happy to take a look at implementing that feature.")
     return args
 
 
