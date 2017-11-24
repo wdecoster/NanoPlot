@@ -69,6 +69,7 @@ def main():
                 names=barcodes)
             plots = []
             for barc in barcodes:
+                logging.info("Processing {}".format(barc))
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
                 dfbarc = datadf[datadf["barcode"] == barc]
                 settings["title"] = barc
