@@ -23,7 +23,6 @@ import nanoplot.utils as utils
 from .version import __version__
 import nanoplotter
 import pickle
-import sys
 from textwrap import wrap
 
 
@@ -59,15 +58,19 @@ def main():
                 file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
         if args.raw:
             datadf.to_csv("NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
-        nanomath.write_stats(datadf, settings["path"] + "NanoStats.txt")
+        nanomath.write_stats([datadf], settings["path"] + "NanoStats.txt")
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, settings)
         if args.barcoded:
+            barcodes = list(datadf["barcode"].unique())
+            nanomath.write_stats(
+                datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
+                outputfile=settings["path"] + "NanoStats_barcoded.txt",
+                names=barcodes)
             plots = []
-            for barc in list(datadf["barcode"].unique()):
+            for barc in barcodes:
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
                 dfbarc = datadf[datadf["barcode"] == barc]
-                nanomath.write_stats(dfbarc, settings["path"] + "NanoStats.txt")
                 settings["title"] = barc
                 plots.extend(
                     make_plots(dfbarc, settings)
