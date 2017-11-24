@@ -58,14 +58,18 @@ def main():
                 file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
         if args.raw:
             datadf.to_csv("NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
-        nanomath.write_stats([datadf], settings["path"] + "NanoStats.txt")
+        statsfile = settings["path"] + "NanoStats.txt"
+        nanomath.write_stats(
+            datadfs=[datadf],
+            outputfile=statsfile)
         logging.info("Calculated statistics")
         datadf, settings = filter_data(datadf, settings)
         if args.barcoded:
             barcodes = list(datadf["barcode"].unique())
+            statsfile = settings["path"] + "NanoStats_barcoded.txt"
             nanomath.write_stats(
                 datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
-                outputfile=settings["path"] + "NanoStats_barcoded.txt",
+                outputfile=statsfile,
                 names=barcodes)
             plots = []
             for barc in barcodes:
@@ -79,7 +83,7 @@ def main():
             settings["path"] = path.join(args.outdir, args.prefix)
         else:
             plots = make_plots(datadf, settings)
-        make_report(plots, settings["path"], logfile)
+        make_report(plots, settings["path"], logfile, statsfile)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -414,7 +418,7 @@ def make_plots(datadf, settings):
     return plots
 
 
-def make_report(plots, path, logfile):
+def make_report(plots, path, logfile, statsfile):
     '''
     Creates a fat html report based on the previously created files
     plots is a list of Plot objects defined by a path and title
@@ -441,7 +445,7 @@ def make_report(plots, path, logfile):
         </head>"""
     html_content = ["\n<body>\n<h1>NanoPlot report</h1>"]
     html_content.append("<h2>Summary statistics</h2>")
-    with open(path + "NanoStats.txt") as stats:
+    with open(statsfile) as stats:
         html_content.append('\n<table>')
         for line in stats:
             html_content.append('')
