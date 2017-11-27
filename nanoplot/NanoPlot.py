@@ -23,7 +23,6 @@ import nanoplot.utils as utils
 from .version import __version__
 import nanoplotter
 import pickle
-from textwrap import wrap
 
 
 def main():
