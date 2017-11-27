@@ -469,13 +469,6 @@ def make_report(plots, path, logfile, statsfile):
     for plot in plots:
         html_content.append("\n<h3>" + plot.title + "</h3>\n" + plot.encode())
         html_content.append('\n<br>\n<br>\n<br>\n<br>')
-    if logfile:
-        html_content.append("<h2>Log file</h2>")
-        with open(logfile) as logs:
-            html_content.append('<pre>')
-            for line in logs:
-                html_content.append('\n'.join(wrap(line.rstrip(), width=150)))
-            html_content.append('</pre>')
     html_body = '\n'.join(html_content) + "</body></html>"
     html_str = html_head + html_body
     with open(path + "NanoPlot-report.html", "w") as html_file:
