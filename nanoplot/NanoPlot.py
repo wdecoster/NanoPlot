@@ -357,7 +357,7 @@ def make_plots(datadf, settings):
                 title=settings["title"])
         )
         logging.info("Created AlignedLength vs Length plot.")
-    if "maqpQ" in datadf:
+    if "mapQ" in datadf:
         plots.extend(
             nanoplotter.scatter(
                 x=datadf["mapQ"],
