@@ -44,7 +44,6 @@ NanoPlot creates:
 
 
 
-
 ### USAGE
 ```
 NanoPlot [-h] [-v] [-t THREADS] [--verbose] [-o OUTDIR] [-p PREFIX]
@@ -110,7 +109,7 @@ Options for customizing the plots created:
   --listcolors          List the colors which are available for plotting and exit.
 ```
 
-### EXAMPLES
+### EXAMPLE USAGE
 ```bash
 Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed  
 NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
@@ -121,6 +120,23 @@ This script now also provides read length vs mean quality plots in the '[pauvre]
 ## [ACKNOWLEDGMENTS](https://github.com/wdecoster/NanoPlot/blob/master/ACKNOWLEDGMENTS.MD)
 
 I welcome all suggestions, bug reports, feature requests and contributions. Please leave an [issue](https://github.com/wdecoster/NanoPlot/issues) or open a pull request. I will usually respond within a day, or rarely within a few days.
+
+## PLOTS GENERATED
+Plot|Fastq|Fastq_rich|Fastq_minimal|Bam|Summary|Options|Style
+----|----|----|----|----|----|----|----
+Histogram of read length|x|x|x|x|x|N50|
+Histogram of (log transformed) read length|x|x|x|x|x|N50|
+Bivariate plot of length against base call quality|x|x||x|x|log transformation|dot, hex, kde, pauvre
+Heatmap of reads per channel||x|||x||
+Cumulative yield plot||x|x||x||
+Violin plot of read length over time||x|x||x||
+Violin plot of base call quality over time||x|||x||
+Bivariate plot of aligned read length against sequenced read length||||x|||dot, hex, kde
+Bivariate plot of percent reference identity against read length||||x||log transformation|dot, hex, kde
+Bivariate plot of percent reference identity against base call quality||||x|||dot, hex, kde
+Bivariate plot of mapping quality against read length||||x||log transformation|dot, hex, kde
+Bivariate plot of mapping quality against basecall quality||||x|||dot, hex, kde
+
 
 ## COMPANION SCRIPTS
 - [NanoComp](https://github.com/wdecoster/nanocomp): comparing multiple runs  
