@@ -39,8 +39,9 @@ def main():
         args.format = nanoplotter.check_valid_format(args.format)
         settings = vars(args)
         settings["path"] = path.join(args.outdir, args.prefix)
-        sources = [args.fastq, args.bam, args.fastq_rich, args.fastq_minimal, args.summary]
-        sourcename = ["fastq", "bam", "fastq_rich", "fastq_minimal", "summary"]
+        sources = [args.fastq, args.bam, args.cram,
+                   args.fastq_rich, args.fastq_minimal, args.summary]
+        sourcename = ["fastq", "bam", "cram", "fastq_rich", "fastq_minimal", "summary"]
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         else:
@@ -217,6 +218,10 @@ def get_args():
                          metavar="file")
     mtarget.add_argument("--bam",
                          help="Data is in one or more sorted bam file(s).",
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--cram",
+                         help="Data is in one or more sorted cram file(s).",
                          nargs='+',
                          metavar="file")
     mtarget.add_argument("--pickle",
