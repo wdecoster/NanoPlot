@@ -89,14 +89,13 @@ Each of these options can take one or multiple files e.g.
 
 Options for filtering or transforming input prior to plotting:
   --maxlength N         Drop reads longer than length specified.
+  --minlength N         Drop reads shorter than length specified.
   --drop_outliers       Drop outlier reads with extreme long length.
   --downsample N        Reduce dataset to N reads by random sampling.
   --loglength           Logarithmic scaling of lengths in plots.
   --alength             Use aligned read lengths rather than sequenced length (bam mode)
   --minqual N           Drop reads with an average quality lower than specified.
-  --readtype {1D,2D,1D2}
-                        Which read type to extract information about from summary. Options are 1D, 2D,
-                        1D2
+  --readtype            Which read type to extract information about from summary. Options are 1D, 2D, 1D2
   --barcoded            Use if you want to split the summary file by barcode
 
 Options for customizing the plots created:

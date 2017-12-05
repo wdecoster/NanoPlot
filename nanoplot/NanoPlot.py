@@ -140,6 +140,10 @@ def get_args():
                            help="Drop reads longer than length specified.",
                            type=int,
                            metavar='N')
+    filtering.add_argument("--minlength",
+                           help="Drop reads shorter than length specified.",
+                           type=int,
+                           metavar='N')
     filtering.add_argument("--drop_outliers",
                            help="Drop outlier reads with extreme long length.",
                            action="store_true")
@@ -263,7 +267,15 @@ def filter_data(datadf, settings):
         datadf = datadf[datadf[settings["lengths_pointer"]] < settings["maxlength"]]
         length_prefix_list.append("MaxLength-" + str(settings["maxlength"]) + '_')
         num_reads_post = len(datadf)
-        logging.info("Removing {} reads longer than {}bp.".format(
+        logging.info("Removed {} reads longer than {}bp.".format(
+            str(num_reads_prior - num_reads_post),
+            str(settings["maxlength"])))
+    if settings["minlength"]:
+        num_reads_prior = len(datadf)
+        datadf = datadf[datadf[settings["lengths_pointer"]] > settings["maxlength"]]
+        length_prefix_list.append("MinLength-" + str(settings["minlength"]) + '_')
+        num_reads_post = len(datadf)
+        logging.info("Removed {} reads shorter than {}bp.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["maxlength"])))
     if settings["minqual"]:
