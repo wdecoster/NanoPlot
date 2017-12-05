@@ -36,7 +36,7 @@ setup(
                       'python-dateutil',
                       'seaborn',
                       'nanoplotter>=0.25.0',
-                      'nanoget>=1.0.2',
+                      'nanoget>=1.2.0',
                       'nanomath>=0.14.2'
                       ],
     package_data={'NanoPlot': []},
