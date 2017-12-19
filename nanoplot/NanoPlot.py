@@ -482,7 +482,7 @@ def make_report(plots, path, logfile, statsfile):
     html_content.append('<p><strong><a href="#stats">Summary Statistics</a></strong></p>')
     html_content.append('<p><strong><a href="#plots">Plots</a></strong></p>')
     html_content.extend(['<p style="margin-left:20px"><a href="#' +
-                         p.title + '">' + p.title + '</a></p>' for p in plots])
+                         p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
     html_content.append('</div>')
     html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
     html_content.append('<h2 id="stats">Summary statistics</h2>')
@@ -508,8 +508,8 @@ def make_report(plots, path, logfile, statsfile):
 
     html_content.append('<h2 id="plots">Plots</h2>')
     for plot in plots:
-        html_content.append('\n<h3 id="' + plot.title + '">' + plot.title + '</h3>\n' +
-                            plot.encode())
+        html_content.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">' +
+                            plot.title + '</h3>\n' + plot.encode())
         html_content.append('\n<br>\n<br>\n<br>\n<br>')
     html_body = '\n'.join(html_content) + '</div></body></html>'
     html_str = html_head + html_body
