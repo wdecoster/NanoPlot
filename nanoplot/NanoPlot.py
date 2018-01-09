@@ -2,7 +2,7 @@
 # wdecoster
 
 '''
-The main purpose of this script is to create plots for nanopore data.
+The main purpose of this script is to create plots for long read sequencing data.
 Input data can be given as one or multiple of:
 -compressed, standard or streamed fastq file
 -compressed, standard or streamed fastq file, with
@@ -101,7 +101,7 @@ def get_args():
     NanoPlot --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000
     """
     parser = ArgumentParser(
-        description="Creates various plots for Oxford Nanopore sequencing data.".upper(),
+        description="Creates various plots for long read sequencing data.".upper(),
         epilog=epilog,
         formatter_class=utils.custom_formatter,
         add_help=False)
