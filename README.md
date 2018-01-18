@@ -93,6 +93,7 @@ Options for filtering or transforming input prior to plotting:
   --drop_outliers       Drop outlier reads with extreme long length.
   --downsample N        Reduce dataset to N reads by random sampling.
   --loglength           Logarithmic scaling of lengths in plots.
+  --percentqual         Use qualities as theoretical percent identities.
   --alength             Use aligned read lengths rather than sequenced length (bam mode)
   --minqual N           Drop reads with an average quality lower than specified.
   --readtype            Which read type to extract information about from summary. Options are 1D, 2D, 1D2
