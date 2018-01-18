@@ -275,12 +275,12 @@ def filter_and_transform_data(datadf, settings):
             str(settings["maxlength"])))
     if settings["minlength"]:
         num_reads_prior = len(datadf)
-        datadf = datadf[datadf[settings["lengths_pointer"]] > settings["maxlength"]]
+        datadf = datadf[datadf[settings["lengths_pointer"]] > settings["minlength"]]
         length_prefix_list.append("MinLength-" + str(settings["minlength"]) + '_')
         num_reads_post = len(datadf)
         logging.info("Removed {} reads shorter than {}bp.".format(
             str(num_reads_prior - num_reads_post),
-            str(settings["maxlength"])))
+            str(settings["minlength"])))
     if settings["minqual"]:
         num_reads_prior = len(datadf)
         datadf = datadf[datadf["quals"] > settings["minqual"]]
