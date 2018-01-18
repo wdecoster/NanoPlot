@@ -63,7 +63,7 @@ def main():
             datadfs=[datadf],
             outputfile=statsfile)
         logging.info("Calculated statistics")
-        datadf, settings = filter_data(datadf, settings)
+        datadf, settings = filter_and_transform_data(datadf, settings)
         if args.barcoded:
             barcodes = list(datadf["barcode"].unique())
             statsfile = settings["path"] + "NanoStats_barcoded.txt"
@@ -237,7 +237,7 @@ def get_args():
     return args
 
 
-def filter_data(datadf, settings):
+def filter_and_transform_data(datadf, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
