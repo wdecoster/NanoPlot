@@ -36,9 +36,9 @@ setup(
                       'scipy',
                       'python-dateutil',
                       'seaborn',
-                      'nanoplotter>=0.25.0',
-                      'nanoget>=1.2.0',
-                      'nanomath>=0.14.2'
+                      'nanoplotter>=0.30.1',
+                      'nanoget>=1.3.0',
+                      'nanomath>=0.17.0'
                       ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
