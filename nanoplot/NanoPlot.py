@@ -154,6 +154,9 @@ def get_args():
     filtering.add_argument("--loglength",
                            help="Logarithmic scaling of lengths in plots.",
                            action="store_true")
+    filtering.add_argument("--percentqual",
+                           help="Use qualities as theoretical percent identities.",
+                           action="store_true")
     filtering.add_argument("--alength",
                            help="Use aligned read lengths rather than sequenced length (bam mode)",
                            action="store_true")
@@ -299,6 +302,9 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), new_size))
         datadf = datadf.sample(new_size)
+    if settings["percentqual"]:
+        datadf["quals"] = datadf["quals"].apply(nanomath.phred_to_percent)
+        logging.info("Converting quality scores to theoretical percent identities.")
     logging.info("Processed the reads, optionally filtered. {} reads left".format(str(len(datadf))))
     settings["length_prefix"] = ''.join(length_prefix_list)
     return(datadf, settings)
