@@ -23,6 +23,7 @@ import nanoplot.utils as utils
 from .version import __version__
 import nanoplotter
 import pickle
+import sys
 
 
 def main():
@@ -196,6 +197,10 @@ def get_args():
     visual.add_argument("--no-N50",
                         help="Hide the N50 mark in the read length histogram",
                         action="store_true")
+    visual.add_argument("--N50",
+                        help="Show the N50 mark in the read length histogram",
+                        action="store_true",
+                        default=False)
     visual.add_argument("--title",
                         help="Add a title to all plots, requires quoting if using spaces",
                         type=str,
@@ -237,6 +242,9 @@ def get_args():
     args = parser.parse_args()
     if args.listcolors:
         utils.list_colors()
+    if args.no_N50:
+        sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
+        sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
     return args
 
 
@@ -318,10 +326,10 @@ def make_plots(datadf, settings):
     color = nanoplotter.check_valid_color(settings["color"])
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
-    if settings["no_N50"]:
-        n50 = None
-    else:
+    if settings["N50"]:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
+    else:
+        n50 = None
     plots.extend(
         nanoplotter.length_plots(
             array=datadf["lengths"],
