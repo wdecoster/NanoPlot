@@ -41,8 +41,8 @@ def main():
         settings = vars(args)
         settings["path"] = path.join(args.outdir, args.prefix)
         sources = [args.fastq, args.bam, args.cram,
-                   args.fastq_rich, args.fastq_minimal, args.summary]
-        sourcename = ["fastq", "bam", "cram", "fastq_rich", "fastq_minimal", "summary"]
+                   args.fastq_rich, args.fastq_minimal, args.summary, args.fasta]
+        sourcename = ["fastq", "bam", "cram", "fastq_rich", "fastq_minimal", "summary", "fasta"]
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         else:
@@ -211,6 +211,10 @@ def get_args():
         required=True)
     mtarget.add_argument("--fastq",
                          help="Data is in one or more default fastq file(s).",
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--fasta",
+                         help="Data is in one or more fasta file(s).",
                          nargs='+',
                          metavar="file")
     mtarget.add_argument("--fastq_rich",
