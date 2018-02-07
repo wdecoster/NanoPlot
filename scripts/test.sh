@@ -29,3 +29,8 @@ echo ""
 echo ""
 echo "testing fastq plain:"
 NanoPlot --fastq nanotest/reads.fastq.gz --verbose --minqual 4 --color red
+echo ""
+echo ""
+echo ""
+echo "testing fasta:"
+NanoPlot --fastq nanotest/reads.fa.gz --verbose --maxlength 35000
