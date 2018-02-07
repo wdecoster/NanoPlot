@@ -33,4 +33,4 @@ echo ""
 echo ""
 echo ""
 echo "testing fasta:"
-NanoPlot --fastq nanotest/reads.fa.gz --verbose --maxlength 35000
+NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000
