@@ -85,7 +85,7 @@ Options for customizing the plots created:
   -f, --format          Specify the output format of the plots.
                         One of png [default], eps,jpeg,jpg,pdf,pgf,ps,raw,rgba,svg,svgz,tif,tiff
   --plots               Specify which bivariate plots have to be made.
-                        One or more of kde (default), hex (default), dot (default), pauvre
+                        One or more of 'dot' (default), 'kde' (default), 'hex' and 'pauvre'
   --listcolors          List the colors which are available for plotting and exit.
   --no-N50              Hide the N50 mark in the read length histogram
   --N50                 Show the N50 mark in the read length histogram

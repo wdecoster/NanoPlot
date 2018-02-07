@@ -186,7 +186,7 @@ def get_args():
                                  'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
     visual.add_argument("--plots",
                         help="Specify which bivariate plots have to be made.",
-                        default=['kde', 'hex', 'dot'],
+                        default=['kde', 'dot'],
                         type=str,
                         nargs='*',
                         choices=['kde', 'hex', 'dot', 'pauvre'])
