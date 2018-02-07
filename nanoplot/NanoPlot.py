@@ -392,7 +392,7 @@ def make_plots(datadf, settings):
                 title=settings["title"])
         )
         logging.info("Created AlignedLength vs Length plot.")
-    if "mapQ" in datadf:
+    if "mapQ" in datadf and "quals" in datadf:
         plots.extend(
             nanoplotter.scatter(
                 x=datadf["mapQ"],
@@ -420,20 +420,21 @@ def make_plots(datadf, settings):
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
         minPID = np.percentile(datadf["percentIdentity"], 1)
-        plots.extend(
-            nanoplotter.scatter(
-                x=datadf["percentIdentity"],
-                y=datadf["aligned_quals"],
-                names=["Percent identity", "Read quality"],
-                path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
-                color=color,
-                figformat=settings["format"],
-                plots=plotdict,
-                stat=stats.pearsonr,
-                minvalx=minPID,
-                title=settings["title"])
-        )
-        logging.info("Created Percent ID vs Base quality plot.")
+        if "aligned_quals" in datadf:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf["percentIdentity"],
+                    y=datadf["aligned_quals"],
+                    names=["Percent identity", "Read quality"],
+                    path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    stat=stats.pearsonr,
+                    minvalx=minPID,
+                    title=settings["title"])
+            )
+            logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
             nanoplotter.scatter(
                 x=datadf[settings["lengths_pointer"]],
