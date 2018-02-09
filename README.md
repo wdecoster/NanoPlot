@@ -4,7 +4,6 @@ Plotting tool for long read sequencing data and alignments.
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/wouter_decoster.svg?style=social&label=Follow%20%40wouter_decoster)](https://twitter.com/wouter_decoster)
 [![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)
 [![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
-[![Code Health](https://landscape.io/github/wdecoster/NanoPlot/master/landscape.svg?style=flat)](https://landscape.io/github/wdecoster/NanoPlot/master)
 
 
 
