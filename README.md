@@ -5,7 +5,7 @@ Plotting tool for long read sequencing data and alignments.
 [![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)
 [![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
 
-
+### NanoPlot is also available as a [web service](http://nanoplot.bioinf.be).
 
 ![Example plot](https://github.com/wdecoster/NanoPlot/blob/master/examples/scaled_Log_Downsampled_LengthvsQualityScatterPlot_kde.png)
 
