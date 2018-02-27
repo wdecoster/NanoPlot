@@ -425,7 +425,7 @@ def make_plots(datadf, settings):
                 nanoplotter.scatter(
                     x=datadf["percentIdentity"],
                     y=datadf["aligned_quals"],
-                    names=["Percent identity", "Read quality"],
+                    names=["Percent identity", "Average Base Quality"],
                     path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
                     color=color,
                     figformat=settings["format"],
