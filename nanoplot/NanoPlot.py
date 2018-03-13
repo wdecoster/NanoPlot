@@ -279,7 +279,7 @@ def filter_and_transform_data(datadf, settings):
             str(num_reads_prior - num_reads_post)))
     if settings["maxlength"]:
         num_reads_prior = len(datadf)
-        datadf = datadf[datadf[settings["lengths_pointer"]] < settings["maxlength"]]
+        datadf = datadf.loc[datadf[settings["lengths_pointer"]] < settings["maxlength"]].copy()
         length_prefix_list.append("MaxLength-" + str(settings["maxlength"]) + '_')
         num_reads_post = len(datadf)
         logging.info("Removed {} reads longer than {}bp.".format(
@@ -287,7 +287,7 @@ def filter_and_transform_data(datadf, settings):
             str(settings["maxlength"])))
     if settings["minlength"]:
         num_reads_prior = len(datadf)
-        datadf = datadf[datadf[settings["lengths_pointer"]] > settings["minlength"]]
+        datadf = datadf.loc[datadf[settings["lengths_pointer"]] > settings["minlength"]].copy()
         length_prefix_list.append("MinLength-" + str(settings["minlength"]) + '_')
         num_reads_post = len(datadf)
         logging.info("Removed {} reads shorter than {}bp.".format(
@@ -295,7 +295,7 @@ def filter_and_transform_data(datadf, settings):
             str(settings["minlength"])))
     if settings["minqual"]:
         num_reads_prior = len(datadf)
-        datadf = datadf[datadf["quals"] > settings["minqual"]]
+        datadf = datadf.loc[datadf["quals"] > settings["minqual"]].copy()
         num_reads_post = len(datadf)
         logging.info("Removing {} reads with quality below Q{}.".format(
             str(num_reads_prior - num_reads_post),
