@@ -90,7 +90,6 @@ def main():
                 )
         else:
             plots = make_plots(datadf, settings)
-        make_report(plots, settings["path"], logfile, statsfile)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -459,7 +458,7 @@ def make_plots(datadf, settings):
     return plots
 
 
-def make_report(plots, path, logfile, statsfile):
+def make_report(plots, settings):
     '''
     Creates a fat html report based on the previously created files
     plots is a list of Plot objects defined by a path and title
