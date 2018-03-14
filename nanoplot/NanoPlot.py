@@ -40,15 +40,22 @@ def main():
         args.format = nanoplotter.check_valid_format(args.format)
         settings = vars(args)
         settings["path"] = path.join(args.outdir, args.prefix)
-        sources = [args.fastq, args.bam, args.cram,
-                   args.fastq_rich, args.fastq_minimal, args.summary, args.fasta]
-        sourcename = ["fastq", "bam", "cram", "fastq_rich", "fastq_minimal", "summary", "fasta"]
+        sources = {
+            "fastq": args.fastq,
+            "bam": args.bam,
+            "cram": args.cram,
+            "fastq_rich": args.fastq_rich,
+            "fastq_minimal": args.fastq_minimal,
+            "summary": args.summary,
+            "fasta": args.fasta,
+        }
+
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         else:
             datadf = get_input(
-                source=[n for n, s in zip(sourcename, sources) if s][0],
-                files=[f for f in sources if f][0],
+                source=[n for n, s in sources.items() if s][0],
+                files=[f for f in sources.values() if f][0],
                 threads=args.threads,
                 readtype=args.readtype,
                 combine="simple",
