@@ -70,3 +70,38 @@ def init_logs(args, tool="NanoPlot"):
     logging.info('{} {} started with arguments {}'.format(tool, __version__, args))
     logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
     return logname
+
+
+html_head = """<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+        <style>
+        table, th, td {
+            text-align: left;
+            padding: 2px;
+            /* border: 1px solid black;
+            border-collapse: collapse; */
+        }
+        h2 {
+            line-height: 0pt;
+        }
+        .panel {
+            display: inline-block;
+            background: #ffffff;
+            min-height: 100px;
+            box-shadow:0px 0px 5px 5px #C9C9C9;
+            -webkit-box-shadow:2px 2px 5px 5x #C9C9C9;
+            -moz-box-shadow:2px 2px 5px 5px #C9C9C9;
+            margin: 10px;
+            padding: 10px;
+        }
+        .panelC {
+            float: left
+        }
+        .panelM {
+            float: left
+        }
+        </style>
+        <title>NanoPlot Report</title>
+    </head>"""

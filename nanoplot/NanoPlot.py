@@ -36,19 +36,26 @@ def main():
     args = get_args()
     try:
         utils.make_output_dir(args.outdir)
-        logfile = utils.init_logs(args)
+        utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
         settings = vars(args)
         settings["path"] = path.join(args.outdir, args.prefix)
-        sources = [args.fastq, args.bam, args.cram,
-                   args.fastq_rich, args.fastq_minimal, args.summary, args.fasta]
-        sourcename = ["fastq", "bam", "cram", "fastq_rich", "fastq_minimal", "summary", "fasta"]
+        sources = {
+            "fastq": args.fastq,
+            "bam": args.bam,
+            "cram": args.cram,
+            "fastq_rich": args.fastq_rich,
+            "fastq_minimal": args.fastq_minimal,
+            "summary": args.summary,
+            "fasta": args.fasta,
+        }
+
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         else:
             datadf = get_input(
-                source=[n for n, s in zip(sourcename, sources) if s][0],
-                files=[f for f in sources if f][0],
+                source=[n for n, s in sources.items() if s][0],
+                files=[f for f in sources.values() if f][0],
                 threads=args.threads,
                 readtype=args.readtype,
                 combine="simple",
@@ -59,19 +66,14 @@ def main():
                 file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
         if args.raw:
             datadf.to_csv("NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
-        statsfile = settings["path"] + "NanoStats.txt"
-        nanomath.write_stats(
-            datadfs=[datadf],
-            outputfile=statsfile)
-        logging.info("Calculated statistics")
+
+        settings["statsfile"] = [make_stats(datadf, settings, suffix="")]
         datadf, settings = filter_and_transform_data(datadf, settings)
+        if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
+            settings["statsfile"].append(make_stats(datadf, settings, suffix="_post_filtering"))
+
         if args.barcoded:
             barcodes = list(datadf["barcode"].unique())
-            statsfile = settings["path"] + "NanoStats_barcoded.txt"
-            nanomath.write_stats(
-                datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
-                outputfile=statsfile,
-                names=barcodes)
             plots = []
             for barc in barcodes:
                 logging.info("Processing {}".format(barc))
@@ -81,10 +83,9 @@ def main():
                 plots.extend(
                     make_plots(dfbarc, settings)
                 )
-            settings["path"] = path.join(args.outdir, args.prefix)
         else:
             plots = make_plots(datadf, settings)
-        make_report(plots, settings["path"], logfile, statsfile)
+        make_report(plots, settings)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -252,6 +253,22 @@ def get_args():
     return args
 
 
+def make_stats(datadf, settings, suffix):
+    statsfile = settings["path"] + "NanoStats" + suffix + ".txt"
+    nanomath.write_stats(
+        datadfs=[datadf],
+        outputfile=statsfile)
+    logging.info("Calculated statistics")
+    if settings["barcoded"]:
+        barcodes = list(datadf["barcode"].unique())
+        statsfile = settings["path"] + "NanoStats_barcoded.txt"
+        nanomath.write_stats(
+            datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
+            outputfile=statsfile,
+            names=barcodes)
+    return statsfile
+
+
 def filter_and_transform_data(datadf, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
@@ -263,6 +280,7 @@ def filter_and_transform_data(datadf, settings):
     Return an accurate prefix which is added to plotnames using this filtered data
     '''
     length_prefix_list = list()
+    settings["filtered"] = False
     if settings["alength"] and settings["bam"]:
         settings["lengths_pointer"] = "aligned_lengths"
         length_prefix_list.append("Aligned_")
@@ -277,6 +295,7 @@ def filter_and_transform_data(datadf, settings):
         num_reads_post = len(datadf)
         logging.info("Removing {} length outliers for plotting.".format(
             str(num_reads_prior - num_reads_post)))
+        settings["filtered"] = True
     if settings["maxlength"]:
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf[settings["lengths_pointer"]] < settings["maxlength"]].copy()
@@ -285,6 +304,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removed {} reads longer than {}bp.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["maxlength"])))
+        settings["filtered"] = True
     if settings["minlength"]:
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf[settings["lengths_pointer"]] > settings["minlength"]].copy()
@@ -293,6 +313,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removed {} reads shorter than {}bp.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["minlength"])))
+        settings["filtered"] = True
     if settings["minqual"]:
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf["quals"] > settings["minqual"]].copy()
@@ -300,6 +321,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removing {} reads with quality below Q{}.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["minqual"])))
+        settings["filtered"] = True
     if settings["loglength"]:
         datadf["log_" + settings["lengths_pointer"]] = np.log10(datadf[settings["lengths_pointer"]])
         settings["lengths_pointer"] = "log_" + settings["lengths_pointer"]
@@ -314,6 +336,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), new_size))
         datadf = datadf.sample(new_size)
+        settings["filtered"] = True
     if settings["percentqual"]:
         datadf["quals"] = datadf["quals"].apply(nanomath.phred_to_percent)
         logging.info("Converting quality scores to theoretical percent identities.")
@@ -453,7 +476,7 @@ def make_plots(datadf, settings):
     return plots
 
 
-def make_report(plots, path, logfile, statsfile):
+def make_report(plots, settings):
     '''
     Creates a fat html report based on the previously created files
     plots is a list of Plot objects defined by a path and title
@@ -461,80 +484,73 @@ def make_report(plots, path, logfile, statsfile):
     which is parsed to a table (rather dodgy)
     '''
     logging.info("Writing html report.")
-    html_head = """<!DOCTYPE html>
-    <html>
-        <head>
-        <meta charset="UTF-8">
-            <style>
-            table, th, td {
-                text-align: left;
-                padding: 2px;
-                /* border: 1px solid black;
-                border-collapse: collapse; */
-            }
-            h2 {
-                line-height: 0pt;
-            }
-            .panel {
-                display: inline-block;
-                background: #ffffff;
-                min-height: 100px;
-                box-shadow:0px 0px 5px 5px #C9C9C9;
-                -webkit-box-shadow:2px 2px 5px 5x #C9C9C9;
-                -moz-box-shadow:2px 2px 5px 5px #C9C9C9;
-                margin: 10px;
-                padding: 10px;
-            }
-            .panelC {
-                float: left
-            }
-            .panelM {
-                float: left
-            }
-            </style>
-            <title>NanoPlot Report</title>
-        </head>"""
-
     html_content = ['<body>']
 
+    # Hyperlink Table of Contents panel
     html_content.append('<div class="panel panelC">')
-    html_content.append('<p><strong><a href="#stats">Summary Statistics</a></strong></p>')
+    if settings["filtered"]:
+        html_content.append(
+            '<p><strong><a href="#stats0">Summary Statistics prior to filtering</a></strong></p>')
+        html_content.append(
+            '<p><strong><a href="#stats1">Summary Statistics after filtering</a></strong></p>')
+    else:
+        html_content.append(
+            '<p><strong><a href="#stats0">Summary Statistics</a></strong></p>')
     html_content.append('<p><strong><a href="#plots">Plots</a></strong></p>')
     html_content.extend(['<p style="margin-left:20px"><a href="#' +
                          p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
     html_content.append('</div>')
-    html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
-    html_content.append('<h2 id="stats">Summary statistics</h2>')
-    with open(statsfile) as stats:
-        html_content.append('\n<table>')
-        for line in stats:
-            linesplit = line.strip().split('\t')
-            if line.startswith('Data'):
-                html_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2">' +
-                                    line.strip() + '</td>\n</tr>')
-                break
-            if len(linesplit) > 1:
-                data = ''.join(['<td>' + e + '</td>' for e in linesplit])
-                html_content.append('<tr>\n\t' + data + '\n</tr>')
-            else:
-                html_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2"><b>' +
-                                    line.strip() + '</b></td>\n</tr>')
-        for line in stats:
-            html_content.append('\n<tr>\n\t<td colspan="2">' +
-                                line.strip() + '</td>\n</tr>')
-        html_content.append('</table>')
-    html_content.append('\n<br>\n<br>\n<br>\n<br>')
 
+    # The report itself: stats
+    html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
+    if settings["filtered"]:
+        html_content.append('<h2 id="stats0">Summary statistics prior to filtering</h2>')
+        html_content.extend(html_stats_report(settings["statsfile"][0]))
+        html_content.append('<h2 id="stats1">Summary statistics after filtering</h2>')
+        html_content.extend(html_stats_report(settings["statsfile"][1]))
+    else:
+        html_content.append('<h2 id="stats0">Summary statistics</h2>')
+        html_content.extend(html_stats_report(settings["statsfile"][0]))
+
+    # The report itself: plots
     html_content.append('<h2 id="plots">Plots</h2>')
     for plot in plots:
         html_content.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">' +
                             plot.title + '</h3>\n' + plot.encode())
         html_content.append('\n<br>\n<br>\n<br>\n<br>')
     html_body = '\n'.join(html_content) + '</div></body></html>'
-    html_str = html_head + html_body
-    with open(path + "NanoPlot-report.html", "w") as html_file:
+    html_str = utils.html_head + html_body
+    htmlreport = settings["path"] + "NanoPlot-report.html"
+    with open(htmlreport, "w") as html_file:
         html_file.write(html_str)
-    return path + "NanoPlot-report.html"
+    return htmlreport
+
+
+def html_stats_report(statsfile):
+    """Parse the tab separated stats file to get a html table.
+
+    Nasty functions, needs to be rewritten.
+    """
+    with open(statsfile) as stats:
+        html_stats_content = ['\n<table>']
+        for line in stats:
+            linesplit = line.strip().split('\t')
+            if line.startswith('Data'):
+                html_stats_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2">' +
+                                          line.strip() + '</td>\n</tr>')
+                break
+            if len(linesplit) > 1:
+                data = ''.join(['<td>' + e + '</td>' for e in linesplit])
+                html_stats_content.append('<tr>\n\t' + data + '\n</tr>')
+            else:
+                html_stats_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2"><b>' +
+                                          line.strip() + '</b></td>\n</tr>')
+        for line in stats:
+            html_stats_content.append('\n<tr>\n\t<td colspan="2">' +
+                                      line.strip() + '</td>\n</tr>')
+        html_stats_content.append('</table>')
+    html_stats_content.append('\n<br>\n<br>\n<br>\n<br>')
+    return html_stats_content
 
 
 if __name__ == "__main__":
