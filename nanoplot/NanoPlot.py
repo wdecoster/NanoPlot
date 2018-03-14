@@ -66,19 +66,14 @@ def main():
                 file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
         if args.raw:
             datadf.to_csv("NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
-        statsfile = settings["path"] + "NanoStats.txt"
-        nanomath.write_stats(
-            datadfs=[datadf],
-            outputfile=statsfile)
-        logging.info("Calculated statistics")
+
+        settings["statsfile"] = [make_stats(datadf, settings, suffix="")]
         datadf, settings = filter_and_transform_data(datadf, settings)
+        if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
+            settings["statsfile"].append(make_stats(datadf, settings, suffix="_post_filtering"))
+
         if args.barcoded:
             barcodes = list(datadf["barcode"].unique())
-            statsfile = settings["path"] + "NanoStats_barcoded.txt"
-            nanomath.write_stats(
-                datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
-                outputfile=statsfile,
-                names=barcodes)
             plots = []
             for barc in barcodes:
                 logging.info("Processing {}".format(barc))
