@@ -257,6 +257,22 @@ def get_args():
     return args
 
 
+def make_stats(datadf, settings, suffix):
+    statsfile = settings["path"] + "NanoStats" + suffix + ".txt"
+    nanomath.write_stats(
+        datadfs=[datadf],
+        outputfile=statsfile)
+    logging.info("Calculated statistics")
+    if settings["barcoded"]:
+        barcodes = list(datadf["barcode"].unique())
+        statsfile = settings["path"] + "NanoStats_barcoded.txt"
+        nanomath.write_stats(
+            datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
+            outputfile=statsfile,
+            names=barcodes)
+    return statsfile
+
+
 def filter_and_transform_data(datadf, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
