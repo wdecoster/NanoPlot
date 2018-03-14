@@ -36,7 +36,7 @@ def main():
     args = get_args()
     try:
         utils.make_output_dir(args.outdir)
-        logfile = utils.init_logs(args)
+        utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
         settings = vars(args)
         settings["path"] = path.join(args.outdir, args.prefix)
