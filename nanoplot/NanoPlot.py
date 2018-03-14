@@ -88,7 +88,6 @@ def main():
                 plots.extend(
                     make_plots(dfbarc, settings)
                 )
-            settings["path"] = path.join(args.outdir, args.prefix)
         else:
             plots = make_plots(datadf, settings)
         make_report(plots, settings["path"], logfile, statsfile)
