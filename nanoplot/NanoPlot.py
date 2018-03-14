@@ -268,6 +268,7 @@ def filter_and_transform_data(datadf, settings):
     Return an accurate prefix which is added to plotnames using this filtered data
     '''
     length_prefix_list = list()
+    settings["filtered"] = False
     if settings["alength"] and settings["bam"]:
         settings["lengths_pointer"] = "aligned_lengths"
         length_prefix_list.append("Aligned_")
@@ -282,6 +283,7 @@ def filter_and_transform_data(datadf, settings):
         num_reads_post = len(datadf)
         logging.info("Removing {} length outliers for plotting.".format(
             str(num_reads_prior - num_reads_post)))
+        settings["filtered"] = True
     if settings["maxlength"]:
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf[settings["lengths_pointer"]] < settings["maxlength"]].copy()
@@ -290,6 +292,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removed {} reads longer than {}bp.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["maxlength"])))
+        settings["filtered"] = True
     if settings["minlength"]:
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf[settings["lengths_pointer"]] > settings["minlength"]].copy()
@@ -298,6 +301,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removed {} reads shorter than {}bp.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["minlength"])))
+        settings["filtered"] = True
     if settings["minqual"]:
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf["quals"] > settings["minqual"]].copy()
@@ -305,6 +309,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removing {} reads with quality below Q{}.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["minqual"])))
+        settings["filtered"] = True
     if settings["loglength"]:
         datadf["log_" + settings["lengths_pointer"]] = np.log10(datadf[settings["lengths_pointer"]])
         settings["lengths_pointer"] = "log_" + settings["lengths_pointer"]
@@ -319,6 +324,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), new_size))
         datadf = datadf.sample(new_size)
+        settings["filtered"] = True
     if settings["percentqual"]:
         datadf["quals"] = datadf["quals"].apply(nanomath.phred_to_percent)
         logging.info("Converting quality scores to theoretical percent identities.")
