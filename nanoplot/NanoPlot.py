@@ -85,6 +85,7 @@ def main():
                 )
         else:
             plots = make_plots(datadf, settings)
+        make_report(plots, settings)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -485,44 +486,71 @@ def make_report(plots, settings):
     logging.info("Writing html report.")
     html_content = ['<body>']
 
+    # Hyperlink Table of Contents panel
     html_content.append('<div class="panel panelC">')
-    html_content.append('<p><strong><a href="#stats">Summary Statistics</a></strong></p>')
+    if settings["filtered"]:
+        html_content.append(
+            '<p><strong><a href="#stats0">Summary Statistics prior to filtering</a></strong></p>')
+        html_content.append(
+            '<p><strong><a href="#stats1">Summary Statistics after filtering</a></strong></p>')
+    else:
+        html_content.append(
+            '<p><strong><a href="#stats0">Summary Statistics</a></strong></p>')
     html_content.append('<p><strong><a href="#plots">Plots</a></strong></p>')
     html_content.extend(['<p style="margin-left:20px"><a href="#' +
                          p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
     html_content.append('</div>')
-    html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
-    html_content.append('<h2 id="stats">Summary statistics</h2>')
-    with open(statsfile) as stats:
-        html_content.append('\n<table>')
-        for line in stats:
-            linesplit = line.strip().split('\t')
-            if line.startswith('Data'):
-                html_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2">' +
-                                    line.strip() + '</td>\n</tr>')
-                break
-            if len(linesplit) > 1:
-                data = ''.join(['<td>' + e + '</td>' for e in linesplit])
-                html_content.append('<tr>\n\t' + data + '\n</tr>')
-            else:
-                html_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2"><b>' +
-                                    line.strip() + '</b></td>\n</tr>')
-        for line in stats:
-            html_content.append('\n<tr>\n\t<td colspan="2">' +
-                                line.strip() + '</td>\n</tr>')
-        html_content.append('</table>')
-    html_content.append('\n<br>\n<br>\n<br>\n<br>')
 
+    # The report itself: stats
+    html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
+    if settings["filtered"]:
+        html_content.append('<h2 id="stats0">Summary statistics prior to filtering</h2>')
+        html_content.extend(html_stats_report(settings["statsfile"][0]))
+        html_content.append('<h2 id="stats1">Summary statistics after filtering</h2>')
+        html_content.extend(html_stats_report(settings["statsfile"][1]))
+    else:
+        html_content.append('<h2 id="stats0">Summary statistics</h2>')
+        html_content.extend(html_stats_report(settings["statsfile"][0]))
+
+    # The report itself: plots
     html_content.append('<h2 id="plots">Plots</h2>')
     for plot in plots:
         html_content.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">' +
                             plot.title + '</h3>\n' + plot.encode())
         html_content.append('\n<br>\n<br>\n<br>\n<br>')
     html_body = '\n'.join(html_content) + '</div></body></html>'
-    html_str = html_head + html_body
-    with open(path + "NanoPlot-report.html", "w") as html_file:
+    html_str = utils.html_head + html_body
+    htmlreport = settings["path"] + "NanoPlot-report.html"
+    with open(htmlreport, "w") as html_file:
         html_file.write(html_str)
-    return path + "NanoPlot-report.html"
+    return htmlreport
+
+
+def html_stats_report(statsfile):
+    """Parse the tab separated stats file to get a html table.
+
+    Nasty functions, needs to be rewritten.
+    """
+    with open(statsfile) as stats:
+        html_stats_content = ['\n<table>']
+        for line in stats:
+            linesplit = line.strip().split('\t')
+            if line.startswith('Data'):
+                html_stats_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2">' +
+                                          line.strip() + '</td>\n</tr>')
+                break
+            if len(linesplit) > 1:
+                data = ''.join(['<td>' + e + '</td>' for e in linesplit])
+                html_stats_content.append('<tr>\n\t' + data + '\n</tr>')
+            else:
+                html_stats_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2"><b>' +
+                                          line.strip() + '</b></td>\n</tr>')
+        for line in stats:
+            html_stats_content.append('\n<tr>\n\t<td colspan="2">' +
+                                      line.strip() + '</td>\n</tr>')
+        html_stats_content.append('</table>')
+    html_stats_content.append('\n<br>\n<br>\n<br>\n<br>')
+    return html_stats_content
 
 
 if __name__ == "__main__":
