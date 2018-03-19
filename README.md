@@ -149,3 +149,7 @@ Bivariate plot of mapping quality against basecall quality||||x|||dot, hex, kde
 - [NanoStat](https://github.com/wdecoster/nanostat): statistic summary report of reads or alignments  
 - [NanoFilt](https://github.com/wdecoster/nanofilt): filtering and trimming of reads  
 - [NanoLyse](https://github.com/wdecoster/nanolyse): removing contaminant reads (e.g. lambda control DNA) from fastq
+
+
+## CITATION
+If you use this tool, please consider citing our [publication](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty149/4934939).
