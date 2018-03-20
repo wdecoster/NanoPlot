@@ -38,7 +38,7 @@ setup(
                       'seaborn',
                       'nanoplotter>=0.35.1',
                       'nanoget>=1.4.0',
-                      'nanomath>=0.19.1'
+                      'nanomath>=0.21.0'
                       ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
