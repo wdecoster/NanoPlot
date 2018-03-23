@@ -1,2 +1,3 @@
 include extra/color_options.txt
 include scripts/test.sh
+include README.md
