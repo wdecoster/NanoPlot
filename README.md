@@ -53,11 +53,12 @@ NanoPlot [-h] [-v] [-t THREADS] [--verbose] [--store] [--raw]
                 [-o OUTDIR] [-p PREFIX] [--maxlength N] [--minlength N]
                 [--drop_outliers] [--downsample N] [--loglength]
                 [--percentqual] [--alength] [--minqual N]
-                [--readtype {1D,2D,1D2}] [--barcoded] [-c COLOR]
+                [--readtype {1D,2D,1D2}] [--barcoded] [--runtime_until N]
+                [-c COLOR]
                 [-f {eps,jpeg,jpg,pdf,pgf,png,ps,raw,rgba,svg,svgz,tif,tiff}]
                 [--plots [{kde,hex,dot,pauvre} [{kde,hex,dot,pauvre} ...]]]
                 [--listcolors] [--no-N50] [--N50] [--title TITLE]
-                (--fastq file [file ...] | --fastq_rich file [file ...] | --fastq_minimal file [file ...] | --summary file [file ...] | --bam file [file ...] | --cram file [file ...] | --pickle pickle)
+                (--fastq file [file ...] | --fasta file [file ...] | --fastq_rich file [file ...] | --fastq_minimal file [file ...] | --summary file [file ...] | --bam file [file ...] | --cram file [file ...] | --pickle pickle)
 
 
 General options:
@@ -79,6 +80,7 @@ Options for filtering or transforming input prior to plotting:
   --percentqual         Use qualities as theoretical percent identities.
   --alength             Use aligned read lengths rather than sequenced length (bam mode)
   --minqual N           Drop reads with an average quality lower than specified.
+  --runtime_until N     Only take the N first hours of a run
   --readtype            Which read type to extract information about from a summary file.
                         One of 1D (default), 2D, 1D2
   --barcoded            Use if you want to split the summary file by barcode
