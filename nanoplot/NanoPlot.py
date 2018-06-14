@@ -80,10 +80,14 @@ def main():
                 logging.info("Processing {}".format(barc))
                 settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
                 dfbarc = datadf[datadf["barcode"] == barc]
-                settings["title"] = barc
-                plots.extend(
-                    make_plots(dfbarc, settings)
-                )
+                if len(dfbarc) > 5:
+                    settings["title"] = barc
+                    plots.extend(
+                        make_plots(dfbarc, settings)
+                    )
+                else:
+                    sys.stderr.write("Found barcode {} less than 5x, ignoring...\n".format(barc))
+                    logging.info("Found barcode {} less than 5 times, ignoring".format(barc))
         else:
             plots = make_plots(datadf, settings)
         make_report(plots, settings)
