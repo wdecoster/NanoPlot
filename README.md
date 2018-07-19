@@ -125,8 +125,12 @@ NanoPlot -t 12 --color yellow --bam alignment1.bam alignment2.bam alignment3.bam
 ```
 This script now also provides read length vs mean quality plots in the '[pauvre](https://github.com/conchoecia/pauvre)'-style from [@conchoecia](https://github.com/conchoecia).
 
-## [ACKNOWLEDGMENTS](https://github.com/wdecoster/NanoPlot/blob/master/ACKNOWLEDGMENTS.MD)
 
+## ACKNOWLEDGMENTS
+- Andreas Sjödin for building and maintaining conda recipes
+- Darrin Schultz [@conchoecia](https://github.com/conchoecia) for Pauvre code
+
+## CONTRIBUTING
 I welcome all suggestions, bug reports, feature requests and contributions. Please leave an [issue](https://github.com/wdecoster/NanoPlot/issues) or open a pull request. I will usually respond within a day, or rarely within a few days.
 
 ## PLOTS GENERATED
