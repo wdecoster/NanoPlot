@@ -37,7 +37,7 @@ setup(
                       'scipy',
                       'python-dateutil',
                       'seaborn',
-                      'nanoplotter>=0.40.0',
+                      'nanoplotter>=0.40.1',
                       'nanoget>=1.6.0',
                       'nanomath>=0.21.0'
                       ],
