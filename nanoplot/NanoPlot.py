@@ -355,7 +355,8 @@ def make_plots(datadf, settings):
                 figformat=settings["format"],
                 plots=plotdict,
                 color=color,
-                title=settings["title"])
+                title=settings["title"],
+                plot_settings=plot_settings)
         )
         logging.info("Created AlignedLength vs Length plot.")
     if "mapQ" in datadf and "quals" in datadf:
@@ -368,7 +369,8 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                title=settings["title"])
+                title=settings["title"],
+                plot_settings=plot_settings)
         )
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
@@ -381,7 +383,8 @@ def make_plots(datadf, settings):
                 figformat=settings["format"],
                 plots=plotdict,
                 log=settings["logBool"],
-                title=settings["title"])
+                title=settings["title"],
+                plot_settings=plot_settings)
         )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
@@ -398,7 +401,8 @@ def make_plots(datadf, settings):
                     plots=plotdict,
                     stat=stats.pearsonr,
                     minvalx=minPID,
-                    title=settings["title"])
+                    title=settings["title"],
+                    plot_settings=plot_settings)
             )
             logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
@@ -413,7 +417,8 @@ def make_plots(datadf, settings):
                 stat=stats.pearsonr,
                 log=settings["logBool"],
                 minvaly=minPID,
-                title=settings["title"])
+                title=settings["title"],
+                plot_settings=plot_settings)
         )
         logging.info("Created Percent ID vs Length plot")
     return plots
