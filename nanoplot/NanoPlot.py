@@ -215,6 +215,10 @@ def get_args():
                         help="Add a title to all plots, requires quoting if using spaces",
                         type=str,
                         default=None)
+    visual.add_argument("--font_scale",
+                        help="Scale the font of the plots by a factor",
+                        type=float,
+                        default=1)
     target = parser.add_argument_group(
         title="Input data sources, one of these is required.")
     mtarget = target.add_mutually_exclusive_group(
@@ -285,6 +289,8 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
+    plot_settings = dict(font_scale=settings["font_scale"])
+    nanoplotter.plot_settings(plot_settings)
     color = nanoplotter.check_valid_color(settings["color"])
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
@@ -314,7 +320,8 @@ def make_plots(datadf, settings):
                 figformat=settings["format"],
                 plots=plotdict,
                 log=settings["logBool"],
-                title=settings["title"])
+                title=settings["title"],
+                plot_settings=plot_settings)
         )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
@@ -334,7 +341,8 @@ def make_plots(datadf, settings):
                 path=settings["path"],
                 color=color,
                 figformat=settings["format"],
-                title=settings["title"])
+                title=settings["title"],
+                plot_settings=plot_settings)
         )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
