@@ -11,7 +11,7 @@ setup(
     name='NanoPlot',
     version=__version__,
     description='Plotting suite for Oxford Nanopore sequencing data and alignments',
-    long_description=open(path.join(here, "README.md")).read(),
+    long_description=open(path.join(here, "README.md"), encoding='utf-8').read(),
     long_description_content_type="text/markdown",
     url='https://github.com/wdecoster/NanoPlot',
     author='Wouter De Coster',
