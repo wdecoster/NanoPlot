@@ -16,14 +16,14 @@ def filter_and_transform_data(datadf, settings):
     '''
     length_prefix_list = list()
     settings["filtered"] = False
-    if settings["alength"] and settings["bam"]:
+    if settings.get("alength") and settings.get("bam"):
         settings["lengths_pointer"] = "aligned_lengths"
         length_prefix_list.append("Aligned_")
         logging.info("Using aligned read lengths for plotting.")
     else:
         settings["lengths_pointer"] = "lengths"
         logging.info("Using sequenced read lengths for plotting.")
-    if settings["drop_outliers"]:
+    if settings.get("drop_outliers"):
         num_reads_prior = len(datadf)
         datadf = nanomath.remove_length_outliers(datadf, settings["lengths_pointer"])
         length_prefix_list.append("OutliersRemoved_")
@@ -31,7 +31,7 @@ def filter_and_transform_data(datadf, settings):
         logging.info("Removing {} length outliers for plotting.".format(
             str(num_reads_prior - num_reads_post)))
         settings["filtered"] = True
-    if settings["maxlength"]:
+    if settings.get("maxlength"):
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf[settings["lengths_pointer"]] < settings["maxlength"]].copy()
         length_prefix_list.append("MaxLength-" + str(settings["maxlength"]) + '_')
@@ -40,7 +40,7 @@ def filter_and_transform_data(datadf, settings):
             str(num_reads_prior - num_reads_post),
             str(settings["maxlength"])))
         settings["filtered"] = True
-    if settings["minlength"]:
+    if settings.get("minlength"):
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf[settings["lengths_pointer"]] > settings["minlength"]].copy()
         length_prefix_list.append("MinLength-" + str(settings["minlength"]) + '_')
@@ -49,7 +49,7 @@ def filter_and_transform_data(datadf, settings):
             str(num_reads_prior - num_reads_post),
             str(settings["minlength"])))
         settings["filtered"] = True
-    if settings["minqual"]:
+    if settings.get("minqual"):
         num_reads_prior = len(datadf)
         datadf = datadf.loc[datadf["quals"] > settings["minqual"]].copy()
         num_reads_post = len(datadf)
@@ -57,7 +57,7 @@ def filter_and_transform_data(datadf, settings):
             str(num_reads_prior - num_reads_post),
             str(settings["minqual"])))
         settings["filtered"] = True
-    if settings["loglength"]:
+    if settings.get("loglength"):
         datadf["log_" + settings["lengths_pointer"]] = np.log10(datadf[settings["lengths_pointer"]])
         settings["lengths_pointer"] = "log_" + settings["lengths_pointer"]
         length_prefix_list.append("Log_")
@@ -65,7 +65,7 @@ def filter_and_transform_data(datadf, settings):
         settings["logBool"] = True
     else:
         settings["logBool"] = False
-    if settings["runtime_until"]:
+    if settings.get("runtime_until"):
         num_reads_prior = len(datadf)
         datadf = datadf[datadf.start_time < timedelta(hours=settings["runtime_until"])]
         num_reads_post = len(datadf)
@@ -73,14 +73,14 @@ def filter_and_transform_data(datadf, settings):
             str(num_reads_prior - num_reads_post),
             str(settings["runtime_until"])))
         settings["filtered"] = True
-    if settings["downsample"]:
+    if settings.get("downsample"):
         new_size = min(settings["downsample"], len(datadf.index))
         length_prefix_list.append("Downsampled_")
         logging.info("Downsampling the dataset from {} to {} reads".format(
             len(datadf.index), new_size))
         datadf = datadf.sample(new_size)
         settings["filtered"] = True
-    if settings["percentqual"]:
+    if settings.get("percentqual"):
         datadf["quals"] = datadf["quals"].apply(nanomath.phred_to_percent)
         logging.info("Converting quality scores to theoretical percent identities.")
     logging.info("Processed the reads, optionally filtered. {} reads left".format(str(len(datadf))))
