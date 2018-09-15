@@ -219,6 +219,10 @@ def get_args():
                         help="Scale the font of the plots by a factor",
                         type=float,
                         default=1)
+    visual.add_argument("--dpi",
+                        help="Set the dpi for saving images",
+                        type=int,
+                        default=100)
     target = parser.add_argument_group(
         title="Input data sources, one of these is required.")
     mtarget = target.add_mutually_exclusive_group(
@@ -290,7 +294,7 @@ def make_plots(datadf, settings):
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
     plot_settings = dict(font_scale=settings["font_scale"])
-    nanoplotter.plot_settings(plot_settings)
+    nanoplotter.plot_settings(plot_settings, dpi=settings["dpi"])
     color = nanoplotter.check_valid_color(settings["color"])
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
