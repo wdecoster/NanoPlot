@@ -346,6 +346,7 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 title=settings["title"],
+                log_length=settings["logBool"],
                 plot_settings=plot_settings)
         )
         logging.info("Created timeplots.")
