@@ -95,8 +95,9 @@ def main():
     except Exception as e:
         logging.error(e, exc_info=True)
         print("\n\n\nIf you read this then NanoPlot has crashed :-(")
-        print("Please report this issue at https://github.com/wdecoster/NanoPlot/issues")
-        print("If you include the log file that would be really helpful.")
+        print("Please try updating NanoPlot and see if that helps...\n")
+        print("If not, please report this issue at https://github.com/wdecoster/NanoPlot/issues")
+        print("If you could include the log file that would be really helpful.")
         print("Thanks!\n\n\n")
         raise
 
