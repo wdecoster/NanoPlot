@@ -20,12 +20,13 @@ def filter_and_transform_data(df, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
-    - drop outliers
-    - drop reads longer than maxlength or shorter than minlength
+    - hide outliers from length plots*
+    - hide reads longer than maxlength or shorter than minlength from length plots*
     - filter reads with a quality below minqual
     - use log10 scaled reads
     - downsample reads to args.downsample
-    Return a prefix which is added to plotnames using this filtered data
+
+    * using a boolean column length_filter
     '''
     df["length_filter"] = True
     settings["filtered"] = False
