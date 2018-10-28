@@ -1,5 +1,4 @@
 import logging
-import nanomath
 import numpy as np
 from datetime import timedelta
 
@@ -10,6 +9,10 @@ def flag_length_outliers(df, columnname):
 
 
 def filter_and_transform_data(datadf, settings):
+def phred_to_percent(phred):
+    return 100 * (1 - 10 ** (phred / -10))
+
+
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
