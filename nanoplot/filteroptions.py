@@ -4,17 +4,23 @@ import numpy as np
 from datetime import timedelta
 
 
+def non_filtered_reads(datadf):
+    return len(datadf["length_filter"] == False)
+
+
 def filter_and_transform_data(datadf, settings):
     '''
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
     - drop outliers
-    - drop reads longer than args.maxlength
+    - drop reads longer than maxlength or shorter than minlength
+    - filter reads with a quality below minqual
     - use log10 scaled reads
     - downsample reads to args.downsample
-    Return an accurate prefix which is added to plotnames using this filtered data
+    Return a prefix which is added to plotnames using this filtered data
     '''
     length_prefix_list = list()
+    datadf["length_filter"] = False
     settings["filtered"] = False
     if settings.get("alength") and settings.get("bam"):
         settings["lengths_pointer"] = "aligned_lengths"
@@ -24,35 +30,35 @@ def filter_and_transform_data(datadf, settings):
         settings["lengths_pointer"] = "lengths"
         logging.info("Using sequenced read lengths for plotting.")
     if settings.get("drop_outliers"):
-        num_reads_prior = len(datadf)
-        datadf = nanomath.remove_length_outliers(datadf, settings["lengths_pointer"])
+        num_reads_prior = non_filtered_reads(datadf)
+        nanomath.remove_length_outliers(datadf, settings["lengths_pointer"]) ### Fix this function to only change the 'length_filtered' field
         length_prefix_list.append("OutliersRemoved_")
-        num_reads_post = len(datadf)
-        logging.info("Removing {} length outliers for plotting.".format(
+        num_reads_post = non_filtered_reads(datadf)
+        logging.info("Hidding {} length outliers in length plots.".format(
             str(num_reads_prior - num_reads_post)))
         settings["filtered"] = True
     if settings.get("maxlength"):
-        num_reads_prior = len(datadf)
-        datadf = datadf.loc[datadf[settings["lengths_pointer"]] < settings["maxlength"]].copy()
+        num_reads_prior = non_filtered_reads(datadf)
+        datadf.loc[datadf[settings["lengths_pointer"]] > settings["maxlength"], "length_filter"] = True
         length_prefix_list.append("MaxLength-" + str(settings["maxlength"]) + '_')
-        num_reads_post = len(datadf)
-        logging.info("Removed {} reads longer than {}bp.".format(
+        num_reads_post = non_filtered_reads(datadf)
+        logging.info("Hidding {} reads longer than {}bp in length plots.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["maxlength"])))
         settings["filtered"] = True
     if settings.get("minlength"):
-        num_reads_prior = len(datadf)
-        datadf = datadf.loc[datadf[settings["lengths_pointer"]] > settings["minlength"]].copy()
+        num_reads_prior = non_filtered_reads(datadf)
+        datadf.loc[datadf[settings["lengths_pointer"]] < settings["minlength"], "length_filter"] = True
         length_prefix_list.append("MinLength-" + str(settings["minlength"]) + '_')
-        num_reads_post = len(datadf)
-        logging.info("Removed {} reads shorter than {}bp.".format(
+        num_reads_post = non_filtered_reads(datadf)
+        logging.info("Hidding {} reads shorter than {}bp in length plots.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["minlength"])))
         settings["filtered"] = True
     if settings.get("minqual"):
-        num_reads_prior = len(datadf)
+        num_reads_prior = non_filtered_reads(datadf)
         datadf = datadf.loc[datadf["quals"] > settings["minqual"]].copy()
-        num_reads_post = len(datadf)
+        num_reads_post = non_filtered_reads(datadf)
         logging.info("Removing {} reads with quality below Q{}.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["minqual"])))
@@ -66,18 +72,18 @@ def filter_and_transform_data(datadf, settings):
     else:
         settings["logBool"] = False
     if settings.get("runtime_until"):
-        num_reads_prior = len(datadf)
+        num_reads_prior = non_filtered_reads(datadf)
         datadf = datadf[datadf.start_time < timedelta(hours=settings["runtime_until"])]
-        num_reads_post = len(datadf)
+        num_reads_post = non_filtered_reads(datadf)
         logging.info("Removing {} reads generated after {} hours in the run.".format(
             str(num_reads_prior - num_reads_post),
             str(settings["runtime_until"])))
         settings["filtered"] = True
     if settings.get("downsample"):
-        new_size = min(settings["downsample"], len(datadf.index))
+        new_size = min(settings["downsample"], len(datadf))
         length_prefix_list.append("Downsampled_")
         logging.info("Downsampling the dataset from {} to {} reads".format(
-            len(datadf.index), new_size))
+            len(datadf), new_size))
         datadf = datadf.sample(new_size)
         settings["filtered"] = True
     if settings.get("percentqual"):
