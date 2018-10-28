@@ -305,7 +305,7 @@ def make_plots(datadf, settings):
         n50 = None
     plots.extend(
         nanoplotter.length_plots(
-            array=datadf["lengths"],
+            array=datadf[datadf["length_filter"]]["lengths"],
             name="Read length",
             path=settings["path"],
             n50=n50,
@@ -317,8 +317,8 @@ def make_plots(datadf, settings):
     if "quals" in datadf:
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[settings["lengths_pointer"]],
-                y=datadf["quals"],
+                x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                y=datadf[datadf["length_filter"]]["quals"],
                 names=['Read lengths', 'Average read quality'],
                 path=settings["path"] + "LengthvsQualityScatterPlot",
                 color=color,
@@ -354,8 +354,8 @@ def make_plots(datadf, settings):
     if "aligned_lengths" in datadf and "lengths" in datadf:
         plots.extend(
             nanoplotter.scatter(
-                x=datadf["aligned_lengths"],
-                y=datadf["lengths"],
+                x=datadf[datadf["length_filter"]]["aligned_lengths"],
+                y=datadf[datadf["length_filter"]]["lengths"],
                 names=["Aligned read lengths", "Sequenced read length"],
                 path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
                 figformat=settings["format"],
@@ -381,8 +381,8 @@ def make_plots(datadf, settings):
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[settings["lengths_pointer"]],
-                y=datadf["mapQ"],
+                x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                y=datadf[datadf["length_filter"]]["mapQ"],
                 names=["Read length", "Read mapping quality"],
                 path=settings["path"] + "MappingQualityvsReadLength",
                 color=color,
@@ -413,8 +413,8 @@ def make_plots(datadf, settings):
             logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[settings["lengths_pointer"]],
-                y=datadf["percentIdentity"],
+                x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                y=datadf[datadf["length_filter"]]["percentIdentity"],
                 names=["Aligned read length", "Percent identity"],
                 path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                 color=color,
