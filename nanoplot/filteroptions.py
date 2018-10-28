@@ -4,8 +4,9 @@ import numpy as np
 from datetime import timedelta
 
 
-def non_filtered_reads(datadf):
-    return len(datadf["length_filter"] == False)
+def flag_length_outliers(df, columnname):
+    """Return index of records with length-outliers above 3 standard deviations from the median."""
+    return df[columnname] > (np.median(df[columnname]) + 3 * np.std(df[columnname]))
 
 
 def filter_and_transform_data(datadf, settings):
