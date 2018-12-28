@@ -23,8 +23,12 @@ def filter_and_transform_data(df, settings):
     - hide outliers from length plots*
     - hide reads longer than maxlength or shorter than minlength from length plots*
     - filter reads with a quality below minqual
-    - use log10 scaled reads
+    - use log10 scaled reads rather than normal
+    - use empirical percent accuracy rather than phred score quality
     - downsample reads to args.downsample
+
+    - always: drop reads which are basecaller artefacts
+              judged by length below 20 and quality above 30
 
     * using a boolean column length_filter
     '''
@@ -87,6 +91,14 @@ def filter_and_transform_data(df, settings):
             str(settings["runtime_until"])))
         settings["filtered"] = True
 
+    num_reads_prior = len(df)
+    df = df.loc[-((df["lengths"] < 20) & (df["quals"] > 30))].copy()
+    num_reads_post = len(df)
+    if num_reads_prior - num_reads_post > 0:
+        logging.info("Removed {} artefactual reads with very short length and very high quality."
+                     .format(num_reads_prior - num_reads_post))
+        settings["filtered"] = True
+
     if settings.get("downsample"):
         new_size = min(settings["downsample"], len(df))
         logging.info("Downsampling the dataset from {} to {} reads".format(
@@ -97,4 +109,5 @@ def filter_and_transform_data(df, settings):
     if settings.get("percentqual"):
         df["quals"] = df["quals"].apply(phred_to_percent)
         logging.info("Converting quality scores to theoretical percent identities.")
+
     return(df, settings)
