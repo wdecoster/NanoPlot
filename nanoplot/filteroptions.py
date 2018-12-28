@@ -91,13 +91,15 @@ def filter_and_transform_data(df, settings):
             str(settings["runtime_until"])))
         settings["filtered"] = True
 
-    num_reads_prior = len(df)
-    df = df.loc[-((df["lengths"] < 20) & (df["quals"] > 30))].copy()
-    num_reads_post = len(df)
-    if num_reads_prior - num_reads_post > 0:
-        logging.info("Removed {} artefactual reads with very short length and very high quality."
-                     .format(num_reads_prior - num_reads_post))
-        settings["filtered"] = True
+    if "quals" in df:
+        num_reads_prior = len(df)
+        df = df.loc[-((df["lengths"] < 20) & (df["quals"] > 30))].copy()
+        num_reads_post = len(df)
+        if num_reads_prior - num_reads_post > 0:
+            logging.info(
+                "Removed {} artefactual reads with very short length and very high quality."
+                .format(num_reads_prior - num_reads_post))
+            settings["filtered"] = True
 
     if settings.get("downsample"):
         new_size = min(settings["downsample"], len(df))
