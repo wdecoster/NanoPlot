@@ -459,12 +459,12 @@ def make_report(plots, settings):
     html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
     if settings["filtered"]:
         html_content.append('<h2 id="stats0">Summary statistics prior to filtering</h2>')
-        html_content.extend(html_stats_report(settings["statsfile"][0]))
+        html_content.append(utils.stats2html(settings["statsfile"][0]))
         html_content.append('<h2 id="stats1">Summary statistics after filtering</h2>')
-        html_content.extend(html_stats_report(settings["statsfile"][1]))
+        html_content.append(utils.stats2html(settings["statsfile"][1]))
     else:
         html_content.append('<h2 id="stats0">Summary statistics</h2>')
-        html_content.extend(html_stats_report(settings["statsfile"][0]))
+        html_content.append(utils.stats2html(settings["statsfile"][0]))
 
     # The report itself: plots
     html_content.append('<h2 id="plots">Plots</h2>')
@@ -478,33 +478,6 @@ def make_report(plots, settings):
     with open(htmlreport, "w") as html_file:
         html_file.write(html_str)
     return htmlreport
-
-
-def html_stats_report(statsfile):
-    """Parse the tab separated stats file to get a html table.
-
-    Nasty functions, needs to be rewritten.
-    """
-    with open(statsfile) as stats:
-        html_stats_content = ['\n<table>']
-        for line in stats:
-            linesplit = line.strip().split('\t')
-            if line.startswith('Data'):
-                html_stats_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2">' +
-                                          line.strip() + '</td>\n</tr>')
-                break
-            if len(linesplit) > 1:
-                data = ''.join(['<td>' + e + '</td>' for e in linesplit])
-                html_stats_content.append('<tr>\n\t' + data + '\n</tr>')
-            else:
-                html_stats_content.append('\n<tr></tr>\n<tr>\n\t<td colspan="2"><b>' +
-                                          line.strip() + '</b></td>\n</tr>')
-        for line in stats:
-            html_stats_content.append('\n<tr>\n\t<td colspan="2">' +
-                                      line.strip() + '</td>\n</tr>')
-        html_stats_content.append('</table>')
-    html_stats_content.append('\n<br>\n<br>\n<br>\n<br>')
-    return html_stats_content
 
 
 if __name__ == "__main__":

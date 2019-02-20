@@ -6,6 +6,8 @@ import logging
 from nanoplot.version import __version__
 from argparse import HelpFormatter, Action
 import textwrap as _textwrap
+import pandas as pd
+import numpy as np
 
 
 class CustomHelpFormatter(HelpFormatter):
@@ -70,6 +72,22 @@ def init_logs(args, tool="NanoPlot"):
     logging.info('{} {} started with arguments {}'.format(tool, __version__, args))
     logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
     return logname
+
+
+def chunks(values, chunks):
+    if values:
+        chunksize = int(len(values) / chunks)
+        return([' '.join(values[i:i+chunksize]) for i in range(0, len(values), chunksize)])
+    else:
+        return [" "] * chunks
+
+
+def stats2html(statsf):
+    df = pd.read_csv(statsf, sep=':', header=None, names=['feature', 'value'])
+    values = df["value"].str.strip().str.replace('\t', ' ').str.split().replace(np.nan, '')
+    num = len(values[0]) or 1
+    v = [chunks(i, num) for i in values]
+    return pd.DataFrame(v, index=df["feature"]).to_html(header=False)
 
 
 html_head = """<!DOCTYPE html>
