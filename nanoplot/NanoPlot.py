@@ -49,6 +49,7 @@ def main():
             "fastq_minimal": args.fastq_minimal,
             "summary": args.summary,
             "fasta": args.fasta,
+            "ubam": args.ubam,
         }
 
         if args.pickle:
@@ -255,6 +256,10 @@ def get_args():
                          metavar="file")
     mtarget.add_argument("--bam",
                          help="Data is in one or more sorted bam file(s).",
+                         nargs='+',
+                         metavar="file")
+    mtarget.add_argument("--ubam",
+                         help="Data is in one or more unmapped bam file(s).",
                          nargs='+',
                          metavar="file")
     mtarget.add_argument("--cram",
