@@ -67,7 +67,7 @@ def main():
                 obj=datadf,
                 file=open(settings["path"] + "NanoPlot-data.pickle", 'wb'))
         if args.raw:
-            datadf.to_csv(args.prefix + "NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
+            datadf.to_csv(settings["path"] + "NanoPlot-data.tsv.gz", sep="\t", index=False, compression="gzip")
 
         settings["statsfile"] = [make_stats(datadf, settings, suffix="")]
         datadf, settings = filter_and_transform_data(datadf, settings)
