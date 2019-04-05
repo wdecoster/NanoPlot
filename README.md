@@ -72,8 +72,8 @@ General options:
   -p, --prefix PREFIX   Specify an optional prefix to be used for the output files.
 
 Options for filtering or transforming input prior to plotting:
-  --maxlength N         Drop reads longer than length specified.
-  --minlength N         Drop reads shorter than length specified.
+  --maxlength N         Hide reads longer than length specified.
+  --minlength N         Hide reads shorter than length specified.
   --drop_outliers       Drop outlier reads with extreme long length.
   --downsample N        Reduce dataset to N reads by random sampling.
   --loglength           Logarithmic scaling of lengths in plots.

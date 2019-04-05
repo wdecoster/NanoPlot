@@ -149,11 +149,11 @@ def get_args():
     filtering = parser.add_argument_group(
         title='Options for filtering or transforming input prior to plotting')
     filtering.add_argument("--maxlength",
-                           help="Drop reads longer than length specified.",
+                           help="Hide reads longer than length specified.",
                            type=int,
                            metavar='N')
     filtering.add_argument("--minlength",
-                           help="Drop reads shorter than length specified.",
+                           help="Hide reads shorter than length specified.",
                            type=int,
                            metavar='N')
     filtering.add_argument("--drop_outliers",
