@@ -72,8 +72,8 @@ General options:
   -p, --prefix PREFIX   Specify an optional prefix to be used for the output files.
 
 Options for filtering or transforming input prior to plotting:
-  --maxlength N         Drop reads longer than length specified.
-  --minlength N         Drop reads shorter than length specified.
+  --maxlength N         Hide reads longer than length specified.
+  --minlength N         Hide reads shorter than length specified.
   --drop_outliers       Drop outlier reads with extreme long length.
   --downsample N        Reduce dataset to N reads by random sampling.
   --loglength           Logarithmic scaling of lengths in plots.
@@ -116,6 +116,10 @@ Input data sources, one of these is required.:
                         Data is in one or more sorted cram file(s).
   --pickle pickle       Data is a pickle file stored earlier.
 ```
+
+### NOTES
+ - `--downsample` won't save you tons of time, as down sampling is only done after collecting all data and probably would only make a difference for a huge amount of data. If you want to save time you could down sample your data upfront. Note also that extracting information from a summary file is faster than other formats, and that you can extract from multiple files simultaneously (which will happen in parallel then). Some plot types (especially kde) are slower than others and you can take a look at the input for `--plots` to speed things up (default is to make both kde and dot plot). If you are only interested in say the read length histogram it is possible to write a script to just get you that and avoid wasting time on the rest. Let me know if you need any help here.
+
 
 ### EXAMPLE USAGE
 ```bash
