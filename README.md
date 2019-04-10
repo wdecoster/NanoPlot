@@ -130,7 +130,7 @@ This script now also provides read length vs mean quality plots in the '[pauvre]
 - Andreas Sjödin for building and maintaining conda recipes
 - Darrin Schultz [@conchoecia](https://github.com/conchoecia) for Pauvre code
 - [@alexomics](https://github.com/alexomics) for fixing the indentation of the printed stats
-
+- Botond Sipos [@bsipos](https://github.com/bsipos) for speeding up the calculation of average quality scores
 
 
 ## CONTRIBUTING
