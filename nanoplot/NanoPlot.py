@@ -193,6 +193,9 @@ def get_args():
     visual.add_argument("-c", "--color",
                         help="Specify a color for the plots, must be a valid matplotlib color",
                         default="#4CB391")
+    visual.add_argument("-cm", "--colormap",
+                        help="Specify a colormap for the heatmap, must be a valid matplotlib colormap",
+                        default="Greens")
     visual.add_argument("-f", "--format",
                         help="Specify the output format of the plots.",
                         default="png",
@@ -208,6 +211,10 @@ def get_args():
     visual.add_argument("--listcolors",
                         help="List the colors which are available for plotting and exit.",
                         action=utils.Action_Print_Colors,
+                        default=False)
+    visual.add_argument("--listcolormaps",
+                        help="List the colors which are available for plotting and exit.",
+                        action=utils.Action_Print_Colormaps,
                         default=False)
     visual.add_argument("--no-N50",
                         help="Hide the N50 mark in the read length histogram",
@@ -275,6 +282,8 @@ def get_args():
     args = parser.parse_args()
     if args.listcolors:
         utils.list_colors()
+    if args.listcolormaps:
+        utils.list_colormaps()
     if args.no_N50:
         sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
         sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
@@ -305,6 +314,7 @@ def make_plots(datadf, settings):
     plot_settings = dict(font_scale=settings["font_scale"])
     nanoplotter.plot_settings(plot_settings, dpi=settings["dpi"])
     color = nanoplotter.check_valid_color(settings["color"])
+    colormap = nanoplotter.check_valid_colormap(settings["colormap"])
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
     if settings["N50"]:
@@ -343,7 +353,7 @@ def make_plots(datadf, settings):
                 array=datadf["channelIDs"],
                 title=settings["title"],
                 path=settings["path"] + "ActivityMap_ReadsPerChannel",
-                color="Greens",
+                color=colormap,
                 figformat=settings["format"])
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")

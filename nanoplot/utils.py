@@ -8,6 +8,7 @@ from argparse import HelpFormatter, Action
 import textwrap as _textwrap
 import pandas as pd
 import numpy as np
+from matplotlib import cm
 
 
 class CustomHelpFormatter(HelpFormatter):
@@ -39,6 +40,20 @@ class Action_Print_Colors(Action):
         list_colors()
 
 
+class Action_Print_Colormaps(Action):
+
+    def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
+        super(Action_Print_Colormaps, self).__init__(
+            option_strings=option_strings,
+            dest=dest,
+            default=default,
+            nargs=0,
+            help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        list_colormaps()
+
+
 def custom_formatter(prog):
     return CustomHelpFormatter(prog)
 
@@ -47,6 +62,11 @@ def list_colors():
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
     colours = open(os.path.join(parent_directory, "extra/color_options.txt")).readlines()
     print("{}".format(", ".join([c.strip() for c in colours])))
+    sys.exit(0)
+
+
+def list_colormaps():
+    print("{}".format(", ".join([c.strip() for c in cm.cmap_d.keys()])))
     sys.exit(0)
 
 
@@ -77,7 +97,7 @@ def init_logs(args, tool="NanoPlot"):
 def chunks(values, chunks):
     if values:
         chunksize = int(len(values) / chunks)
-        return([' '.join(values[i:i+chunksize]) for i in range(0, len(values), chunksize)])
+        return([' '.join(values[i:i + chunksize]) for i in range(0, len(values), chunksize)])
     else:
         return [" "] * chunks
 
