@@ -75,7 +75,9 @@ def main():
         settings["statsfile"] = [make_stats(datadf, settings, suffix="")]
         datadf, settings = filter_and_transform_data(datadf, settings)
         if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
-            settings["statsfile"].append(make_stats(datadf, settings, suffix="_post_filtering"))
+            settings["statsfile"].append(
+                make_stats(datadf[datadf["length_filter"]], settings, suffix="_post_filtering")
+            )
 
         if args.barcoded:
             barcodes = list(datadf["barcode"].unique())
@@ -469,8 +471,8 @@ def make_report(plots, settings):
         html_content.append(
             '<p><strong><a href="#stats0">Summary Statistics</a></strong></p>')
     html_content.append('<p><strong><a href="#plots">Plots</a></strong></p>')
-    html_content.extend(['<p style="margin-left:20px"><a href="#' +
-                         p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
+    html_content.extend(['<p style="margin-left:20px"><a href="#'
+                         + p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
     html_content.append('</div>')
 
     # The report itself: stats
@@ -487,8 +489,8 @@ def make_report(plots, settings):
     # The report itself: plots
     html_content.append('<h2 id="plots">Plots</h2>')
     for plot in plots:
-        html_content.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">' +
-                            plot.title + '</h3>\n' + plot.encode())
+        html_content.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">'
+                            + plot.title + '</h3>\n' + plot.encode())
         html_content.append('\n<br>\n<br>\n<br>\n<br>')
     html_body = '\n'.join(html_content) + '</div></body></html>'
     html_str = utils.html_head + html_body
