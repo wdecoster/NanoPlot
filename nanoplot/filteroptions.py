@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from datetime import timedelta
+import sys
 
 
 def flag_length_outliers(df, columnname):
@@ -66,13 +67,17 @@ def filter_and_transform_data(df, settings):
             str(settings["minlength"])))
 
     if settings.get("minqual"):
-        num_reads_prior = non_filtered_reads(df)
-        df = df.loc[df["quals"] > settings["minqual"]].copy()
-        num_reads_post = non_filtered_reads(df)
-        logging.info("Removing {} reads with quality below Q{}.".format(
-            str(num_reads_prior - num_reads_post),
-            str(settings["minqual"])))
-        settings["filtered"] = True
+        if "quals" in df:
+            num_reads_prior = non_filtered_reads(df)
+            df = df.loc[df["quals"] > settings["minqual"]].copy()
+            num_reads_post = non_filtered_reads(df)
+            logging.info("Removing {} reads with quality below Q{}.".format(
+                str(num_reads_prior - num_reads_post),
+                str(settings["minqual"])))
+            settings["filtered"] = True
+        else:
+            sys.stderr.write("--minqual is ignored since no time information in the data.")
+            logging.info("--minqual is ignored since no time information in the data.")
 
     if settings.get("loglength"):
         df["log_" + settings["lengths_pointer"]] = np.log10(df[settings["lengths_pointer"]])
@@ -83,13 +88,17 @@ def filter_and_transform_data(df, settings):
         settings["logBool"] = False
 
     if settings.get("runtime_until"):
-        num_reads_prior = non_filtered_reads(df)
-        df = df[df.start_time < timedelta(hours=settings["runtime_until"])]
-        num_reads_post = non_filtered_reads(df)
-        logging.info("Removing {} reads generated after {} hours in the run.".format(
-            str(num_reads_prior - num_reads_post),
-            str(settings["runtime_until"])))
-        settings["filtered"] = True
+        if "start_time" in df:
+            num_reads_prior = non_filtered_reads(df)
+            df = df[df.start_time < timedelta(hours=settings["runtime_until"])]
+            num_reads_post = non_filtered_reads(df)
+            logging.info("Removing {} reads generated after {} hours in the run.".format(
+                str(num_reads_prior - num_reads_post),
+                str(settings["runtime_until"])))
+            settings["filtered"] = True
+        else:
+            sys.stderr.write("--runtime_until is ignored since no time information in the data.")
+            logging.info("--runtime_until is ignored since no time information in the data.")
 
     if "quals" in df:
         num_reads_prior = len(df)
