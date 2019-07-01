@@ -143,8 +143,9 @@ def sequencing_speed_over_time(dfs, path, figformat, title, plot_settings={}):
     sns.set(style="white", **plot_settings)
     if "timebin" not in dfs:
         dfs['timebin'] = add_time_bins(dfs)
-    ax = sns.violinplot(x=dfs["timebin"],
-                        y=dfs["lengths"] / dfs["duration"],
+    mask = dfs['duration'] != 0
+    ax = sns.violinplot(x=dfs.loc[mask, "timebin"],
+                        y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"],
                         inner=None,
                         cut=0,
                         linewidth=0)
