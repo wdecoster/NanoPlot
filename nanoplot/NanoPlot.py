@@ -137,7 +137,7 @@ def make_plots(datadf, settings):
         n50 = None
     plots.extend(
         nanoplotter.length_plots(
-            array=datadf[datadf["length_filter"]]["lengths"],
+            array=datadf[datadf["length_filter"]]["lengths"].astype('uint64'),
             name="Read length",
             path=settings["path"],
             n50=n50,
