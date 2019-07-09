@@ -49,10 +49,10 @@ def check_valid_color(color):
     If color is invalid the default is returned.
     """
     if color in list(mcolors.CSS4_COLORS.keys()) + ["#4CB391"]:
-        logging.info("Nanoplotter: Valid color {}.".format(color))
+        logging.info("NanoPlot:  Valid color {}.".format(color))
         return color
     else:
-        logging.info("Nanoplotter: Invalid color {}, using default.".format(color))
+        logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
         sys.stderr.write("Invalid color {}, using default.\n".format(color))
         return "#4CB391"
 
@@ -63,10 +63,10 @@ def check_valid_colormap(colormap):
     If colormap is invalid the default is returned.
     """
     if colormap in list(cm.cmap_d.keys()):
-        logging.info("Nanoplotter: Valid colormap {}.".format(colormap))
+        logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
         return colormap
     else:
-        logging.info("Nanoplotter: Invalid colormap {}, using default.".format(colormap))
+        logging.info("NanoPlot:  Invalid colormap {}, using default.".format(colormap))
         sys.stderr.write("Invalid colormap {}, using default.\n".format(colormap))
         return "Greens"
 
@@ -79,10 +79,10 @@ def check_valid_format(figformat):
     """
     fig = plt.figure()
     if figformat in list(fig.canvas.get_supported_filetypes().keys()):
-        logging.info("Nanoplotter: valid output format {}".format(figformat))
+        logging.info("NanoPlot:  valid output format {}".format(figformat))
         return figformat
     else:
-        logging.info("Nanoplotter: invalid output format {}".format(figformat))
+        logging.info("NanoPlot:  invalid output format {}".format(figformat))
         sys.stderr.write("Invalid format {}, using default.\n".format(figformat))
         return "png"
 
@@ -103,7 +103,7 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
     -A kernel density plot with density curves on axes
     -A pauvre-style plot using code from https://github.com/conchoecia/pauvre
     """
-    logging.info("Nanoplotter: Creating {} vs {} plots using statistics from {} reads.".format(
+    logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads.".format(
         names[0], names[1], x.size))
     if not contains_variance([x, y], names):
         return []
@@ -232,7 +232,7 @@ def contains_variance(arrays, names):
         if np.std(ar) == 0:
             sys.stderr.write(
                 "No variation in '{}', skipping bivariate plots.\n".format(name.lower()))
-            logging.info("Nanoplotter: No variation in {}, skipping bivariate plot".format(name))
+            logging.info("NanoPlot:  No variation in {}, skipping bivariate plot".format(name))
             return False
     else:
         return True
@@ -240,13 +240,13 @@ def contains_variance(arrays, names):
 
 def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figformat="png"):
     """Create histogram of normal and log transformed read lengths."""
-    logging.info("Nanoplotter: Creating length plots for {}.".format(name))
+    logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
     if n50:
-        logging.info("Nanoplotter: Using {} reads with read length N50 of {}bp and maximum of {}bp."
+        logging.info("NanoPlot:  Using {} reads with read length N50 of {}bp and maximum of {}bp."
                      .format(array.size, n50, maxvalx))
     else:
-        logging.info("Nanoplotter: Using {} reads maximum of {}bp.".format(array.size, maxvalx))
+        logging.info("NanoPlot:  Using {} reads maximum of {}bp.".format(array.size, maxvalx))
 
     plots = []
     HistType = namedtuple('HistType', 'weight name ylabel')
