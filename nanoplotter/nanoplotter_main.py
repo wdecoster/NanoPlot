@@ -307,7 +307,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
         log_histogram.save(format=figformat)
         plt.close("all")
         plots.extend([histogram, log_histogram])
-    plots.append(dynamic_histogram(array=array, name=name, path=path, title=title, color=color))
+    dynamic_histogram(array=array, name=name, path=path, title=title, color=color)
     plots.append(yield_by_minimal_length_plot(array=array,
                                               name=name,
                                               path=path,
