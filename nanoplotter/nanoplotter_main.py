@@ -324,7 +324,7 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
 
     Only has 10 colors, which get recycled up to 5 times.
     """
-    dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name),
+    dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name.replace(' ', '_')),
                    title=title or "Dynamic histogram of {}".format(name))
     dynhist.html, dynhist.fig = plotly_histogram(array, color, title=dynhist.title)
     dynhist.save()
