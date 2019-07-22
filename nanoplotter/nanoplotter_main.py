@@ -324,7 +324,7 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
     """
     dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name.replace(' ', '_')),
                    title=title or "Dynamic histogram of {}".format(name))
-    dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10_000)),
+    dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10000)),
                                                  color=color,
                                                  title=dynhist.title)
     dynhist.save()
