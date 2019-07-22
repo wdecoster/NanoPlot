@@ -258,12 +258,12 @@ def make_plots(datadf, settings):
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
-        nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],
-                                      name="percent identity",
-                                      path=settings["path"]
-                                      + "PercentIdentityHistogram",
-                                      title=settings["title"],
-                                      color=color)
+        plots.append(nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],
+                                                   name="percent identity",
+                                                   path=settings["path"]
+                                                   + "PercentIdentityHistogram",
+                                                   title=settings["title"],
+                                                   color=color))
         logging.info("Created Percent ID vs Length plot")
     return plots
 

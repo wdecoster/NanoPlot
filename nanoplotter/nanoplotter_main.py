@@ -253,8 +253,8 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
     for h_type in [HistType(None, "", "Number of reads"),
                    HistType(array, "Weighted ", "Number of bases")]:
         histogram = Plot(
-            path=path + h_type.name.replace(" ", "_") + "Histogram"
-            + name.replace(' ', '') + "." + figformat,
+            path=path + h_type.name.replace(" ", "_") + "Histogram" +
+            name.replace(' ', '') + "." + figformat,
             title=h_type.name + "Histogram of read lengths")
         ax = sns.distplot(
             a=array,
@@ -279,8 +279,8 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
         plt.close("all")
 
         log_histogram = Plot(
-            path=path + h_type.name.replace(" ", "_") + "LogTransformed_Histogram"
-            + name.replace(' ', '') + "." + figformat,
+            path=path + h_type.name.replace(" ", "_") + "LogTransformed_Histogram" +
+            name.replace(' ', '') + "." + figformat,
             title=h_type.name + "Histogram of read lengths after log transformation")
         ax = sns.distplot(
             a=np.log10(array),
@@ -307,7 +307,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
         log_histogram.save(format=figformat)
         plt.close("all")
         plots.extend([histogram, log_histogram])
-    dynamic_histogram(array=array, name=name, path=path, title=title, color=color)
+    plots.append(dynamic_histogram(array=array, name=name, path=path, title=title, color=color))
     plots.append(yield_by_minimal_length_plot(array=array,
                                               name=name,
                                               path=path,
@@ -319,14 +319,14 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
 
 def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
     """
-    Use plotly to create an overlay of length histograms
+    Use plotly to a histogram
     Return html code, but also save as png
-
-    Only has 10 colors, which get recycled up to 5 times.
     """
     dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name.replace(' ', '_')),
                    title=title or "Dynamic histogram of {}".format(name))
-    dynhist.html, dynhist.fig = plotly_histogram(array, color, title=dynhist.title)
+    dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10_000)),
+                                                 color=color,
+                                                 title=dynhist.title)
     dynhist.save()
     return dynhist
 
