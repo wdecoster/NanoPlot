@@ -183,6 +183,10 @@ def get_args():
                         help="Set the dpi for saving images",
                         type=int,
                         default=100)
+    visual.add_argument("--hide_stats",
+                        help="Not adding Pearson R stats in some bivariate plots",
+                        action="store_true",
+                        default=False)
     target = parser.add_argument_group(
         title="Input data sources, one of these is required.")
     mtarget = target.add_mutually_exclusive_group(

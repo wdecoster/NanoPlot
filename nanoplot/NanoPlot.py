@@ -237,7 +237,7 @@ def make_plots(datadf, settings):
                     color=color,
                     figformat=settings["format"],
                     plots=plotdict,
-                    stat=stats.pearsonr,
+                    stat=stats.pearsonr if not settings["hide_stats"] else None,
                     minvalx=minPID,
                     title=settings["title"],
                     plot_settings=plot_settings)
@@ -252,7 +252,7 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                stat=stats.pearsonr,
+                stat=stats.pearsonr if not settings["hide_stats"] else None,
                 log=settings["logBool"],
                 minvaly=minPID,
                 title=settings["title"],
