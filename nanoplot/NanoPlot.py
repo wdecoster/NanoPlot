@@ -57,7 +57,8 @@ def main():
                 threads=args.threads,
                 readtype=args.readtype,
                 combine="simple",
-                barcoded=args.barcoded)
+                barcoded=args.barcoded,
+                huge=args.huge)
         if args.store:
             pickle.dump(
                 obj=datadf,

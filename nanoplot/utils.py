@@ -87,6 +87,9 @@ def get_args():
     general.add_argument("--raw",
                          help="Store the extracted data in tab separated file.",
                          action="store_true")
+    general.add_argument("--huge",
+                         help="Input data is one very large file.",
+                         action="store_true")
     general.add_argument("-o", "--outdir",
                          help="Specify directory in which output has to be created.",
                          default=".")

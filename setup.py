@@ -38,7 +38,7 @@ setup(
                       'python-dateutil',
                       'seaborn>=0.9.0',
                       'matplotlib>=2.1.0',
-                      'nanoget>=1.7.7',
+                      'nanoget>=1.9.0',
                       'nanomath>=0.23.1',
                       "pauvre==0.1.86",
                       "statsmodels>=0.8.0",
