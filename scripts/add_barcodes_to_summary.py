@@ -13,7 +13,10 @@ def main():
     bc = pd.read_csv(args.barcoding_summary, sep="\t", usecols=['read_id', 'barcode_arrangement'])
     df = pd.read_csv(args.sequencing_summary, sep="\t")
     df.join(bc.set_index('read_id'), on='read_id') \
-      .to_csv("barcoded_sequencing_summary.txt", sep="\t", index=False)
+      .to_csv(path_or_buf="barcoded_sequencing_summary.txt.gz",
+              sep="\t",
+              compression="gzip",
+              index=False)
 
 
 if __name__ == '__main__':
