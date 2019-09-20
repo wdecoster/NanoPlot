@@ -56,7 +56,7 @@ class Action_Print_Colormaps(Action):
 
 def get_args():
     epilog = """EXAMPLES:
-    Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed
+    NanoPlot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed
     NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
     NanoPlot --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000
     """
