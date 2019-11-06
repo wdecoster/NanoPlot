@@ -84,8 +84,12 @@ def violin_plots_over_time(dfs, path, figformat, title,
 
 
 def length_over_time(dfs, path, figformat, title, log_length=False, plot_settings={}):
-    time_length = Plot(path=path + "TimeLengthViolinPlot." + figformat,
-                       title="Violin plot of read lengths over time")
+    if log_length:
+        time_length = Plot(path=path + "TimeLogLengthViolinPlot." + figformat,
+                           title="Violin plot of log read lengths over time")
+    else:
+        time_length = Plot(path=path + "TimeLengthViolinPlot." + figformat,
+                           title="Violin plot of read lengths over time")
     sns.set(style="white", **plot_settings)
     if log_length:
         length_column = "log_lengths"
