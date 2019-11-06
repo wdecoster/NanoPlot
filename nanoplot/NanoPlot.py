@@ -157,10 +157,23 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                log=settings["logBool"],
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    y=datadf[datadf["length_filter"]]["quals"],
+                    names=['Read lengths', 'Average read quality'],
+                    path=settings["path"] + "LengthvsQualityScatterPlot",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    log=True,
+                    title=settings["title"],
+                    plot_settings=plot_settings)
+            )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
         plots.extend(
@@ -180,9 +193,19 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 title=settings["title"],
-                log_length=settings["logBool"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.time_plots(
+                    df=datadf,
+                    path=settings["path"],
+                    color=color,
+                    figformat=settings["format"],
+                    title=settings["title"],
+                    log_length=True,
+                    plot_settings=plot_settings)
+            )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
         plots.extend(
@@ -221,10 +244,23 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                log=settings["logBool"],
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    y=datadf[datadf["length_filter"]]["mapQ"],
+                    names=["Read length", "Read mapping quality"],
+                    path=settings["path"] + "MappingQualityvsReadLength",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    log=True,
+                    title=settings["title"],
+                    plot_settings=plot_settings)
+            )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
         minPID = np.percentile(datadf["percentIdentity"], 1)
@@ -254,11 +290,27 @@ def make_plots(datadf, settings):
                 figformat=settings["format"],
                 plots=plotdict,
                 stat=stats.pearsonr if not settings["hide_stats"] else None,
-                log=settings["logBool"],
                 minvaly=minPID,
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    y=datadf[datadf["length_filter"]]["percentIdentity"],
+                    names=["Aligned read length", "Percent identity"],
+                    path=settings["path"] + "PercentIdentityvsAlignedReadLength",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    stat=stats.pearsonr if not settings["hide_stats"] else None,
+                    log=True,
+                    minvaly=minPID,
+                    title=settings["title"],
+                    plot_settings=plot_settings)
+            )
+
         plots.append(nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],
                                                    name="percent identity",
                                                    path=settings["path"]

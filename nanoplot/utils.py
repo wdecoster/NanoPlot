@@ -115,7 +115,7 @@ def get_args():
                            type=int,
                            metavar='N')
     filtering.add_argument("--loglength",
-                           help="Logarithmic scaling of lengths in plots.",
+                           help="Additionally show logarithmic scaling of lengths in plots.",
                            action="store_true")
     filtering.add_argument("--percentqual",
                            help="Use qualities as theoretical percent identities.",
