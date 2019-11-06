@@ -114,9 +114,15 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
     plots_made = []
 
     if plots["hex"]:
-        hex_plot = Plot(
-            path=path + "_hex." + figformat,
-            title="{} vs {} plot using hexagonal bins".format(names[0], names[1]))
+        if log:
+            hex_plot = Plot(
+                path=path + "_loglength_hex." + figformat,
+                title="{} vs {} plot using hexagonal bins "
+                      "after log transformation of read lengths".format(names[0], names[1]))
+        else:
+            hex_plot = Plot(
+                path=path + "_hex." + figformat,
+                title="{} vs {} plot using hexagonal bins".format(names[0], names[1]))
         plot = sns.jointplot(
             x=x,
             y=y,
@@ -129,7 +135,6 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
             height=10)
         plot.set_axis_labels(names[0], names[1])
         if log:
-            hex_plot.title = hex_plot.title + " after log transformation of read lengths"
             ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
@@ -142,9 +147,15 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
 
     sns.set(style="darkgrid", **plot_settings)
     if plots["dot"]:
-        dot_plot = Plot(
-            path=path + "_dot." + figformat,
-            title="{} vs {} plot using dots".format(names[0], names[1]))
+        if log:
+            dot_plot = Plot(
+                path=path + "_loglength_dot." + figformat,
+                title="{} vs {} plot using dots "
+                      "after log transformation of read lengths".format(names[0], names[1]))
+        else:
+            dot_plot = Plot(
+                path=path + "_dot." + figformat,
+                title="{} vs {} plot using dots".format(names[0], names[1]))
         plot = sns.jointplot(
             x=x,
             y=y,
@@ -158,7 +169,6 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
             joint_kws={"s": 1})
         plot.set_axis_labels(names[0], names[1])
         if log:
-            dot_plot.title = dot_plot.title + " after log transformation of read lengths"
             ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
@@ -171,9 +181,15 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
 
     if plots["kde"]:
         idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
-        kde_plot = Plot(
-            path=path + "_kde." + figformat,
-            title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
+        if log:
+            kde_plot = Plot(
+                path=path + "_loglength_kde." + figformat,
+                title="{} vs {} plot using a kernel density estimation "
+                      "after log transformation of read lengths".format(names[0], names[1]))
+        else:
+            kde_plot = Plot(
+                path=path + "_kde." + figformat,
+                title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
         plot = sns.jointplot(
             x=x[idx],
             y=y[idx],
@@ -188,7 +204,6 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
             height=10)
         plot.set_axis_labels(names[0], names[1])
         if log:
-            kde_plot.title = kde_plot.title + " after log transformation of read lengths"
             ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
