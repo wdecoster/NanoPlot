@@ -142,10 +142,10 @@ def get_args():
     visual = parser.add_argument_group(
         title='Options for customizing the plots created')
     visual.add_argument("-c", "--color",
-                        help="Specify a color for the plots, must be a valid matplotlib color",
+                        help="Specify a valid matplotlib color for the plots",
                         default="#4CB391")
     visual.add_argument("-cm", "--colormap",
-                        help="Specify a colormap for the heatmap, must be a valid matplotlib colormap",
+                        help="Specify a valid matplotlib colormap for the heatmap",
                         default="Greens")
     visual.add_argument("-f", "--format",
                         help="Specify the output format of the plots.",
