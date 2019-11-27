@@ -339,21 +339,26 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
     """
     dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name.replace(' ', '_')),
                    title=title or "Dynamic histogram of {}".format(name))
+    ylabel = "Number of reads" if len(array) <= 10000 else "Downsampled number of reads"
     dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10000)),
                                                  color=color,
-                                                 title=dynhist.title)
+                                                 title=dynhist.title,
+                                                 xlabel=name,
+                                                 ylabel=ylabel)
     dynhist.save()
     return dynhist
 
 
-def plotly_histogram(array, color="#4CB391", title=None):
+def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=None):
     data = [go.Histogram(x=array,
                          opacity=0.4,
                          marker=dict(color=color))]
     html = plotly.offline.plot(
         {"data": data,
          "layout": go.Layout(barmode='overlay',
-                             title=title)},
+                             title=title,
+                             yaxis_title=ylabel,
+                             xaxis_title=xlabel)},
         output_type="div",
         show_link=False)
     fig = go.Figure(
