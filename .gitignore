@@ -3,3 +3,4 @@ nanoplot/__pycache__/
 NanoPlot.egg-info/
 README.rst
 dist/
+nanoplotter/__pycache__/
