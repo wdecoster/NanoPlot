@@ -35,7 +35,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 import seaborn as sns
-from pauvre.marginplot import margin_plot
+from nanoplotter.pauvre import margin_plot
 from nanoplotter.timeplots import time_plots
 from nanoplotter.spatial_heatmap import spatial_heatmap
 from matplotlib import cm
@@ -219,21 +219,9 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
             path=path + "_pauvre." + figformat,
             title="{} vs {} plot using pauvre-style @conchoecia".format(names[0], names[1]))
         sns.set(style="white", **plot_settings)
-        margin_plot(df=pd.DataFrame({"length": x, "meanQual": y}),
-                    Y_AXES=False,
-                    title=title or "Length vs Quality in Pauvre-style",
-                    plot_maxlen=None,
-                    plot_minlen=0,
-                    plot_maxqual=None,
-                    plot_minqual=0,
-                    lengthbin=None,
-                    qualbin=None,
-                    BASENAME="whatever",
-                    path=pauvre_plot.path,
-                    fileform=[figformat],
-                    dpi=600,
-                    TRANSPARENT=True,
-                    QUIET=True)
+        pauvre_plot.fig = margin_plot(df=pd.DataFrame({"length": x, "meanQual": y}),
+                                      title=title or "Length vs Quality in Pauvre-style")
+        pauvre_plot.save(format=figformat)
         plots_made.append(pauvre_plot)
     plt.close("all")
     return plots_made
@@ -268,8 +256,8 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
     for h_type in [HistType(None, "", "Number of reads"),
                    HistType(array, "Weighted ", "Number of bases")]:
         histogram = Plot(
-            path=path + h_type.name.replace(" ", "_") + "Histogram" +
-            name.replace(' ', '') + "." + figformat,
+            path=path + h_type.name.replace(" ", "_") + "Histogram"
+            + name.replace(' ', '') + "." + figformat,
             title=h_type.name + "Histogram of read lengths")
         ax = sns.distplot(
             a=array,
@@ -294,8 +282,8 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
         plt.close("all")
 
         log_histogram = Plot(
-            path=path + h_type.name.replace(" ", "_") + "LogTransformed_Histogram" +
-            name.replace(' ', '') + "." + figformat,
+            path=path + h_type.name.replace(" ", "_") + "LogTransformed_Histogram"
+            + name.replace(' ', '') + "." + figformat,
             title=h_type.name + "Histogram of read lengths after log transformation")
         ax = sns.distplot(
             a=np.log10(array),

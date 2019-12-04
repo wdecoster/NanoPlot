@@ -40,7 +40,6 @@ setup(
                       'matplotlib>=2.1.0',
                       'nanoget>=1.9.0',
                       'nanomath>=0.23.1',
-                      "pauvre==0.1.86",
                       "statsmodels>=0.8.0",
                       'plotly>=3.4.2',
                       ],
