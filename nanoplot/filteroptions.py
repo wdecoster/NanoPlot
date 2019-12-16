@@ -76,8 +76,8 @@ def filter_and_transform_data(df, settings):
                 str(settings["minqual"])))
             settings["filtered"] = True
         else:
-            sys.stderr.write("--minqual is ignored since no time information in the data.")
-            logging.info("--minqual is ignored since no time information in the data.")
+            sys.stderr.write("--minqual is ignored since no quality information in the data.")
+            logging.info("--minqual is ignored since no quality information in the data.")
 
     if settings.get("loglength"):
         df["log_" + settings["lengths_pointer"]] = np.log10(df[settings["lengths_pointer"]])
