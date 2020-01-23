@@ -41,7 +41,7 @@ setup(
                       'nanoget>=1.9.0',
                       'nanomath>=0.23.1',
                       "pauvre==0.1.86",
-                      "statsmodels>=0.8.0",
+                      "statsmodels==0.10.1",
                       'plotly>=3.4.2',
                       ],
     package_data={'NanoPlot': []},
