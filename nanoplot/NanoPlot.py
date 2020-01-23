@@ -20,6 +20,7 @@ from scipy import stats
 import nanoplot.utils as utils
 from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
+from nanoplot.version import __version__
 import nanoplotter
 import pickle
 import sys
@@ -97,7 +98,7 @@ def main():
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
-        print("\n\n\nIf you read this then NanoPlot has crashed :-(")
+        print("\n\n\nIf you read this then NanoPlot {} has crashed :-(".format(__version__))
         print("Please try updating NanoPlot and see if that helps...\n")
         print("If not, please report this issue at https://github.com/wdecoster/NanoPlot/issues")
         print("If you could include the log file that would be really helpful.")
