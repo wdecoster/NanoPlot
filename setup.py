@@ -42,7 +42,7 @@ setup(
                       'nanomath>=0.23.1',
                       "pauvre==0.1.86",
                       "statsmodels==0.10.1",
-                      'plotly>=3.4.2',
+                      'plotly>=4.1.0',
                       ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
