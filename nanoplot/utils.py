@@ -242,6 +242,8 @@ def get_args():
     if args.no_N50:
         sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
         sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
+    if args.barcoded and not args.summary:
+        sys.exit('ARGUMENT ERROR: --barcoded only works with data provided as --summary!')
     settings = vars(args)
     settings["path"] = os.path.join(args.outdir, args.prefix)
     return settings, args
