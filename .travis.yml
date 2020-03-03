@@ -4,10 +4,9 @@ os:
   - linux
 
 python:
-  - "3.5"
-  - "3.5-dev"
   - "3.6"
-  - "3.6-dev"
+  - "3.7"
+  - "3.8"
 
 before_install:
   - cp README.md README.rst
