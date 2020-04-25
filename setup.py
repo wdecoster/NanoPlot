@@ -49,4 +49,5 @@ setup(
             'NanoPlot=nanoplot.NanoPlot:main',
         ],
     },
+    data_files=[("", ["LICENSE"])]
 )
