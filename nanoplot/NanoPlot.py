@@ -12,7 +12,6 @@ Input data can be given as one or multiple of:
 '''
 
 
-from argparse import ArgumentParser
 from os import path
 import logging
 import nanomath
@@ -21,7 +20,7 @@ from scipy import stats
 import nanoplot.utils as utils
 from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
-from .version import __version__
+from nanoplot.version import __version__
 import nanoplotter
 import pickle
 import sys
@@ -34,13 +33,11 @@ def main():
     -gets inputdata
     -calls plotting function
     '''
-    args = get_args()
+    settings, args = utils.get_args()
     try:
         utils.make_output_dir(args.outdir)
         utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
-        settings = vars(args)
-        settings["path"] = path.join(args.outdir, args.prefix)
         sources = {
             "fastq": args.fastq,
             "bam": args.bam,
@@ -61,7 +58,8 @@ def main():
                 threads=args.threads,
                 readtype=args.readtype,
                 combine="simple",
-                barcoded=args.barcoded)
+                barcoded=args.barcoded,
+                huge=args.huge)
         if args.store:
             pickle.dump(
                 obj=datadf,
@@ -100,196 +98,12 @@ def main():
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
-        print("\n\n\nIf you read this then NanoPlot has crashed :-(")
+        print("\n\n\nIf you read this then NanoPlot {} has crashed :-(".format(__version__))
         print("Please try updating NanoPlot and see if that helps...\n")
         print("If not, please report this issue at https://github.com/wdecoster/NanoPlot/issues")
         print("If you could include the log file that would be really helpful.")
         print("Thanks!\n\n\n")
         raise
-
-
-def get_args():
-    epilog = """EXAMPLES:
-    Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed
-    NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
-    NanoPlot --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000
-    """
-    parser = ArgumentParser(
-        description="Creates various plots for long read sequencing data.".upper(),
-        epilog=epilog,
-        formatter_class=utils.custom_formatter,
-        add_help=False)
-    general = parser.add_argument_group(
-        title='General options')
-    general.add_argument("-h", "--help",
-                         action="help",
-                         help="show the help and exit")
-    general.add_argument("-v", "--version",
-                         help="Print version and exit.",
-                         action="version",
-                         version='NanoPlot {}'.format(__version__))
-    general.add_argument("-t", "--threads",
-                         help="Set the allowed number of threads to be used by the script",
-                         default=4,
-                         type=int)
-    general.add_argument("--verbose",
-                         help="Write log messages also to terminal.",
-                         action="store_true")
-    general.add_argument("--store",
-                         help="Store the extracted data in a pickle file for future plotting.",
-                         action="store_true")
-    general.add_argument("--raw",
-                         help="Store the extracted data in tab separated file.",
-                         action="store_true")
-    general.add_argument("-o", "--outdir",
-                         help="Specify directory in which output has to be created.",
-                         default=".")
-    general.add_argument("-p", "--prefix",
-                         help="Specify an optional prefix to be used for the output files.",
-                         default="",
-                         type=str)
-    filtering = parser.add_argument_group(
-        title='Options for filtering or transforming input prior to plotting')
-    filtering.add_argument("--maxlength",
-                           help="Hide reads longer than length specified.",
-                           type=int,
-                           metavar='N')
-    filtering.add_argument("--minlength",
-                           help="Hide reads shorter than length specified.",
-                           type=int,
-                           metavar='N')
-    filtering.add_argument("--drop_outliers",
-                           help="Drop outlier reads with extreme long length.",
-                           action="store_true")
-    filtering.add_argument("--downsample",
-                           help="Reduce dataset to N reads by random sampling.",
-                           type=int,
-                           metavar='N')
-    filtering.add_argument("--loglength",
-                           help="Logarithmic scaling of lengths in plots.",
-                           action="store_true")
-    filtering.add_argument("--percentqual",
-                           help="Use qualities as theoretical percent identities.",
-                           action="store_true")
-    filtering.add_argument("--alength",
-                           help="Use aligned read lengths rather than sequenced length (bam mode)",
-                           action="store_true")
-    filtering.add_argument("--minqual",
-                           help="Drop reads with an average quality lower than specified.",
-                           type=int,
-                           metavar='N')
-    filtering.add_argument("--runtime_until",
-                           help="Only take the N first hours of a run",
-                           type=int,
-                           metavar='N')
-    filtering.add_argument("--readtype",
-                           help="Which read type to extract information about from summary. \
-                                 Options are 1D, 2D, 1D2",
-                           default="1D",
-                           choices=['1D', '2D', '1D2'])
-    filtering.add_argument("--barcoded",
-                           help="Use if you want to split the summary file by barcode",
-                           action="store_true")
-    visual = parser.add_argument_group(
-        title='Options for customizing the plots created')
-    visual.add_argument("-c", "--color",
-                        help="Specify a color for the plots, must be a valid matplotlib color",
-                        default="#4CB391")
-    visual.add_argument("-cm", "--colormap",
-                        help="Specify a colormap for the heatmap, must be a valid matplotlib colormap",
-                        default="Greens")
-    visual.add_argument("-f", "--format",
-                        help="Specify the output format of the plots.",
-                        default="png",
-                        type=str,
-                        choices=['eps', 'jpeg', 'jpg', 'pdf', 'pgf', 'png', 'ps',
-                                 'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
-    visual.add_argument("--plots",
-                        help="Specify which bivariate plots have to be made.",
-                        default=['kde', 'dot'],
-                        type=str,
-                        nargs='*',
-                        choices=['kde', 'hex', 'dot', 'pauvre'])
-    visual.add_argument("--listcolors",
-                        help="List the colors which are available for plotting and exit.",
-                        action=utils.Action_Print_Colors,
-                        default=False)
-    visual.add_argument("--listcolormaps",
-                        help="List the colors which are available for plotting and exit.",
-                        action=utils.Action_Print_Colormaps,
-                        default=False)
-    visual.add_argument("--no-N50",
-                        help="Hide the N50 mark in the read length histogram",
-                        action="store_true")
-    visual.add_argument("--N50",
-                        help="Show the N50 mark in the read length histogram",
-                        action="store_true",
-                        default=False)
-    visual.add_argument("--title",
-                        help="Add a title to all plots, requires quoting if using spaces",
-                        type=str,
-                        default=None)
-    visual.add_argument("--font_scale",
-                        help="Scale the font of the plots by a factor",
-                        type=float,
-                        default=1)
-    visual.add_argument("--dpi",
-                        help="Set the dpi for saving images",
-                        type=int,
-                        default=100)
-    target = parser.add_argument_group(
-        title="Input data sources, one of these is required.")
-    mtarget = target.add_mutually_exclusive_group(
-        required=True)
-    mtarget.add_argument("--fastq",
-                         help="Data is in one or more default fastq file(s).",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--fasta",
-                         help="Data is in one or more fasta file(s).",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--fastq_rich",
-                         help="Data is in one or more fastq file(s) generated by albacore, \
-                               MinKNOW or guppy with additional information \
-                               concerning channel and time.",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--fastq_minimal",
-                         help="Data is in one or more fastq file(s) generated by albacore, \
-                               MinKNOW or guppy with additional information concerning channel \
-                               and time. Is extracted swiftly without elaborate checks.",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--summary",
-                         help="Data is in one or more summary file(s) generated by albacore \
-                               or guppy.",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--bam",
-                         help="Data is in one or more sorted bam file(s).",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--ubam",
-                         help="Data is in one or more unmapped bam file(s).",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--cram",
-                         help="Data is in one or more sorted cram file(s).",
-                         nargs='+',
-                         metavar="file")
-    mtarget.add_argument("--pickle",
-                         help="Data is a pickle file stored earlier.",
-                         metavar="pickle")
-    args = parser.parse_args()
-    if args.listcolors:
-        utils.list_colors()
-    if args.listcolormaps:
-        utils.list_colormaps()
-    if args.no_N50:
-        sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
-        sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
-    return args
 
 
 def make_stats(datadf, settings, suffix):
@@ -325,7 +139,7 @@ def make_plots(datadf, settings):
         n50 = None
     plots.extend(
         nanoplotter.length_plots(
-            array=datadf[datadf["length_filter"]]["lengths"],
+            array=datadf[datadf["length_filter"]]["lengths"].astype('uint64'),
             name="Read length",
             path=settings["path"],
             n50=n50,
@@ -337,17 +151,30 @@ def make_plots(datadf, settings):
     if "quals" in datadf:
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["quals"],
                 names=['Read lengths', 'Average read quality'],
                 path=settings["path"] + "LengthvsQualityScatterPlot",
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                log=settings["logBool"],
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    y=datadf[datadf["length_filter"]]["quals"],
+                    names=['Read lengths', 'Average read quality'],
+                    path=settings["path"] + "LengthvsQualityScatterPlot",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    log=True,
+                    title=settings["title"],
+                    plot_settings=plot_settings)
+            )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
         plots.extend(
@@ -367,9 +194,19 @@ def make_plots(datadf, settings):
                 color=color,
                 figformat=settings["format"],
                 title=settings["title"],
-                log_length=settings["logBool"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.time_plots(
+                    df=datadf,
+                    path=settings["path"],
+                    color=color,
+                    figformat=settings["format"],
+                    title=settings["title"],
+                    log_length=True,
+                    plot_settings=plot_settings)
+            )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
         plots.extend(
@@ -401,17 +238,30 @@ def make_plots(datadf, settings):
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["mapQ"],
                 names=["Read length", "Read mapping quality"],
                 path=settings["path"] + "MappingQualityvsReadLength",
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                log=settings["logBool"],
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    y=datadf[datadf["length_filter"]]["mapQ"],
+                    names=["Read length", "Read mapping quality"],
+                    path=settings["path"] + "MappingQualityvsReadLength",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    log=True,
+                    title=settings["title"],
+                    plot_settings=plot_settings)
+            )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
         minPID = np.percentile(datadf["percentIdentity"], 1)
@@ -425,7 +275,7 @@ def make_plots(datadf, settings):
                     color=color,
                     figformat=settings["format"],
                     plots=plotdict,
-                    stat=stats.pearsonr,
+                    stat=stats.pearsonr if not settings["hide_stats"] else None,
                     minvalx=minPID,
                     title=settings["title"],
                     plot_settings=plot_settings)
@@ -433,19 +283,41 @@ def make_plots(datadf, settings):
             logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["percentIdentity"],
                 names=["Aligned read length", "Percent identity"],
                 path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                 color=color,
                 figformat=settings["format"],
                 plots=plotdict,
-                stat=stats.pearsonr,
-                log=settings["logBool"],
+                stat=stats.pearsonr if not settings["hide_stats"] else None,
                 minvaly=minPID,
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
+        if settings["logBool"]:
+            plots.extend(
+                nanoplotter.scatter(
+                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    y=datadf[datadf["length_filter"]]["percentIdentity"],
+                    names=["Aligned read length", "Percent identity"],
+                    path=settings["path"] + "PercentIdentityvsAlignedReadLength",
+                    color=color,
+                    figformat=settings["format"],
+                    plots=plotdict,
+                    stat=stats.pearsonr if not settings["hide_stats"] else None,
+                    log=True,
+                    minvaly=minPID,
+                    title=settings["title"],
+                    plot_settings=plot_settings)
+            )
+
+        plots.append(nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],
+                                                   name="percent identity",
+                                                   path=settings["path"]
+                                                   + "PercentIdentityHistogram",
+                                                   title=settings["title"],
+                                                   color=color))
         logging.info("Created Percent ID vs Length plot")
     return plots
 
