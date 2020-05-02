@@ -36,7 +36,7 @@ setup(
                       'numpy',
                       'scipy',
                       'python-dateutil',
-                      'seaborn>=0.9.0',
+                      'seaborn>=0.10.1',
                       'matplotlib>=3.1.3',
                       'nanoget>=1.9.0',
                       'nanomath>=0.23.1',
