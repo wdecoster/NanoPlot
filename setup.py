@@ -40,7 +40,7 @@ setup(
                       'matplotlib>=3.1.3',
                       'nanoget>=1.9.0',
                       'nanomath>=0.23.1',
-                      "pauvre==0.1.86",
+                      "pauvre==0.2.0",
                       'plotly>=4.1.0',
                       ],
     package_data={'NanoPlot': []},
