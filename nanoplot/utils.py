@@ -139,6 +139,10 @@ def get_args():
     filtering.add_argument("--barcoded",
                            help="Use if you want to split the summary file by barcode",
                            action="store_true")
+    filtering.add_argument("--no_supplementary",
+                           help="Use if you want to remove supplementary alignments",
+                           action="store_true",
+                           default=False)
     visual = parser.add_argument_group(
         title='Options for customizing the plots created')
     visual.add_argument("-c", "--color",

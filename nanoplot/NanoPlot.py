@@ -59,7 +59,8 @@ def main():
                 readtype=args.readtype,
                 combine="simple",
                 barcoded=args.barcoded,
-                huge=args.huge)
+                huge=args.huge,
+                keep_supp=not(args.no_supplementary))
         if args.store:
             pickle.dump(
                 obj=datadf,

@@ -12,6 +12,11 @@ NanoPlot --bam nanotest/alignment.bam --verbose
 echo ""
 echo ""
 echo ""
+echo "testing bam without supplementary alignments:"
+NanoPlot --bam nanotest/alignment.bam --verbose --no_supplementary
+echo ""
+echo ""
+echo ""
 echo "testing summary:"
 NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose
 echo ""
