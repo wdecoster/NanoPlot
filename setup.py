@@ -16,7 +16,7 @@ setup(
     url='https://github.com/wdecoster/NanoPlot',
     author='Wouter De Coster',
     author_email='decosterwouter@gmail.com',
-    license='MIT',
+    license='GPLv3',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
@@ -38,7 +38,7 @@ setup(
                       'python-dateutil',
                       'seaborn>=0.10.1',
                       'matplotlib>=3.1.3',
-                      'nanoget>=1.9.0',
+                      'nanoget>=1.13.0',
                       'nanomath>=0.23.1',
                       "pauvre==0.2.0",
                       'plotly>=4.1.0',
