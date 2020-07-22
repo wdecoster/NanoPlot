@@ -38,20 +38,23 @@ def main():
         utils.make_output_dir(args.outdir)
         utils.init_logs(args)
         args.format = nanoplotter.check_valid_format(args.format)
-        sources = {
-            "fastq": args.fastq,
-            "bam": args.bam,
-            "cram": args.cram,
-            "fastq_rich": args.fastq_rich,
-            "fastq_minimal": args.fastq_minimal,
-            "summary": args.summary,
-            "fasta": args.fasta,
-            "ubam": args.ubam,
-        }
-
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
+        elif args.feather:
+            from nanoget import combine_dfs
+            from pandas import read_feather
+            datadf = combine_dfs([read_feather(p) for p in args.feather], method="simple")
         else:
+            sources = {
+                "fastq": args.fastq,
+                "bam": args.bam,
+                "cram": args.cram,
+                "fastq_rich": args.fastq_rich,
+                "fastq_minimal": args.fastq_minimal,
+                "summary": args.summary,
+                "fasta": args.fasta,
+                "ubam": args.ubam,
+            }
             datadf = get_input(
                 source=[n for n, s in sources.items() if s][0],
                 files=[f for f in sources.values() if f][0],

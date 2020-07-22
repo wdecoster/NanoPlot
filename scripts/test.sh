@@ -39,3 +39,8 @@ echo ""
 echo ""
 echo "testing fasta:"
 NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000
+echo ""
+echo ""
+echo ""
+echo "testing feather:"
+NanoPlot --feather nanotest/summary1.feather --verbose --outdir plots

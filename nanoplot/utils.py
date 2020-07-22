@@ -238,6 +238,10 @@ def get_args():
     mtarget.add_argument("--pickle",
                          help="Data is a pickle file stored earlier.",
                          metavar="pickle")
+    mtarget.add_argument("--feather",
+                         help="Data is in one or more feather file(s).",
+                         nargs='+',
+                         metavar="file")
     args = parser.parse_args()
     if args.listcolors:
         list_colors()
