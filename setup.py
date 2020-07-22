@@ -42,6 +42,7 @@ setup(
                       'nanomath>=0.23.1',
                       "pauvre==0.2.0",
                       'plotly>=4.1.0',
+                      'pyarrow'
                       ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
