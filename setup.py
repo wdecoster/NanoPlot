@@ -39,7 +39,7 @@ setup(
                       'seaborn>=0.10.1',
                       'matplotlib>=3.1.3',
                       'nanoget>=1.14.0',
-                      'nanomath>=0.23.1',
+                      'nanomath>=1.0.0',
                       "pauvre==0.2.0",
                       'plotly>=4.1.0',
                       'pyarrow'

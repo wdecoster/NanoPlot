@@ -97,6 +97,9 @@ def get_args():
                          help="Specify an optional prefix to be used for the output files.",
                          default="",
                          type=str)
+    general.add_argument("--tsv_stats",
+                         help="Output the stats file as a properly formatted TSV.",
+                         action='store_true')
     filtering = parser.add_argument_group(
         title='Options for filtering or transforming input prior to plotting')
     filtering.add_argument("--maxlength",

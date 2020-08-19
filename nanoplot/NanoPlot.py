@@ -74,11 +74,12 @@ def main():
                           index=False,
                           compression="gzip")
 
-        settings["statsfile"] = [make_stats(datadf, settings, suffix="")]
+        settings["statsfile"] = [make_stats(datadf, settings, suffix="", tsv_stats=args.tsv_stats)]
         datadf, settings = filter_and_transform_data(datadf, settings)
         if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
             settings["statsfile"].append(
-                make_stats(datadf[datadf["length_filter"]], settings, suffix="_post_filtering")
+                make_stats(datadf[datadf["length_filter"]], settings,
+                           suffix="_post_filtering", tsv_stats=args.tsv_stats)
             )
 
         if args.barcoded:
@@ -110,20 +111,22 @@ def main():
         raise
 
 
-def make_stats(datadf, settings, suffix):
+def make_stats(datadf, settings, suffix, tsv_stats=True):
     statsfile = settings["path"] + "NanoStats" + suffix + ".txt"
-    nanomath.write_stats(
+    stats_df = nanomath.write_stats(
         datadfs=[datadf],
-        outputfile=statsfile)
+        outputfile=statsfile,
+        as_tsv=tsv_stats)
     logging.info("Calculated statistics")
     if settings["barcoded"]:
         barcodes = list(datadf["barcode"].unique())
         statsfile = settings["path"] + "NanoStats_barcoded.txt"
-        nanomath.write_stats(
+        stats_df = nanomath.write_stats(
             datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
             outputfile=statsfile,
-            names=barcodes)
-    return statsfile
+            names=barcodes,
+            as_tsv=tsv_stats)
+    return stats_df if tsv_stats else statsfile
 
 
 def make_plots(datadf, settings):
@@ -355,12 +358,21 @@ def make_report(plots, settings):
     html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
     if settings["filtered"]:
         html_content.append('<h2 id="stats0">Summary statistics prior to filtering</h2>')
-        html_content.append(utils.stats2html(settings["statsfile"][0]))
+        if settings['tsv_stats']:
+            html_content.append(settings["statsfile"][0].to_html())
+        else:
+            html_content.append(utils.stats2html(settings["statsfile"][0]))
         html_content.append('<h2 id="stats1">Summary statistics after filtering</h2>')
-        html_content.append(utils.stats2html(settings["statsfile"][1]))
+        if settings['tsv_stats']:
+            html_content.append(settings["statsfile"][1].to_html())
+        else:
+            html_content.append(utils.stats2html(settings["statsfile"][1]))
     else:
         html_content.append('<h2 id="stats0">Summary statistics</h2>')
-        html_content.append(utils.stats2html(settings["statsfile"][0]))
+        if settings['tsv_stats']:
+            html_content.append(settings["statsfile"][0].to_html())
+        else:
+            html_content.append(utils.stats2html(settings["statsfile"][0]))
 
     # The report itself: plots
     html_content.append('<h2 id="plots">Plots</h2>')
