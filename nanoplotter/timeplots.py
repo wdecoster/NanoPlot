@@ -166,7 +166,7 @@ def sequencing_speed_over_time(dfs, path, figformat, title, plot_settings={}):
 def add_time_bins(dfs, bin_length=3):
     maxtime = dfs["start_time"].max().total_seconds()
     labels = [str(i) + "-" + str(i + bin_length)
-              for i in range(0, 168, bin_length) if not i > (maxtime / 3600)]
+              for i in range(0, 168, bin_length) if not i >= (maxtime / 3600)]
     return pd.cut(x=dfs["start_time"],
                   bins=ceil((maxtime / 3600) / bin_length),
                   labels=labels)
