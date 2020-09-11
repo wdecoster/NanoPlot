@@ -24,6 +24,14 @@ spatialHeatmap(array, title, path, color, format)
 """
 
 
+import plotly.graph_objs as go
+import plotly
+from nanoplotter.spatial_heatmap import spatial_heatmap
+from nanoplotter.timeplots import time_plots
+from pauvre.marginplot import margin_plot
+import seaborn as sns
+from matplotlib import colors as mcolors
+import matplotlib.pyplot as plt
 import logging
 import sys
 import pandas as pd
@@ -32,15 +40,6 @@ from collections import namedtuple
 from nanoplotter.plot import Plot
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.pyplot as plt
-from matplotlib import colors as mcolors
-import seaborn as sns
-from pauvre.marginplot import margin_plot
-from nanoplotter.timeplots import time_plots
-from nanoplotter.spatial_heatmap import spatial_heatmap
-from matplotlib import cm
-import plotly
-import plotly.graph_objs as go
 
 
 def check_valid_color(color):
@@ -62,7 +61,7 @@ def check_valid_colormap(colormap):
 
     If colormap is invalid the default is returned.
     """
-    if colormap in list(cm.cmap_d.keys()):
+    if colormap in plt.colormaps():
         logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
         return colormap
     else:

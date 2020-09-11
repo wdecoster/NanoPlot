@@ -8,7 +8,7 @@ from argparse import HelpFormatter, Action, ArgumentParser
 import textwrap as _textwrap
 import pandas as pd
 import numpy as np
-from matplotlib import cm
+import matplotlib.pyplot as plt
 
 
 class CustomHelpFormatter(HelpFormatter):
@@ -272,7 +272,7 @@ def list_colors():
 
 
 def list_colormaps():
-    print("{}".format(", ".join([c.strip() for c in cm.cmap_d.keys()])))
+    print(', '.join(plt.colormaps()))
     sys.exit(0)
 
 
