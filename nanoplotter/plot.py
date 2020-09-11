@@ -1,9 +1,8 @@
-import plotly.io as pio
 from base64 import b64encode
 from io import BytesIO
 from urllib.parse import quote as urlquote
 import sys
-import logging
+from kaleido.scopes.plotly import PlotlyScope
 
 
 class Plot(object):
@@ -56,9 +55,6 @@ class Plot(object):
             sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
 
     def save_static(self):
-        try:
-            pio.write_image(self.fig, self.path.replace('html', 'png'))
-        except ValueError as e:
-            logging.warning("Nanoplotter: orca not found, not creating static image of html. "
-                            "See https://github.com/plotly/orca")
-            logging.warning(e, exc_info=True)
+        scope = PlotlyScope()
+        with open(self.path.replace('html', 'png'), "wb") as f:
+            f.write(scope.transform(self.fig, format="png"))

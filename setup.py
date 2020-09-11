@@ -42,7 +42,8 @@ setup(
                       'nanomath>=1.0.0',
                       "pauvre==0.2.0",
                       'plotly>=4.1.0',
-                      'pyarrow'
+                      'pyarrow',
+                      'kaleido'
                       ],
     package_data={'NanoPlot': []},
     package_dir={'nanoplot': 'nanoplot'},
