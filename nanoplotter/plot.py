@@ -2,7 +2,7 @@ from base64 import b64encode
 from io import BytesIO
 from urllib.parse import quote as urlquote
 import sys
-from kaleido.scopes.plotly import PlotlyScope
+import plotly.io as pio
 
 
 class Plot(object):
@@ -55,6 +55,4 @@ class Plot(object):
             sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
 
     def save_static(self):
-        scope = PlotlyScope()
-        with open(self.path.replace('html', 'png'), "wb") as f:
-            f.write(scope.transform(self.fig, format="png"))
+        pio.write_image(self.fig, self.path.replace('html', 'png'), engine="kaleido")
