@@ -4,3 +4,4 @@ NanoPlot.egg-info/
 README.rst
 dist/
 nanoplotter/__pycache__/
+build/
