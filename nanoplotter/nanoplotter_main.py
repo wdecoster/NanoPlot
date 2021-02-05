@@ -337,11 +337,11 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
     Return html code, but also save as png
     """
     dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name.replace(' ', '_')),
-                   title=title or "Dynamic histogram of {}".format(name))
+                   title="Dynamic histogram of {}".format(name))
     ylabel = "Number of reads" if len(array) <= 10000 else "Downsampled number of reads"
     dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10000)),
                                                  color=color,
-                                                 title=dynhist.title,
+                                                 title=title or dynhist.title,
                                                  xlabel=name,
                                                  ylabel=ylabel)
     dynhist.save()
