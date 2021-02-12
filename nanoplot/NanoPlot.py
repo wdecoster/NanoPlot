@@ -344,9 +344,10 @@ def make_report(plots, settings):
 
     html_content = [
         '<body>',
-        *report.html_toc(plots, filtered=settings["filtered"]),
-        *report.html_stats(settings),
-        *report.html_plots(plots),
+        report.html_toc(plots, filtered=settings["filtered"]),
+        report.html_stats(settings),
+        report.html_plots(plots),
+        report.run_info(settings) if settings["info_in_report"] else '',
         '</div></body></html>']
     with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
         html_file.write(report.html_head + '\n'.join(html_content))

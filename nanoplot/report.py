@@ -43,7 +43,7 @@ def html_stats(settings):
             stats_html.append(statsfile[0].to_html())
         else:
             stats_html.append(stats2html(statsfile[0]))
-    return stats_html
+    return '\n'.join(stats_html)
 
 
 def stats2html(statsf):
@@ -69,7 +69,7 @@ def html_toc(plots, filtered=False):
     toc.extend(['<p style="margin-left:20px"><a href="#'
                 + p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
     toc.append('</div>')
-    return toc
+    return '\n'.join(toc)
 
 
 def html_plots(plots):
@@ -79,7 +79,22 @@ def html_plots(plots):
         html_plots.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">'
                           + plot.title + '</h3>\n' + plot.encode())
         html_plots.append('\n<br>\n<br>\n<br>\n<br>')
-    return html_plots
+    return '\n'.join(html_plots)
+
+
+def run_info(settings):
+    html_info = []
+    html_info.append('<h4>Run Info</h4>\n')
+    html_info.append('<h4>Data source:</h5>\n')
+    for k in ["fastq", "fasta", "fastq_rich", "fastq_minimal", "summary",
+              "bam", "ubam", "cram", "pickle", "feather"]:
+        html_info.append(f"{k}:\t{settings[k]}<br>")
+    html_info.append('<h4>Filtering parameters:</h5>\n')
+    for k in ['maxlength', 'minlength', 'drop_outliers', 'downsample', 'loglength',
+              'percentqual', 'alength', 'minqual', 'runtime_until', 'no_supplementary']:
+        html_info.append(f"{k}:\t{settings[k]}<br>")
+    # html_info.append('</p>')
+    return '\n'.join(html_info)
 
 
 html_head = """<!DOCTYPE html>
