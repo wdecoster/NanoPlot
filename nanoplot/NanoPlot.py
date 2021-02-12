@@ -18,6 +18,7 @@ import nanomath
 import numpy as np
 from scipy import stats
 import nanoplot.utils as utils
+import nanoplot.report as report
 from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
@@ -336,58 +337,18 @@ def make_report(plots, settings):
     Creates a fat html report based on the previously created files
     plots is a list of Plot objects defined by a path and title
     statsfile is the file to which the stats have been saved,
-    which is parsed to a table (rather dodgy)
+    which is parsed to a table (rather dodgy) or nicely if it's a pandas/tsv
     '''
     logging.info("Writing html report.")
-    html_content = ['<body>']
 
-    # Hyperlink Table of Contents panel
-    html_content.append('<div class="panel panelC">')
-    if settings["filtered"]:
-        html_content.append(
-            '<p><strong><a href="#stats0">Summary Statistics prior to filtering</a></strong></p>')
-        html_content.append(
-            '<p><strong><a href="#stats1">Summary Statistics after filtering</a></strong></p>')
-    else:
-        html_content.append(
-            '<p><strong><a href="#stats0">Summary Statistics</a></strong></p>')
-    html_content.append('<p><strong><a href="#plots">Plots</a></strong></p>')
-    html_content.extend(['<p style="margin-left:20px"><a href="#'
-                         + p.title.replace(' ', '_') + '">' + p.title + '</a></p>' for p in plots])
-    html_content.append('</div>')
-
-    # The report itself: stats
-    html_content.append('<div class="panel panelM"> <h1>NanoPlot report</h1>')
-    if settings["filtered"]:
-        html_content.append('<h2 id="stats0">Summary statistics prior to filtering</h2>')
-        if settings['tsv_stats']:
-            html_content.append(settings["statsfile"][0].to_html())
-        else:
-            html_content.append(utils.stats2html(settings["statsfile"][0]))
-        html_content.append('<h2 id="stats1">Summary statistics after filtering</h2>')
-        if settings['tsv_stats']:
-            html_content.append(settings["statsfile"][1].to_html())
-        else:
-            html_content.append(utils.stats2html(settings["statsfile"][1]))
-    else:
-        html_content.append('<h2 id="stats0">Summary statistics</h2>')
-        if settings['tsv_stats']:
-            html_content.append(settings["statsfile"][0].to_html())
-        else:
-            html_content.append(utils.stats2html(settings["statsfile"][0]))
-
-    # The report itself: plots
-    html_content.append('<h2 id="plots">Plots</h2>')
-    for plot in plots:
-        html_content.append('\n<h3 id="' + plot.title.replace(' ', '_') + '">'
-                            + plot.title + '</h3>\n' + plot.encode())
-        html_content.append('\n<br>\n<br>\n<br>\n<br>')
-    html_body = '\n'.join(html_content) + '</div></body></html>'
-    html_str = utils.html_head + html_body
-    htmlreport = settings["path"] + "NanoPlot-report.html"
-    with open(htmlreport, "w") as html_file:
-        html_file.write(html_str)
-    return htmlreport
+    html_content = [
+        '<body>',
+        *report.html_toc(plots, filtered=settings["filtered"]),
+        *report.html_stats(settings),
+        *report.html_plots(plots),
+        '</div></body></html>']
+    with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
+        html_file.write(report.html_head + '\n'.join(html_content))
 
 
 if __name__ == "__main__":
