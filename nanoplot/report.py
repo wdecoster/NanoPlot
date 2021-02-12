@@ -2,6 +2,16 @@ import pandas as pd
 import numpy as np
 
 
+class BarcodeTitle(object):
+    """Bit of a dummy class to add barcode titles to the report"""
+
+    def __init__(self, title):
+        self.title = title.upper()
+
+    def encode(self):
+        return ""
+
+
 def chunks(values, chunks):
     if values:
         chunksize = int(len(values) / chunks)

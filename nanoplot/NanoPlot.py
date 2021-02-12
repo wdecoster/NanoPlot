@@ -93,6 +93,7 @@ def main():
                 if len(dfbarc) > 5:
                     settings["title"] = barc
                     settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
+                    plots.append(report.BarcodeTitle(barc))
                     plots.extend(
                         make_plots(dfbarc, settings)
                     )
