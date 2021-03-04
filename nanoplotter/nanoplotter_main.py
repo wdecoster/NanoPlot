@@ -179,39 +179,43 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
         plots_made.append(dot_plot)
 
     if plots["kde"]:
-        idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
-        if log:
-            kde_plot = Plot(
-                path=path + "_loglength_kde." + figformat,
-                title="{} vs {} plot using a kernel density estimation "
-                      "after log transformation of read lengths".format(names[0], names[1]))
+        if len(x) > 2:
+            idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
+            if log:
+                kde_plot = Plot(
+                    path=path + "_loglength_kde." + figformat,
+                    title="{} vs {} plot using a kernel density estimation "
+                          "after log transformation of read lengths".format(names[0], names[1]))
+            else:
+                kde_plot = Plot(
+                    path=path + "_kde." + figformat,
+                    title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
+            plot = sns.jointplot(
+                x=x[idx],
+                y=y[idx],
+                kind="kde",
+                clip=((0, np.Inf), (0, np.Inf)),
+                xlim=(minvalx, maxvalx),
+                ylim=(minvaly, maxvaly),
+                space=0,
+                color=color,
+                stat_func=stat,
+                shade_lowest=False,
+                height=10)
+            plot.set_axis_labels(names[0], names[1])
+            if log:
+                ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
+                plot.ax_joint.set_xticks(np.log10(ticks))
+                plot.ax_marg_x.set_xticks(np.log10(ticks))
+                plot.ax_joint.set_xticklabels(ticks)
+            plt.subplots_adjust(top=0.90)
+            plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
+            kde_plot.fig = plot
+            kde_plot.save(format=figformat)
+            plots_made.append(kde_plot)
         else:
-            kde_plot = Plot(
-                path=path + "_kde." + figformat,
-                title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
-        plot = sns.jointplot(
-            x=x[idx],
-            y=y[idx],
-            kind="kde",
-            clip=((0, np.Inf), (0, np.Inf)),
-            xlim=(minvalx, maxvalx),
-            ylim=(minvaly, maxvaly),
-            space=0,
-            color=color,
-            stat_func=stat,
-            shade_lowest=False,
-            height=10)
-        plot.set_axis_labels(names[0], names[1])
-        if log:
-            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
-            plot.ax_joint.set_xticks(np.log10(ticks))
-            plot.ax_marg_x.set_xticks(np.log10(ticks))
-            plot.ax_joint.set_xticklabels(ticks)
-        plt.subplots_adjust(top=0.90)
-        plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
-        kde_plot.fig = plot
-        kde_plot.save(format=figformat)
-        plots_made.append(kde_plot)
+            sys.stderr.write("Not enough observations (reads) to create a kde plot.\n")
+            logging.info("NanoPlot: Not enough observations (reads) to create a kde plot")
 
     if plots["pauvre"] and names == ['Read lengths', 'Average read quality'] and log is False:
         pauvre_plot = Plot(
