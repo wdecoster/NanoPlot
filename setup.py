@@ -33,7 +33,7 @@ setup(
     install_requires=['biopython',
                       'pysam>0.10.0.0',
                       'pandas>=0.22.0',
-                      'numpy',
+                      'numpy>=1.16.5',
                       'scipy',
                       'python-dateutil',
                       'seaborn==0.10.1',
