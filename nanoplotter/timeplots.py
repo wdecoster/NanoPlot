@@ -265,17 +265,26 @@ def cumulative_yield(dfs, path, title, color):
     return [cum_yield_gb, cum_yield_reads]
 
 def subsample_datasets(df, minimal=1000):
-    list_df = []
     
-    for d in df["dataset"].unique():
-        dataset = df.loc[df['dataset'] == d]
+    if 'dataset' in df:
+        list_df = []
         
-        if len(dataset.index) < 1000:
-            list_df.append(dataset)
+        for d in df["dataset"].unique():
+            dataset = df.loc[df['dataset'] == d]
+            
+            if len(dataset.index) < 1000:
+                list_df.append(dataset)
+                
+            else:
+                list_df.append(dataset.sample(minimal))
+            
+        subsampled_df = pd.concat(list_df,ignore_index=True)
+        
+    else:
+        if len(df.index) < minimal:
+            subsampled_df = df 
             
         else:
-            list_df.append(dataset.sample(minimal))
-        
-    subsampled_df = pd.concat(list_df,ignore_index=True)
-        
+            subsampled_df = df.sample(minimal)
+            
     return subsampled_df

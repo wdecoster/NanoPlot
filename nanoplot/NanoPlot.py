@@ -61,7 +61,7 @@ def main():
                 files=[f for f in sources.values() if f][0],
                 threads=args.threads,
                 readtype=args.readtype,
-                combine="track",
+                combine="simple",
                 barcoded=args.barcoded,
                 huge=args.huge,
                 keep_supp=not(args.no_supplementary))
