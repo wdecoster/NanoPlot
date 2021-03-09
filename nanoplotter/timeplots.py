@@ -6,7 +6,6 @@ from math import ceil
 import pandas as pd
 import numpy as np
 import plotly.graph_objs as go
-from nanocomp.compplots import subsample_datasets
 import plotly.express as px
 
 def check_valid_time_and_sort(df, timescol, days=5, warning=True):
@@ -38,6 +37,8 @@ def time_plots(df, path, title=None, color="#4CB391",
     """Making plots of time vs read length, time vs quality and cumulative yield."""
     
     dfs = check_valid_time_and_sort(df, "start_time")
+    subsampled_dfs = subsample_datasets(dfs)
+    
     logging.info("Nanoplotter: Creating timeplots using {} reads.".format(len(dfs)))
     cumyields = cumulative_yield(dfs=dfs.set_index("start_time"),
                                  path=path,
@@ -47,7 +48,7 @@ def time_plots(df, path, title=None, color="#4CB391",
                                            path=path,
                                            title=title,
                                            color=color)
-    violins = violin_plots_over_time(dfs=dfs,
+    violins = violin_plots_over_time(dfs=subsampled_dfs,
                                      path=path,
                                      title=title,
                                      log_length=log_length,
@@ -56,9 +57,7 @@ def time_plots(df, path, title=None, color="#4CB391",
 
 def violin_plots_over_time(dfs, path, title,
                            log_length=False, plot_settings=None):
-    
-    dfs = subsample_datasets(dfs)
-    
+        
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
     plots.append(length_over_time(dfs=dfs,
@@ -80,8 +79,6 @@ def violin_plots_over_time(dfs, path, title,
 
 
 def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
-    dfs = subsample_datasets(dfs)
-    
     if log_length:
         time_length = Plot(path=path + "TimeLogLengthViolinPlot.html", title="Violin plot of log read lengths over time")
     else:
@@ -98,10 +95,11 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
     else:
         temp_dfs = dfs
         
+    dfs.sort_values("timebin")
     
     fig = go.Figure()
         
-    fig.add_trace(go.Violin(y=dfs[length_column], x = dfs["timebin"].sort_values(),points=False))  
+    fig.add_trace(go.Violin(y=dfs[length_column], x = dfs["timebin"],points=False))  
     
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Read length',
@@ -126,14 +124,14 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
     return time_length
 
 
-def quality_over_time(dfs, path, title=None, plot_settings={}):
-    dfs = subsample_datasets(dfs)
-    
+def quality_over_time(dfs, path, title=None, plot_settings={}):    
     time_qual = Plot(path=path + "TimeQualityViolinPlot.html", title="Violin plot of quality over time")
+    
+    dfs.sort_values("timebin")
     
     fig = go.Figure()
         
-    fig.add_trace(go.Violin(y=dfs["quals"], x = dfs["timebin"].sort_values(),points=False))  
+    fig.add_trace(go.Violin(y=dfs["quals"], x = dfs["timebin"],points=False))  
     
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Basecall quality',
@@ -150,8 +148,6 @@ def quality_over_time(dfs, path, title=None, plot_settings={}):
 
 
 def sequencing_speed_over_time(dfs, path, title, plot_settings={}):
-    dfs = subsample_datasets(dfs)
-    
     time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html", title="Violin plot of sequencing speed over time")
     
     if "timebin" not in dfs:
@@ -267,3 +263,19 @@ def cumulative_yield(dfs, path, title, color):
     cum_yield_reads.save()
 
     return [cum_yield_gb, cum_yield_reads]
+
+def subsample_datasets(df, minimal=1000):
+    list_df = []
+    
+    for d in df["dataset"].unique():
+        dataset = df.loc[df['dataset'] == d]
+        
+        if len(dataset.index) < 1000:
+            list_df.append(dataset)
+            
+        else:
+            list_df.append(dataset.sample(minimal))
+        
+    subsampled_df = pd.concat(list_df,ignore_index=True)
+        
+    return subsampled_df
