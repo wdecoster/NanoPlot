@@ -198,14 +198,20 @@ def make_plots(datadf, settings):
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
+        dfs = check_valid_time_and_sort(datadf, "start_time")
+        subsampled_dfs = subsample_datasets(dfs)        
+        
         plots.extend(
             nanoplotter.time_plots(
                 df=datadf,
                 path=settings["path"],
                 color=color,
                 title=settings["title"],
-                plot_settings=plot_settings)
+                plot_settings=plot_settings,
+                subsampled_df=subsampled_dfs
+            )
         )
+        
         if settings["logBool"]:
             plots.extend(
                 nanoplotter.time_plots(
@@ -214,9 +220,13 @@ def make_plots(datadf, settings):
                     color=color,
                     title=settings["title"],
                     log_length=True,
-                    plot_settings=plot_settings)
+                    plot_settings=plot_settings,
+                    subsampled_df=subsampled_dfs
+                )
             )
+            
         logging.info("Created timeplots.")
+        
     if "aligned_lengths" in datadf and "lengths" in datadf:
         plots.extend(
             nanoplotter.scatter(
