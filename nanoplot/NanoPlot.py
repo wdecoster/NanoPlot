@@ -198,8 +198,8 @@ def make_plots(datadf, settings):
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
-        dfs = check_valid_time_and_sort(datadf, "start_time")
-        subsampled_dfs = subsample_datasets(dfs)        
+        dfs = nanoplotter.check_valid_time_and_sort(datadf, "start_time")
+        subsampled_dfs = nanoplotter.subsample_datasets(dfs)        
         
         plots.extend(
             nanoplotter.time_plots(
