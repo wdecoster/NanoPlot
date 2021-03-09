@@ -23,6 +23,7 @@ from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
 import nanoplotter
+from nanoplotter.timeplots import check_valid_time_and_sort, subsample_datasets
 import pickle
 import sys
 
@@ -198,8 +199,8 @@ def make_plots(datadf, settings):
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
-        dfs = nanoplotter.check_valid_time_and_sort(datadf, "start_time")
-        subsampled_dfs = nanoplotter.subsample_datasets(dfs)        
+        dfs = check_valid_time_and_sort(datadf, "start_time")
+        subsampled_dfs = subsample_datasets(dfs)        
         
         plots.extend(
             nanoplotter.time_plots(
