@@ -203,7 +203,6 @@ def make_plots(datadf, settings):
                 df=datadf,
                 path=settings["path"],
                 color=color,
-                figformat=settings["format"],
                 title=settings["title"],
                 plot_settings=plot_settings)
         )
@@ -213,7 +212,6 @@ def make_plots(datadf, settings):
                     df=datadf,
                     path=settings["path"],
                     color=color,
-                    figformat=settings["format"],
                     title=settings["title"],
                     log_length=True,
                     plot_settings=plot_settings)
