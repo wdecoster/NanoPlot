@@ -32,8 +32,8 @@ def check_valid_time_and_sort(df, timescol, days=5, warning=True):
             .reset_index(drop=True) \
             .reset_index()
 
-def time_plots(df, path, title=None, color="#4CB391",
-               log_length=False, plot_settings=None, subsampled_df):
+def time_plots(df, subsampled_df, path, title=None, color="#4CB391",
+               log_length=False, plot_settings=None):
     """Making plots of time vs read length, time vs quality and cumulative yield."""
     
     logging.info("Nanoplotter: Creating timeplots using {} reads.".format(len(dfs)))

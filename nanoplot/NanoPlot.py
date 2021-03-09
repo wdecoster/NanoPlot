@@ -204,11 +204,11 @@ def make_plots(datadf, settings):
         plots.extend(
             nanoplotter.time_plots(
                 df=datadf,
+                subsampled_df=subsampled_dfs,                
                 path=settings["path"],
                 color=color,
                 title=settings["title"],
-                plot_settings=plot_settings,
-                subsampled_df=subsampled_dfs
+                plot_settings=plot_settings
             )
         )
         
@@ -216,12 +216,12 @@ def make_plots(datadf, settings):
             plots.extend(
                 nanoplotter.time_plots(
                     df=datadf,
+                    subsampled_df=subsampled_dfs,                    
                     path=settings["path"],
                     color=color,
                     title=settings["title"],
                     log_length=True,
-                    plot_settings=plot_settings,
-                    subsampled_df=subsampled_dfs
+                    plot_settings=plot_settings
                 )
             )
             
