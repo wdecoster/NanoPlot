@@ -57,6 +57,9 @@ def violin_plots_over_time(dfs, path, title,
         
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
+    
+    dfs.sort_values("timebin")
+    
     plots.append(length_over_time(dfs=dfs,
                                   path=path,
                                   title=title,
@@ -91,9 +94,7 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
         temp_dfs = dfs[dfs["length_filter"]]
     else:
         temp_dfs = dfs
-        
-    dfs.sort_values("timebin")
-    
+            
     fig = go.Figure()
         
     fig.add_trace(go.Violin(y=dfs[length_column], x = dfs["timebin"],points=False))  
@@ -123,9 +124,7 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
 
 def quality_over_time(dfs, path, title=None, plot_settings={}):    
     time_qual = Plot(path=path + "TimeQualityViolinPlot.html", title="Violin plot of quality over time")
-    
-    dfs.sort_values("timebin")
-    
+        
     fig = go.Figure()
         
     fig.add_trace(go.Violin(y=dfs["quals"], x = dfs["timebin"],points=False))  
@@ -147,13 +146,11 @@ def quality_over_time(dfs, path, title=None, plot_settings={}):
 def sequencing_speed_over_time(dfs, path, title, plot_settings={}):
     time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html", title="Violin plot of sequencing speed over time")
     
-    if "timebin" not in dfs:
-        dfs['timebin'] = add_time_bins(dfs)
     mask = dfs['duration'] != 0
     
     fig = go.Figure()
     
-    fig.add_trace(go.Violin(x=dfs.loc[mask, "timebin"].sort_values(), y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"], points=False)) 
+    fig.add_trace(go.Violin(x=dfs.loc[mask, "timebin"], y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"], points=False)) 
     
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Sequencing speed (nucleotides/second)',
