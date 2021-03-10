@@ -42,7 +42,6 @@ class Plot(object):
                 html_out.write(self.html)
             try:
                 self.save_static()
-                break
             except AttributeError:
                 logging.warning("No static plots are saved due to  version-compatibility issues")
                 
