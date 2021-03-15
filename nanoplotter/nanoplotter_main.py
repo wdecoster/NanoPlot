@@ -29,8 +29,7 @@ import plotly
 from nanoplotter.spatial_heatmap import spatial_heatmap
 from nanoplotter.timeplots import time_plots
 from pauvre.marginplot import margin_plot
-import seaborn as sns
-from matplotlib import colors as mcolors
+
 import matplotlib.pyplot as plt
 import logging
 import sys
@@ -38,9 +37,11 @@ import pandas as pd
 import numpy as np
 from collections import namedtuple
 from nanoplotter.plot import Plot
+import seaborn as sns
 import matplotlib as mpl
-mpl.use('Agg')
-
+from matplotlib import colors as mcolors
+import plotly.express as px
+import plotly.figure_factory as ff
 
 def check_valid_color(color):
     """Check if the color provided by the user is valid.
@@ -90,8 +91,107 @@ def plot_settings(plot_settings, dpi):
     sns.set(**plot_settings)
     mpl.rcParams['savefig.dpi'] = dpi
 
+def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
+            stat=None, log=False, minvalx=0, minvaly=0, title=None,
+            plot_settings={}, xmax=None, ymax=None):
+    """-> 
+    create marginalised scatterplots and KDE plot with marginalized histograms -> update from scatter_legacy function to utilise plotly package
+    - scatterplot with histogram on both axes
+    - kernel density plot with histograms on both axes
+    - hexbin not implemented yet 
+    - pauvre plot temporarily not available
+    """
+    logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads.".format(
+        names[0], names[1], x.size))
+    if not contains_variance([x, y], names):
+        return []
 
-def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
+    maxvalx = xmax or np.amax(x)
+    maxvaly = ymax or np.amax(y)
+    
+
+    plots_made = []
+    
+    if plots["dot"]:
+        if log:
+            dot_plot = Plot(
+                path=path + "_loglength_dot.html",
+                title="{} vs {} plot using dots "
+                      "after log transformation of read lengths".format(names[0], names[1]))
+        else:
+            dot_plot = Plot(
+                path=path + "_dot.html",
+                title="{} vs {} plot using dots".format(names[0], names[1]))
+            
+        fig = px.scatter(x=x, y=y, marginal_x="histogram", marginal_y="histogram",range_x=[minvalx,maxvalx],range_y=[minvaly,maxvaly])
+
+        fig.update_yaxes(rangemode="tozero")
+        fig.update_xaxes(rangemode="tozero")
+        
+        fig.update_layout(xaxis_title=names[0],
+               yaxis_title=names[1],
+               title=title or dot_plot.title,
+               title_x=0.5)        
+        
+        if log:
+            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvaly)]
+            fig.update_layout(
+                yaxis=dict(
+                    tickmode='array',
+                    tickvals=np.log10(ticks),
+                    ticktext=ticks,
+                    tickangle=45
+                )
+            )
+        
+        dot_plot.fig = fig
+        dot_plot.html = dot_plot.fig.to_html(full_html=False,include_plotlyjs='cdn')
+        dot_plot.save()
+        plots_made.append(dot_plot)
+    
+    if plots["kde"]:
+        idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
+        if log:
+            kde_plot = Plot(
+                path=path + "_loglength_kde.html",
+                title="{} vs {} plot using a kernel density estimation "
+                      "after log transformation of read lengths".format(names[0], names[1]))
+        else:
+            kde_plot = Plot(
+                path=path + "_kde.html",
+                title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
+                
+        colorscale = ['#7A4579', '#D56073', 'rgb(236,158,105)', (1, 1, 0.2), (0.98,0.98,0.98)]
+        
+        fig = ff.create_2d_density(x[idx], y[idx], point_size=3)        
+            
+        fig.update_layout(xaxis_title=names[0],
+               yaxis_title=names[1],
+               title=title or kde_plot.title,
+               title_x=0.5)
+        
+        if log:
+            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvaly)]
+            fig.update_layout(
+                yaxis=dict(
+                    tickmode='array',
+                    tickvals=np.log10(ticks),
+                    ticktext=ticks,
+                    tickangle=45
+                )
+            )
+        
+        kde_plot.fig = fig
+        kde_plot.html = kde_plot.fig.to_html(full_html=False,include_plotlyjs='cdn')
+        kde_plot.save()
+        plots_made.append(kde_plot)
+        
+        if legacy:
+            plots_made + scatter_legacy(x,y,names,path,plots,color,figformat,stat,log,minvalx,minvaly,title,plot_settings)
+        return plots_made 
+        
+
+def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
             stat=None, log=False, minvalx=0, minvaly=0, title=None,
             plot_settings={}, xmax=None, ymax=None):
     """Create bivariate plots.
@@ -102,6 +202,11 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
     -A kernel density plot with density curves on axes
     -A pauvre-style plot using code from https://github.com/conchoecia/pauvre
     """
+    try:
+        mpl.use('Agg')
+    except:
+        sys.stderr("need additional modules when running with --legacy")
+        return []
     logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads.".format(
         names[0], names[1], x.size))
     if not contains_variance([x, y], names):
@@ -111,7 +216,8 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
     maxvaly = ymax or np.amax(y)
 
     plots_made = []
-
+    path = path +"_legacy"
+    
     if plots["hex"]:
         if log:
             hex_plot = Plot(
@@ -212,7 +318,12 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
         kde_plot.fig = plot
         kde_plot.save(format=figformat)
         plots_made.append(kde_plot)
+    
+    plt.close("all")
+    return plots_made
 
+
+def pauvre_plot():
     if plots["pauvre"] and names == ['Read lengths', 'Average read quality'] and log is False:
         pauvre_plot = Plot(
             path=path + "_pauvre." + figformat,
@@ -234,10 +345,7 @@ def scatter(x, y, names, path, plots, color="#4CB391", figformat="png",
                     TRANSPARENT=True,
                     QUIET=True)
         plots_made.append(pauvre_plot)
-    plt.close("all")
-    return plots_made
-
-
+        
 def contains_variance(arrays, names):
     """
     Make sure both arrays for bivariate ("scatter") plot have a stddev > 0
@@ -252,7 +360,7 @@ def contains_variance(arrays, names):
         return True
 
 
-def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figformat="png"):
+def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
     """Create histogram of normal and log transformed read lengths."""
     logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
@@ -263,71 +371,79 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391", figfo
         logging.info("NanoPlot:  Using {} reads maximum of {}bp.".format(array.size, maxvalx))
 
     plots = []
-    HistType = namedtuple('HistType', 'weight name ylabel')
-    for h_type in [HistType(None, "", "Number of reads"),
-                   HistType(array, "Weighted ", "Number of bases")]:
+    
+    weighted, non_weighted = {'weight':array, 'name':'Weighted', 'ylabel':'Number of reads'} , {'weight':None, 'name':'', 'ylabel':'Number of reads'}
+    HistType = [weighted,non_weighted]
+    
+    for h_type in HistType:
+        hist_weight, hist_name, hist_ylabel = h_type.values()
         histogram = Plot(
-            path=path + h_type.name.replace(" ", "_") + "Histogram" +
-            name.replace(' ', '') + "." + figformat,
-            title=h_type.name + "Histogram of read lengths")
-        ax = sns.distplot(
-            a=array,
-            kde=False,
-            hist=True,
-            bins=max(round(int(maxvalx) / 500), 10),
-            color=color,
-            hist_kws=dict(weights=h_type.weight,
-                          edgecolor=color,
-                          linewidth=0.2,
-                          alpha=0.8))
+            path=path + hist_name.replace(" ", "_") + "Histogram" +
+            name.replace(' ', '') + ".html",
+            title=hist_name + "Histogram of read lengths")
+        
+        hist, bin_edges = np.histogram(array, bins=max(round(int(maxvalx) / 500), 10),weights=hist_weight)
+        
+        fig = go.Figure()
+        
+        fig.add_trace(go.Bar(x=bin_edges[1:], y=hist, marker_color=color))
+        
         if n50:
-            plt.axvline(n50)
-            plt.annotate('N50', xy=(n50, np.amax([h.get_height() for h in ax.patches])), size=8)
-        ax.set(
-            xlabel='Read length',
-            ylabel=h_type.ylabel,
-            title=title or histogram.title)
-        plt.ticklabel_format(style='plain', axis='y')
-        histogram.fig = ax.get_figure()
-        histogram.save(format=figformat)
-        plt.close("all")
+            fig.add_vline(n50)
+            fig.add_annotation(text='N50', x=n50, y=0.95, textfont_size=8)
+        
+        fig.update_layout(xaxis_title='Read length',
+                          yaxis_title=hist_ylabel,
+                          title = title or histogram.title,
+                          title_x=0.5)    
+                            
+        histogram.fig = fig
+        histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
+        histogram.save()        
 
         log_histogram = Plot(
-            path=path + h_type.name.replace(" ", "_") + "LogTransformed_Histogram" +
-            name.replace(' ', '') + "." + figformat,
-            title=h_type.name + "Histogram of read lengths after log transformation")
-        ax = sns.distplot(
-            a=np.log10(array),
-            kde=False,
-            hist=True,
-            color=color,
-            hist_kws=dict(weights=h_type.weight,
-                          edgecolor=color,
-                          linewidth=0.2,
-                          alpha=0.8))
+            path=path + hist_name.replace(" ", "_") + "LogTransformed_Histogram" +
+            name.replace(' ', '') + ".html",
+            title=hist_name + "Histogram of read lengths after log transformation")
+        
+        if hist_weight is None:        
+            hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(round(int(maxvalx) / 500), 10), weights=hist_weight)
+        
+        else:
+            hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(round(int(maxvalx) / 500), 10), weights=np.log10(hist_weight))
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=bin_edges_log[1:], y=hist_log, marker_color=color))        
+        
         ticks = [10**i for i in range(10) if not 10**i > 10 * maxvalx]
-        ax.set(
-            xticks=np.log10(ticks),
-            xticklabels=ticks,
-            xlabel='Read length',
-            ylabel=h_type.ylabel,
-            title=title or log_histogram.title)
+        
+        fig.update_layout(
+            xaxis = dict(
+                tickmode = 'array',
+                tickvals = np.log10(ticks),
+                ticktext = ticks),
+            xaxis_title='Read length',
+            yaxis_title=hist_ylabel,
+            title = title or log_histogram.title,
+            title_x=0.5)
+        
         if n50:
-            plt.axvline(np.log10(n50))
-            plt.annotate('N50', xy=(np.log10(n50), np.amax(
-                [h.get_height() for h in ax.patches])), size=8)
-        plt.ticklabel_format(style='plain', axis='y')
-        log_histogram.fig = ax.get_figure()
-        log_histogram.save(format=figformat)
-        plt.close("all")
+            fig.add_vline(np.log10(n50))
+            fig.add_annotation(text='N50', x=np.log10(n50), y=0.95, textfont_size=8)        
+        
+        log_histogram.fig = fig
+        log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
+        log_histogram.save()
+        
         plots.extend([histogram, log_histogram])
+    
     plots.append(dynamic_histogram(array=array, name=name, path=path, title=title, color=color))
     plots.append(yield_by_minimal_length_plot(array=array,
                                               name=name,
                                               path=path,
                                               title=title,
-                                              color=color,
-                                              figformat=figformat))
+                                              color=color))
+    
     return plots
 
 
@@ -368,27 +484,27 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
 
 
 def yield_by_minimal_length_plot(array, name, path,
-                                 title=None, color="#4CB391", figformat="png"):
+                                 title=None, color="#4CB391"):
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
+    
     yield_by_length = Plot(
-        path=path + "Yield_By_Length." + figformat,
+        path=path + "Yield_By_Length.html",
         title="Yield by length")
-    ax = sns.regplot(
-        x='lengths',
-        y="cumyield_gb",
-        data=df,
-        x_ci=None,
-        fit_reg=False,
-        color=color,
-        scatter_kws={"s": 3})
-    ax.set(
-        xlabel='Read length',
-        ylabel='Cumulative yield for minimal length',
-        title=title or yield_by_length.title)
-    yield_by_length.fig = ax.get_figure()
-    yield_by_length.save(format=figformat)
-    plt.close("all")
+    
+    fig = px.scatter(
+        x=df['lengths'],
+        y=df['cumyield_gb'])
+    
+    fig.update_layout(xaxis_title='Read length',
+           yaxis_title='Cumulative yield for minimal length',
+           title=title or yield_by_length.title,
+           title_x=0.5)    
+    
+    yield_by_length.fig = fig
+    yield_by_length.html = yield_by_length.fig.to_html(full_html=False,include_plotlyjs='cdn')
+    yield_by_length.save()    
+    
     return yield_by_length
 
 
@@ -400,17 +516,17 @@ def run_tests():
         y=df["quals"],
         names=['Read lengths', 'Average read quality'],
         path="LengthvsQualityScatterPlot",
-        plots={'dot': 1, 'kde': 1, 'hex': 1, 'pauvre': 1},
+        plots={'dot': 1, 'kde': 1},
         plot_settings=dict(font_scale=1))
     time_plots(
         df=df,
-        path=".",
+        path="./",
         color="#4CB391",
         plot_settings=dict(font_scale=1))
     length_plots(
         array=df["lengths"],
         name="lengths",
-        path=".")
+        path="./")
     spatial_heatmap(
         array=df["channelIDs"],
         title="Number of reads generated per channel",

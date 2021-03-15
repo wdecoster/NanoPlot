@@ -1,10 +1,8 @@
 import numpy as np
 import logging
 from nanoplotter.plot import Plot
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
-
+import plotly.graph_objects as go
 
 class Layout(object):
     def __init__(self, structure, template, xticks, yticks, flowcell):
@@ -64,28 +62,30 @@ def make_layout(maxval):
             flowcell='PromethION')
 
 
-def spatial_heatmap(array, path, title=None, color="Greens", figformat="png"):
+def spatial_heatmap(array, path, title=None, color="Greens"):
     """Taking channel information and creating post run channel activity plots."""
     logging.info("Nanoplotter: Creating heatmap of reads per channel using {} reads."
                  .format(array.size))
+    
     activity_map = Plot(
-        path=path + "." + figformat,
+        path=path + ".html",
         title="Number of reads generated per channel")
+    
     layout = make_layout(maxval=np.amax(array))
     valueCounts = pd.value_counts(pd.Series(array))
+    
     for entry in valueCounts.keys():
         layout.template[np.where(layout.structure == entry)] = valueCounts[entry]
-    plt.figure()
-    ax = sns.heatmap(
-        data=pd.DataFrame(layout.template, index=layout.yticks, columns=layout.xticks),
-        xticklabels="auto",
-        yticklabels="auto",
-        square=True,
-        cbar_kws={"orientation": "horizontal"},
-        cmap=color,
-        linewidths=0.20)
-    ax.set_title(title or activity_map.title)
-    activity_map.fig = ax.get_figure()
-    activity_map.save(format=figformat)
-    plt.close("all")
+
+    data=pd.DataFrame(layout.template, index=layout.yticks, columns=layout.xticks)   
+    
+    fig = go.Figure(data=go.Heatmap(z=data.values.tolist(),colorscale=color))
+    fig.update_layout(xaxis_title='Channel',
+           yaxis_title='Number of reads',
+           title=title or activity_map.title,
+           title_x=0.5)
+    
+    activity_map.fig = fig
+    activity_map.html = activity_map.fig.to_html(full_html=False,include_plotlyjs='cdn')
+    activity_map.save()
     return [activity_map]

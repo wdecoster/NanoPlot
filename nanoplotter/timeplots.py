@@ -110,10 +110,11 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
             yaxis = dict(
                 tickmode = 'array',
                 tickvals = np.log10(ticks),
-                ticktext = ticks,
-                tickangle = 45
+                ticktext = ticks
             )
         )
+        
+    fig.update_yaxes(tickangle=45)
         
     time_length.fig = fig
     time_length.html = time_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
