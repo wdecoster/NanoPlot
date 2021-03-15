@@ -43,7 +43,7 @@ class Plot(object):
             try:
                 self.save_static()
             except AttributeError:
-                logging.warning("No static plots are saved due to  version-compatibility issues")
+                logging.warning("No static plots are saved due to version-compatibility issues")
                 
         elif self.fig:
             self.fig.savefig(
