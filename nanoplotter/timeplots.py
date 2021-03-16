@@ -84,10 +84,7 @@ def length_over_time(dfs, path, title, log_length=False):
         time_length = Plot(path=path + "TimeLengthViolinPlot.html",
                            title="Violin plot of read lengths over time")
 
-    if log_length:
-        length_column = "log_lengths"
-    else:
-        length_column = "lengths"
+    length_column = "log_lengths" if log_length else "lengths"
 
     if "length_filter" in dfs:  # produced by NanoPlot filtering of too long reads
         temp_dfs = dfs[dfs["length_filter"]]
@@ -96,7 +93,7 @@ def length_over_time(dfs, path, title, log_length=False):
 
     fig = go.Figure()
 
-    fig.add_trace(go.Violin(y=dfs[length_column], x=dfs["timebin"], points=False))
+    fig.add_trace(go.Violin(y=temp_dfs[length_column], x=temp_dfs["timebin"], points=False))
 
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Read length',
