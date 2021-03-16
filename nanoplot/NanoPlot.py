@@ -145,13 +145,13 @@ def make_plots(datadf, settings):
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
-    
+
     subdf = subsample_datasets(datadf)
     if settings["N50"]:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
     else:
         n50 = None
-    
+
     legacy = settings["legacy"]
     plots.extend(
         nanoplotter.length_plots(
