@@ -28,8 +28,6 @@ import plotly.graph_objs as go
 import plotly
 from nanoplotter.spatial_heatmap import spatial_heatmap
 from nanoplotter.timeplots import time_plots
-from pauvre.marginplot import margin_plot
-
 import matplotlib.pyplot as plt
 import logging
 import sys
@@ -331,6 +329,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
 
 
 # def pauvre_plot():
+#     from pauvre.marginplot import margin_plot
 #     if plots["pauvre"] and names == ['Read lengths', 'Average read quality'] and log is False:
 #         pauvre_plot = Plot(
 #             path=path + "_pauvre." + figformat,
