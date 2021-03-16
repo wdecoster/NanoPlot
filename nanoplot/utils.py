@@ -24,31 +24,31 @@ class CustomHelpFormatter(HelpFormatter):
         return _textwrap.wrap(text, 80)
 
 
-class Action_Print_Colors(Action):
-    def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
-        super(Action_Print_Colors, self).__init__(
-            option_strings=option_strings,
-            dest=dest,
-            default=default,
-            nargs=0,
-            help=help)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        list_colors()
-
-
-class Action_Print_Colormaps(Action):
-
-    def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
-        super(Action_Print_Colormaps, self).__init__(
-            option_strings=option_strings,
-            dest=dest,
-            default=default,
-            nargs=0,
-            help=help)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        list_colormaps()
+# class Action_Print_Colors(Action):
+#     def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
+#         super(Action_Print_Colors, self).__init__(
+#             option_strings=option_strings,
+#             dest=dest,
+#             default=default,
+#             nargs=0,
+#             help=help)
+#
+#     def __call__(self, parser, namespace, values, option_string=None):
+#         list_colors()
+#
+#
+# class Action_Print_Colormaps(Action):
+#
+#     def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
+#         super(Action_Print_Colormaps, self).__init__(
+#             option_strings=option_strings,
+#             dest=dest,
+#             default=default,
+#             nargs=0,
+#             help=help)
+#
+#     def __call__(self, parser, namespace, values, option_string=None):
+#         list_colormaps()
 
 
 def get_args():
@@ -170,14 +170,14 @@ def get_args():
                         type=str,
                         nargs='*',
                         choices=['kde', 'hex', 'dot', 'pauvre'])
-    visual.add_argument("--listcolors",
-                        help="List the colors which are available for plotting and exit.",
-                        action=Action_Print_Colors,
-                        default=False)
-    visual.add_argument("--listcolormaps",
-                        help="List the colors which are available for plotting and exit.",
-                        action=Action_Print_Colormaps,
-                        default=False)
+    # visual.add_argument("--listcolors",
+    #                     help="List the colors which are available for plotting and exit.",
+    #                     action=Action_Print_Colors,
+    #                     default=False)
+    # visual.add_argument("--listcolormaps",
+    #                     help="List the colors which are available for plotting and exit.",
+    #                     action=Action_Print_Colormaps,
+    #                     default=False)
     visual.add_argument("--no-N50",
                         help="Hide the N50 mark in the read length histogram",
                         action="store_true")
