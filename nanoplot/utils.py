@@ -250,12 +250,10 @@ def get_args():
                          nargs='+',
                          metavar="file")
     args = parser.parse_args()
-    if args.listcolors:
-        print("need to be implemented!")
-        # list_colors()
-    if args.listcolormaps:
-        print("need to be implemented!")
-        # list_colormaps()
+    # if args.listcolors:
+    #     # list_colors()
+    # if args.listcolormaps:
+    #     # list_colormaps()
     if args.no_N50:
         sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
         sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
