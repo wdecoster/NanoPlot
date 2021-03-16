@@ -8,6 +8,7 @@ import numpy as np
 import plotly.graph_objs as go
 import plotly.express as px
 
+
 def check_valid_time_and_sort(df, timescol, days=5, warning=True):
     """Check if the data contains reads created within the same `days` timeframe.
 
@@ -32,10 +33,11 @@ def check_valid_time_and_sort(df, timescol, days=5, warning=True):
             .reset_index(drop=True) \
             .reset_index()
 
+
 def time_plots(df, subsampled_df, path, title=None, color="#4CB391",
                log_length=False, plot_settings=None):
     """Making plots of time vs read length, time vs quality and cumulative yield."""
-    
+
     logging.info("Nanoplotter: Creating timeplots using {} (complete dataset)/{} (subsampled dataset) reads.".format(len(df), len(subsampled_df)))
     cumyields = cumulative_yield(dfs=df.set_index("start_time"),
                                  path=path,
@@ -52,14 +54,15 @@ def time_plots(df, subsampled_df, path, title=None, color="#4CB391",
                                      plot_settings=plot_settings)
     return cumyields + reads_pores_over_time + violins
 
+
 def violin_plots_over_time(dfs, path, title,
                            log_length=False, plot_settings=None):
-        
+
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
-    
+
     dfs.sort_values("timebin")
-    
+
     plots.append(length_over_time(dfs=dfs,
                                   path=path,
                                   title=title,
@@ -80,7 +83,8 @@ def violin_plots_over_time(dfs, path, title,
 
 def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
     if log_length:
-        time_length = Plot(path=path + "TimeLogLengthViolinPlot.html", title="Violin plot of log read lengths over time")
+        time_length = Plot(path=path + "TimeLogLengthViolinPlot.html",
+                           title="Violin plot of log read lengths over time")
     else:
         time_length = Plot(path=path + "TimeLengthViolinPlot.html",
                            title="Violin plot of read lengths over time")
@@ -94,76 +98,79 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
         temp_dfs = dfs[dfs["length_filter"]]
     else:
         temp_dfs = dfs
-            
+
     fig = go.Figure()
-        
-    fig.add_trace(go.Violin(y=dfs[length_column], x = dfs["timebin"],points=False))  
-    
+
+    fig.add_trace(go.Violin(y=dfs[length_column], x=dfs["timebin"], points=False))
+
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Read length',
-                      title = title or time_length.title,
+                      title=title or time_length.title,
                       title_x=0.5)
-        
+
     if log_length:
         ticks = [10**i for i in range(10) if not 10**i > 10 * np.amax(dfs["lengths"])]
         fig.update_layout(
-            yaxis = dict(
-                tickmode = 'array',
-                tickvals = np.log10(ticks),
-                ticktext = ticks
+            yaxis=dict(
+                tickmode='array',
+                tickvals=np.log10(ticks),
+                ticktext=ticks
             )
         )
-        
+
     fig.update_yaxes(tickangle=45)
-        
+
     time_length.fig = fig
     time_length.html = time_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
     time_length.save()
-    
+
     return time_length
 
 
-def quality_over_time(dfs, path, title=None, plot_settings={}):    
-    time_qual = Plot(path=path + "TimeQualityViolinPlot.html", title="Violin plot of quality over time")
-        
+def quality_over_time(dfs, path, title=None, plot_settings={}):
+    time_qual = Plot(path=path + "TimeQualityViolinPlot.html",
+                     title="Violin plot of quality over time")
+
     fig = go.Figure()
-        
-    fig.add_trace(go.Violin(y=dfs["quals"], x = dfs["timebin"],points=False))  
-    
+
+    fig.add_trace(go.Violin(y=dfs["quals"], x=dfs["timebin"], points=False))
+
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Basecall quality',
-                      title = title or time_qual.title,
-                      title_x=0.5)    
-        
-    fig.update_xaxes(tickangle = 45)
-    
+                      title=title or time_qual.title,
+                      title_x=0.5)
+
+    fig.update_xaxes(tickangle=45)
+
     time_qual.fig = fig
     time_qual.html = time_qual.fig.to_html(full_html=False, include_plotlyjs='cdn')
     time_qual.save()
-    
+
     return time_qual
 
 
 def sequencing_speed_over_time(dfs, path, title, plot_settings={}):
-    time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html", title="Violin plot of sequencing speed over time")
-    
+    time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html",
+                         title="Violin plot of sequencing speed over time")
+
     mask = dfs['duration'] != 0
-    
+
     fig = go.Figure()
-    
-    fig.add_trace(go.Violin(x=dfs.loc[mask, "timebin"], y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"], points=False)) 
-    
+
+    fig.add_trace(go.Violin(x=dfs.loc[mask, "timebin"], y=dfs.loc[mask,
+                                                                  "lengths"] / dfs.loc[mask, "duration"], points=False))
+
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Sequencing speed (nucleotides/second)',
-                      title = title or time_duration.title,
+                      title=title or time_duration.title,
                       title_x=0.5)
-        
-    fig.update_xaxes(tickangle = 45)
-    
+
+    fig.update_xaxes(tickangle=45)
+
     time_duration.fig = fig
-    time_duration.html = time_duration.fig.to_html(full_html=False, include_plotlyjs='cdn') 
+    time_duration.html = time_duration.fig.to_html(full_html=False, include_plotlyjs='cdn')
     time_duration.save()
-    
+
     return time_duration
 
 
@@ -180,40 +187,40 @@ def plot_over_time(dfs, path, title, color):
     num_reads = Plot(path=path + "NumberOfReads_Over_Time.html",
                      title="Number of reads over time")
     s = dfs.loc[:, "lengths"].resample('10T').count()
-    
+
     fig = px.scatter(
         data_frame=None,
         x=s.index.total_seconds() / 3600,
-        y=s)  
-    
+        y=s)
+
     fig.update_layout(xaxis_title='Run time (hours)',
                       yaxis_title='Number of reads per 10 minutes',
-                      title = title or num_reads.title,
-                      title_x=0.5)        
-    
+                      title=title or num_reads.title,
+                      title_x=0.5)
+
     num_reads.fig = fig
-    num_reads.html = num_reads.fig.to_html(full_html=False, include_plotlyjs='cdn') 
+    num_reads.html = num_reads.fig.to_html(full_html=False, include_plotlyjs='cdn')
     num_reads.save()
-    
+
     plots = [num_reads]
 
     if "channelIDs" in dfs:
         pores_over_time = Plot(path=path + "ActivePores_Over_Time.html",
                                title="Number of active pores over time")
         s = dfs.loc[:, "channelIDs"].resample('10T').nunique()
-        
+
         fig = px.scatter(
             data_frame=None,
             x=s.index.total_seconds() / 3600,
             y=s)
-        
+
         fig.update_layout(xaxis_title='Run time (hours)',
-               yaxis_title='Active pores per 10 minutes',
-               title=title or pores_over_time.title,
-               title_x=0.5)
-        
+                          yaxis_title='Active pores per 10 minutes',
+                          title=title or pores_over_time.title,
+                          title_x=0.5)
+
         pores_over_time.fig = fig
-        pores_over_time.html = pores_over_time.fig.to_html(full_html=False,include_plotlyjs='cdn')
+        pores_over_time.html = pores_over_time.fig.to_html(full_html=False, include_plotlyjs='cdn')
         pores_over_time.save()
 
         plots.append(pores_over_time)
@@ -223,63 +230,64 @@ def plot_over_time(dfs, path, title, color):
 def cumulative_yield(dfs, path, title, color):
     cum_yield_gb = Plot(path=path + "CumulativeYieldPlot_Gigabases.html",
                         title="Cumulative yield")
-    
+
     s = dfs.loc[:, "lengths"].cumsum().resample('1T').max() / 1e9
-    
+
     fig = px.scatter(
         x=s.index.total_seconds() / 3600,
         y=s)
-    
+
     fig.update_layout(xaxis_title='Run time (hours)',
-           yaxis_title='Cumulative yield in gigabase',
-           title=title or cum_yield_gb.title,
-           title_x=0.5)    
-    
+                      yaxis_title='Cumulative yield in gigabase',
+                      title=title or cum_yield_gb.title,
+                      title_x=0.5)
+
     cum_yield_gb.fig = fig
-    cum_yield_gb.html = cum_yield_gb.fig.to_html(full_html=False,include_plotlyjs='cdn')
+    cum_yield_gb.html = cum_yield_gb.fig.to_html(full_html=False, include_plotlyjs='cdn')
     cum_yield_gb.save()
 
     cum_yield_reads = Plot(path=path + "CumulativeYieldPlot_NumberOfReads.html",
                            title="Cumulative yield")
-    
+
     s = dfs.loc[:, "lengths"].resample('10T').count().cumsum()
-    
+
     fig = px.scatter(
         x=s.index.total_seconds() / 3600,
         y=s)
-    
+
     fig.update_layout(xaxis_title='Run time (hours)',
-           yaxis_title='Cumulative yield in number of reads',
-           title=title or cum_yield_gb.title,
-           title_x=0.5)  
-    
+                      yaxis_title='Cumulative yield in number of reads',
+                      title=title or cum_yield_gb.title,
+                      title_x=0.5)
+
     cum_yield_reads.fig = fig
-    cum_yield_reads.html = cum_yield_gb.fig.to_html(full_html=False,include_plotlyjs='cdn')
+    cum_yield_reads.html = cum_yield_gb.fig.to_html(full_html=False, include_plotlyjs='cdn')
     cum_yield_reads.save()
 
     return [cum_yield_gb, cum_yield_reads]
 
+
 def subsample_datasets(df, minimal=1000):
-    
+
     if 'dataset' in df:
         list_df = []
-        
+
         for d in df["dataset"].unique():
             dataset = df.loc[df['dataset'] == d]
-            
+
             if len(dataset.index) < 1000:
                 list_df.append(dataset)
-                
+
             else:
                 list_df.append(dataset.sample(minimal))
-            
-        subsampled_df = pd.concat(list_df,ignore_index=True)
-        
+
+        subsampled_df = pd.concat(list_df, ignore_index=True)
+
     else:
         if len(df.index) < minimal:
-            subsampled_df = df 
-            
+            subsampled_df = df
+
         else:
             subsampled_df = df.sample(minimal)
-            
+
     return subsampled_df
