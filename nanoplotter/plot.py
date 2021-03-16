@@ -3,6 +3,7 @@ from io import BytesIO
 from urllib.parse import quote as urlquote
 import sys
 from kaleido.scopes.plotly import PlotlyScope
+import logging
 
 
 class Plot(object):
@@ -39,7 +40,11 @@ class Plot(object):
         if self.html:
             with open(self.path, 'w') as html_out:
                 html_out.write(self.html)
-            self.save_static()
+            try:
+                self.save_static()
+            except AttributeError:
+                logging.warning("No static plots are saved due to version-compatibility issues")
+                
         elif self.fig:
             self.fig.savefig(
                 fname=self.path,
