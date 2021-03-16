@@ -33,6 +33,8 @@ import numpy as np
 from nanoplotter.plot import Plot
 import plotly.express as px
 import plotly.figure_factory as ff
+from nanoplotter.spatial_heatmap import spatial_heatmap
+from nanoplotter.timeplots import time_plots
 
 
 # def check_valid_color(color):
@@ -523,8 +525,6 @@ def yield_by_minimal_length_plot(array, name, path,
 
 def run_tests():
     import pickle
-    from nanoplotter.spatial_heatmap import spatial_heatmap
-    from nanoplotter.timeplots import time_plots
     df = pickle.load(open("nanotest/sequencing_summary.pickle", "rb"))
     scatter(
         x=df["lengths"],
