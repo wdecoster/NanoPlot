@@ -39,7 +39,7 @@ def main():
     try:
         utils.make_output_dir(args.outdir)
         utils.init_logs(args)
-        args.format = nanoplotter.check_valid_format(args.format)
+        #args.format = nanoplotter.check_valid_format(args.format)
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         elif args.feather:
