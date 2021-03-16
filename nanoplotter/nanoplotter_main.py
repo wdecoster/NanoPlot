@@ -299,7 +299,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
             else:
                 kde_plot = Plot(
                     path=path + "_kde." + figformat,
-                    title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
+                    title=f"{names[0]} vs {names[1]} plot using a kernel density estimation")
             plot = sns.jointplot(
                 x=x[idx],
                 y=y[idx],
