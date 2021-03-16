@@ -329,28 +329,28 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
     return plots_made
 
 
-def pauvre_plot():
-    if plots["pauvre"] and names == ['Read lengths', 'Average read quality'] and log is False:
-        pauvre_plot = Plot(
-            path=path + "_pauvre." + figformat,
-            title="{} vs {} plot using pauvre-style @conchoecia".format(names[0], names[1]))
-        sns.set(style="white", **plot_settings)
-        margin_plot(df=pd.DataFrame({"length": x, "meanQual": y}),
-                    Y_AXES=False,
-                    title=title or "Length vs Quality in Pauvre-style",
-                    plot_maxlen=None,
-                    plot_minlen=0,
-                    plot_maxqual=None,
-                    plot_minqual=0,
-                    lengthbin=None,
-                    qualbin=None,
-                    BASENAME="whatever",
-                    path=pauvre_plot.path,
-                    fileform=[figformat],
-                    dpi=600,
-                    TRANSPARENT=True,
-                    QUIET=True)
-        plots_made.append(pauvre_plot)
+# def pauvre_plot():
+#     if plots["pauvre"] and names == ['Read lengths', 'Average read quality'] and log is False:
+#         pauvre_plot = Plot(
+#             path=path + "_pauvre." + figformat,
+#             title="{} vs {} plot using pauvre-style @conchoecia".format(names[0], names[1]))
+#         sns.set(style="white", **plot_settings)
+#         margin_plot(df=pd.DataFrame({"length": x, "meanQual": y}),
+#                     Y_AXES=False,
+#                     title=title or "Length vs Quality in Pauvre-style",
+#                     plot_maxlen=None,
+#                     plot_minlen=0,
+#                     plot_maxqual=None,
+#                     plot_minqual=0,
+#                     lengthbin=None,
+#                     qualbin=None,
+#                     BASENAME="whatever",
+#                     path=pauvre_plot.path,
+#                     fileform=[figformat],
+#                     dpi=600,
+#                     TRANSPARENT=True,
+#                     QUIET=True)
+#         plots_made.append(pauvre_plot)
 
 
 def contains_variance(arrays, names):
