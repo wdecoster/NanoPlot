@@ -34,11 +34,11 @@ def check_valid_time_and_sort(df, timescol, days=5, warning=True):
             .reset_index()
 
 
-def time_plots(df, subsampled_df, path, title=None, color="#4CB391",
-               log_length=False, plot_settings=None):
+def time_plots(df, subsampled_df, path, title=None, color="#4CB391", log_length=False):
     """Making plots of time vs read length, time vs quality and cumulative yield."""
 
-    logging.info("Nanoplotter: Creating timeplots using {} (complete dataset)/{} (subsampled dataset) reads.".format(len(df), len(subsampled_df)))
+    logging.info(f"Nanoplotter: Creating timeplots using {len(df)} (full) or "
+                 "{len(subsampled_df)} (subsampled dataset) reads.")
     cumyields = cumulative_yield(dfs=df.set_index("start_time"),
                                  path=path,
                                  title=title,
@@ -50,13 +50,11 @@ def time_plots(df, subsampled_df, path, title=None, color="#4CB391",
     violins = violin_plots_over_time(dfs=subsampled_df,
                                      path=path,
                                      title=title,
-                                     log_length=log_length,
-                                     plot_settings=plot_settings)
+                                     log_length=log_length)
     return cumyields + reads_pores_over_time + violins
 
 
-def violin_plots_over_time(dfs, path, title,
-                           log_length=False, plot_settings=None):
+def violin_plots_over_time(dfs, path, title, log_length=False):
 
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
@@ -66,22 +64,19 @@ def violin_plots_over_time(dfs, path, title,
     plots.append(length_over_time(dfs=dfs,
                                   path=path,
                                   title=title,
-                                  log_length=log_length,
-                                  plot_settings=plot_settings))
+                                  log_length=log_length))
     if "quals" in dfs:
         plots.append(quality_over_time(dfs=dfs,
                                        path=path,
-                                       title=title,
-                                       plot_settings=plot_settings))
+                                       title=title))
     if "duration" in dfs:
         plots.append(sequencing_speed_over_time(dfs=dfs,
                                                 path=path,
-                                                title=title,
-                                                plot_settings=plot_settings))
+                                                title=title))
     return plots
 
 
-def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
+def length_over_time(dfs, path, title, log_length=False):
     if log_length:
         time_length = Plot(path=path + "TimeLogLengthViolinPlot.html",
                            title="Violin plot of log read lengths over time")
@@ -127,7 +122,7 @@ def length_over_time(dfs, path, title, log_length=False, plot_settings={}):
     return time_length
 
 
-def quality_over_time(dfs, path, title=None, plot_settings={}):
+def quality_over_time(dfs, path, title=None):
     time_qual = Plot(path=path + "TimeQualityViolinPlot.html",
                      title="Violin plot of quality over time")
 
@@ -149,7 +144,7 @@ def quality_over_time(dfs, path, title=None, plot_settings={}):
     return time_qual
 
 
-def sequencing_speed_over_time(dfs, path, title, plot_settings={}):
+def sequencing_speed_over_time(dfs, path, title):
     time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html",
                          title="Violin plot of sequencing speed over time")
 
@@ -157,8 +152,9 @@ def sequencing_speed_over_time(dfs, path, title, plot_settings={}):
 
     fig = go.Figure()
 
-    fig.add_trace(go.Violin(x=dfs.loc[mask, "timebin"], y=dfs.loc[mask,
-                                                                  "lengths"] / dfs.loc[mask, "duration"], points=False))
+    fig.add_trace(
+        go.Violin(x=dfs.loc[mask, "timebin"],
+                  y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"], points=False))
 
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Sequencing speed (nucleotides/second)',
