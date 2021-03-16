@@ -26,16 +26,12 @@ spatialHeatmap(array, title, path, color, format)
 
 import plotly.graph_objs as go
 import plotly
-from nanoplotter.spatial_heatmap import spatial_heatmap
-from nanoplotter.timeplots import time_plots
 import matplotlib.pyplot as plt
 import logging
 import sys
 import pandas as pd
 import numpy as np
 from nanoplotter.plot import Plot
-import seaborn as sns
-import matplotlib as mpl
 from matplotlib import colors as mcolors
 import plotly.express as px
 import plotly.figure_factory as ff
@@ -85,14 +81,8 @@ def check_valid_format(figformat):
         return "png"
 
 
-def plot_settings(plot_settings, dpi):
-    sns.set(**plot_settings)
-    mpl.rcParams['savefig.dpi'] = dpi
-
-
 def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
-            stat=None, log=False, minvalx=0, minvaly=0, title=None,
-            plot_settings={}, xmax=None, ymax=None):
+            stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
     -> update from scatter_legacy function to utilise plotly package
@@ -161,7 +151,7 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
                 path=path + "_kde.html",
                 title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
 
-        colorscale = ['#7A4579', '#D56073', 'rgb(236,158,105)', (1, 1, 0.2), (0.98, 0.98, 0.98)]
+        # colorscale = ['#7A4579', '#D56073', 'rgb(236,158,105)', (1, 1, 0.2), (0.98, 0.98, 0.98)]
 
         fig = ff.create_2d_density(x[idx], y[idx], point_size=3)
 
@@ -189,13 +179,13 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
         if legacy:
             plots_made += scatter_legacy(x, y, names, path, plots, color,
                                          figformat, stat, log,
-                                         minvalx, minvaly, title, plot_settings)
+                                         minvalx, minvaly, title)
         return plots_made
 
 
 def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
                    stat=None, log=False, minvalx=0, minvaly=0, title=None,
-                   plot_settings={}, xmax=None, ymax=None):
+                   xmax=None, ymax=None):
     """Create bivariate plots.
 
     Create four types of bivariate plots of x vs y, containing marginal summaries
@@ -205,15 +195,19 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
     -A pauvre-style plot using code from https://github.com/conchoecia/pauvre
     """
     try:
+        import matplotlib as mpl
         mpl.use('Agg')
-    except:
+        import seaborn as sns
+        import matplotlib.pyplots as plt
+    except ImportError:
         sys.stderr("need additional modules when running with --legacy")
         return []
+
     logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads.".format(
         names[0], names[1], x.size))
     if not contains_variance([x, y], names):
         return []
-    sns.set(style="ticks", **plot_settings)
+    sns.set(style="ticks")
     maxvalx = xmax or np.amax(x)
     maxvaly = ymax or np.amax(y)
 
@@ -252,7 +246,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
         hex_plot.save(format=figformat)
         plots_made.append(hex_plot)
 
-    sns.set(style="darkgrid", **plot_settings)
+    sns.set(style="darkgrid")
     if plots["dot"]:
         if log:
             dot_plot = Plot(
@@ -334,7 +328,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
 #         pauvre_plot = Plot(
 #             path=path + "_pauvre." + figformat,
 #             title="{} vs {} plot using pauvre-style @conchoecia".format(names[0], names[1]))
-#         sns.set(style="white", **plot_settings)
+#         sns.set(style="white")
 #         margin_plot(df=pd.DataFrame({"length": x, "meanQual": y}),
 #                     Y_AXES=False,
 #                     title=title or "Length vs Quality in Pauvre-style",
@@ -521,19 +515,19 @@ def yield_by_minimal_length_plot(array, name, path,
 
 def run_tests():
     import pickle
+    from nanoplotter.spatial_heatmap import spatial_heatmap
+    from nanoplotter.timeplots import time_plots
     df = pickle.load(open("nanotest/sequencing_summary.pickle", "rb"))
     scatter(
         x=df["lengths"],
         y=df["quals"],
         names=['Read lengths', 'Average read quality'],
         path="LengthvsQualityScatterPlot",
-        plots={'dot': 1, 'kde': 1},
-        plot_settings=dict(font_scale=1))
+        plots={'dot': 1, 'kde': 1})
     time_plots(
         df=df,
         path="./",
-        color="#4CB391",
-        plot_settings=dict(font_scale=1))
+        color="#4CB391")
     length_plots(
         array=df["lengths"],
         name="lengths",
