@@ -6,7 +6,6 @@ import logging
 from nanoplot.version import __version__
 from argparse import HelpFormatter, Action, ArgumentParser
 import textwrap as _textwrap
-import matplotlib.pyplot as plt
 
 
 class CustomHelpFormatter(HelpFormatter):
@@ -252,9 +251,11 @@ def get_args():
                          metavar="file")
     args = parser.parse_args()
     if args.listcolors:
-        list_colors()
+        print("need to be implemented!")
+        # list_colors()
     if args.listcolormaps:
-        list_colormaps()
+        print("need to be implemented!")
+        # list_colormaps()
     if args.no_N50:
         sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
         sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
@@ -269,16 +270,16 @@ def custom_formatter(prog):
     return CustomHelpFormatter(prog)
 
 
-def list_colors():
-    parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    colours = open(os.path.join(parent_directory, "extra/color_options.txt")).readlines()
-    print("{}".format(", ".join([c.strip() for c in colours])))
-    sys.exit(0)
+# def list_colors():
+#     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+#     colours = open(os.path.join(parent_directory, "extra/color_options.txt")).readlines()
+#     print("{}".format(", ".join([c.strip() for c in colours])))
+#     sys.exit(0)
 
 
-def list_colormaps():
-    print(', '.join(plt.colormaps()))
-    sys.exit(0)
+# def list_colormaps():
+#     print(', '.join(plt.colormaps()))
+#     sys.exit(0)
 
 
 def make_output_dir(path):
