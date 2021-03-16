@@ -158,12 +158,12 @@ def get_args():
     visual.add_argument("-cm", "--colormap",
                         help="Specify a valid matplotlib colormap for the heatmap",
                         default="Greens")
-    visual.add_argument("-f", "--format",
-                        help="Specify the output format of the plots.",
-                        default="png",
-                        type=str,
-                        choices=['eps', 'jpeg', 'jpg', 'pdf', 'pgf', 'png', 'ps',
-                                 'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
+    # visual.add_argument("-f", "--format",
+    #                     help="Specify the output format of the plots.",
+    #                     default="png",
+    #                     type=str,
+    #                     choices=['eps', 'jpeg', 'jpg', 'pdf', 'pgf', 'png', 'ps',
+    #                              'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
     visual.add_argument("--plots",
                         help="Specify which bivariate plots have to be made.",
                         default=['kde', 'dot'],
