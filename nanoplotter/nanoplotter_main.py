@@ -176,9 +176,18 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", stat=None,
         plots_made.append(kde_plot)
 
         if legacy:
-            plots_made += scatter_legacy(x, y, names, path, plots, color,
-                                         figformat="png", stat, log,
-                                         minvalx, minvaly, title)
+            plots_made += scatter_legacy(x=x,
+                                         y=y,
+                                         names=names,
+                                         path=path,
+                                         plots=plots,
+                                         color=color,
+                                         figformat="png",
+                                         stat=stat,
+                                         log=log,
+                                         minvalx=minvalx,
+                                         minvaly=minvaly,
+                                         title=title)
         return plots_made
 
 
