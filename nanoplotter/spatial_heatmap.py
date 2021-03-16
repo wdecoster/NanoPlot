@@ -4,6 +4,7 @@ from nanoplotter.plot import Plot
 import pandas as pd
 import plotly.graph_objects as go
 
+
 class Layout(object):
     def __init__(self, structure, template, xticks, yticks, flowcell):
         self.structure = structure
@@ -66,26 +67,26 @@ def spatial_heatmap(array, path, title=None, color="Greens"):
     """Taking channel information and creating post run channel activity plots."""
     logging.info("Nanoplotter: Creating heatmap of reads per channel using {} reads."
                  .format(array.size))
-    
+
     activity_map = Plot(
         path=path + ".html",
         title="Number of reads generated per channel")
-    
+
     layout = make_layout(maxval=np.amax(array))
     valueCounts = pd.value_counts(pd.Series(array))
-    
+
     for entry in valueCounts.keys():
         layout.template[np.where(layout.structure == entry)] = valueCounts[entry]
 
-    data=pd.DataFrame(layout.template, index=layout.yticks, columns=layout.xticks)   
-    
-    fig = go.Figure(data=go.Heatmap(z=data.values.tolist(),colorscale=color))
+    data = pd.DataFrame(layout.template, index=layout.yticks, columns=layout.xticks)
+
+    fig = go.Figure(data=go.Heatmap(z=data.values.tolist(), colorscale=color))
     fig.update_layout(xaxis_title='Channel',
-           yaxis_title='Number of reads',
-           title=title or activity_map.title,
-           title_x=0.5)
-    
+                      yaxis_title='Number of reads',
+                      title=title or activity_map.title,
+                      title_x=0.5)
+
     activity_map.fig = fig
-    activity_map.html = activity_map.fig.to_html(full_html=False,include_plotlyjs='cdn')
+    activity_map.html = activity_map.fig.to_html(full_html=False, include_plotlyjs='cdn')
     activity_map.save()
     return [activity_map]

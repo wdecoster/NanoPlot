@@ -101,8 +101,9 @@ def get_args():
     general.add_argument("--info_in_report",
                          help="Add NanoPlot run info in the report.",
                          action='store_true')
-    general.add_argument("--legacy", help="Create four types of bivariate plots of x vs y, containing marginal summaries," + 
-                         "using the mathplotlib and seaborn package",
+    general.add_argument("--legacy", help="Create four types of bivariate plots of x vs y, "
+                         "containing marginal summaries, "
+                         "using the matplotlib and seaborn package",
                          action='store_true')
     filtering = parser.add_argument_group(
         title='Options for filtering or transforming input prior to plotting')
