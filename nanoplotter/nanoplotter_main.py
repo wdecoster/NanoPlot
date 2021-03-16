@@ -96,7 +96,8 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
             stat=None, log=False, minvalx=0, minvaly=0, title=None,
             plot_settings={}, xmax=None, ymax=None):
     """->
-    create marginalised scatterplots and KDE plot with marginalized histograms -> update from scatter_legacy function to utilise plotly package
+    create marginalised scatterplots and KDE plot with marginalized histograms
+    -> update from scatter_legacy function to utilise plotly package
     - scatterplot with histogram on both axes
     - kernel density plot with histograms on both axes
     - hexbin not implemented yet
