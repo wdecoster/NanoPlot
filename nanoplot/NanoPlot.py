@@ -39,7 +39,7 @@ def main():
     try:
         utils.make_output_dir(args.outdir)
         utils.init_logs(args)
-        #args.format = nanoplotter.check_valid_format(args.format)
+        # args.format = nanoplotter.check_valid_format(args.format)
         if args.pickle:
             datadf = pickle.load(open(args.pickle, 'rb'))
         elif args.feather:
@@ -139,8 +139,10 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
-    color = nanoplotter.check_valid_color(settings["color"])
-    colormap = nanoplotter.check_valid_colormap(settings["colormap"])
+    # color = nanoplotter.check_valid_color(settings["color"])
+    color = settings["color"]
+    # colormap = nanoplotter.check_valid_colormap(settings["colormap"])
+    colormap = settings["colormap"]
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
 
