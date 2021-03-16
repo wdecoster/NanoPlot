@@ -26,43 +26,42 @@ spatialHeatmap(array, title, path, color, format)
 
 import plotly.graph_objs as go
 import plotly
-import matplotlib.pyplot as plt
 import logging
 import sys
 import pandas as pd
 import numpy as np
 from nanoplotter.plot import Plot
-from matplotlib import colors as mcolors
 import plotly.express as px
 import plotly.figure_factory as ff
 
 
-def check_valid_color(color):
-    """Check if the color provided by the user is valid.
+# def check_valid_color(color):
+#     """Check if the color provided by the user is valid.
+#
+#     If color is invalid the default is returned.
+#     """
+#     from matplotlib import colors as mcolors
+#     if color in list(mcolors.CSS4_COLORS.keys()) + ["#4CB391"]:
+#         logging.info("NanoPlot:  Valid color {}.".format(color))
+#         return color
+#     else:
+#         logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
+#         sys.stderr.write("Invalid color {}, using default.\n".format(color))
+#         return "#4CB391"
 
-    If color is invalid the default is returned.
-    """
-    if color in list(mcolors.CSS4_COLORS.keys()) + ["#4CB391"]:
-        logging.info("NanoPlot:  Valid color {}.".format(color))
-        return color
-    else:
-        logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
-        sys.stderr.write("Invalid color {}, using default.\n".format(color))
-        return "#4CB391"
 
-
-def check_valid_colormap(colormap):
-    """Check if the colormap provided by the user is valid.
-
-    If colormap is invalid the default is returned.
-    """
-    if colormap in plt.colormaps():
-        logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
-        return colormap
-    else:
-        logging.info("NanoPlot:  Invalid colormap {}, using default.".format(colormap))
-        sys.stderr.write("Invalid colormap {}, using default.\n".format(colormap))
-        return "Greens"
+# def check_valid_colormap(colormap):
+#     """Check if the colormap provided by the user is valid.
+#
+#     If colormap is invalid the default is returned.
+#     """
+#     if colormap in plt.colormaps():
+#         logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
+#         return colormap
+#     else:
+#         logging.info("NanoPlot:  Invalid colormap {}, using default.".format(colormap))
+#         sys.stderr.write("Invalid colormap {}, using default.\n".format(colormap))
+#         return "Greens"
 
 
 # def check_valid_format(figformat):
