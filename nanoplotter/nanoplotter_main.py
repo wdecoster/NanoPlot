@@ -80,8 +80,8 @@ import plotly.figure_factory as ff
 #         return "png"
 
 
-def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
-            stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
+def scatter(x, y, legacy, names, path, plots, color="#4CB391", stat=None,
+            log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
     -> update from scatter_legacy function to utilise plotly package
@@ -177,7 +177,7 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", figformat="png",
 
         if legacy:
             plots_made += scatter_legacy(x, y, names, path, plots, color,
-                                         figformat, stat, log,
+                                         figformat="png", stat, log,
                                          minvalx, minvaly, title)
         return plots_made
 
