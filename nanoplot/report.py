@@ -51,7 +51,7 @@ def stats2html(statsf):
     values = df["value"].str.strip().str.replace('\t', ' ').str.split().replace(np.nan, '')
     num = len(values[0]) or 1
     v = [chunks(i, num) for i in values]
-    df = pd.DataFrame(v, index=df["feature"]).iloc[1:]
+    df = pd.DataFrame(v, index=df["feature"])
     df.columns.name = None
     df.index.name = None
     return df.to_html(header=False)
