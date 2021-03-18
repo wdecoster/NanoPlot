@@ -5,6 +5,7 @@ from time import time
 import logging
 from nanoplot.version import __version__
 from argparse import HelpFormatter, Action, ArgumentParser
+import plotly.express as px
 import textwrap as _textwrap
 
 
@@ -24,31 +25,31 @@ class CustomHelpFormatter(HelpFormatter):
         return _textwrap.wrap(text, 80)
 
 
-# class Action_Print_Colors(Action):
-#     def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
-#         super(Action_Print_Colors, self).__init__(
-#             option_strings=option_strings,
-#             dest=dest,
-#             default=default,
-#             nargs=0,
-#             help=help)
+class Action_Print_Colors(Action):
+    def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
+        super(Action_Print_Colors, self).__init__(
+            option_strings=option_strings,
+            dest=dest,
+            default=default,
+            nargs=0,
+            help=help)
 #
-#     def __call__(self, parser, namespace, values, option_string=None):
-#         list_colors()
+    def __call__(self, parser, namespace, values, option_string=None):
+        list_colors()
 #
 #
-# class Action_Print_Colormaps(Action):
+class Action_Print_Colormaps(Action):
 #
-#     def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
-#         super(Action_Print_Colormaps, self).__init__(
-#             option_strings=option_strings,
-#             dest=dest,
-#             default=default,
-#             nargs=0,
-#             help=help)
+    def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
+        super(Action_Print_Colormaps, self).__init__(
+            option_strings=option_strings,
+            dest=dest,
+            default=default,
+            nargs=0,
+            help=help)
 #
-#     def __call__(self, parser, namespace, values, option_string=None):
-#         list_colormaps()
+    def __call__(self, parser, namespace, values, option_string=None):
+        list_colormaps()
 
 
 def get_args():
@@ -170,14 +171,14 @@ def get_args():
                         type=str,
                         nargs='*',
                         choices=['kde', 'hex', 'dot', 'pauvre'])
-    # visual.add_argument("--listcolors",
-    #                     help="List the colors which are available for plotting and exit.",
-    #                     action=Action_Print_Colors,
-    #                     default=False)
-    # visual.add_argument("--listcolormaps",
-    #                     help="List the colors which are available for plotting and exit.",
-    #                     action=Action_Print_Colormaps,
-    #                     default=False)
+    visual.add_argument("--listcolors",
+                        help="List the colors which are available for plotting and exit.",
+                        action=Action_Print_Colors,
+                        default=False)
+    visual.add_argument("--listcolormaps",
+                        help="List the colors which are available for plotting and exit.",
+                        action=Action_Print_Colormaps,
+                        default=False)
     visual.add_argument("--no-N50",
                         help="Hide the N50 mark in the read length histogram",
                         action="store_true")
@@ -250,10 +251,10 @@ def get_args():
                          nargs='+',
                          metavar="file")
     args = parser.parse_args()
-    # if args.listcolors:
-    #     # list_colors()
-    # if args.listcolormaps:
-    #     # list_colormaps()
+    if args.listcolors:
+        list_colors()
+    if args.listcolormaps:
+        list_colormaps()
     if args.no_N50:
         sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
         sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
@@ -268,16 +269,16 @@ def custom_formatter(prog):
     return CustomHelpFormatter(prog)
 
 
-# def list_colors():
-#     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-#     colours = open(os.path.join(parent_directory, "extra/color_options.txt")).readlines()
-#     print("{}".format(", ".join([c.strip() for c in colours])))
-#     sys.exit(0)
+def list_colors():
+    parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+    colours = open(os.path.join(parent_directory, "extra/color_options.txt")).read().splitlines()
+    print("Valid colors: {}".format(", ".join([c.strip() for c in colours])))
+    sys.exit(0)
 
 
-# def list_colormaps():
-#     print(', '.join(plt.colormaps()))
-#     sys.exit(0)
+def list_colormaps():
+    print('Valid colormaps:\nGreys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis')
+    sys.exit(0)
 
 
 def make_output_dir(path):

@@ -114,7 +114,7 @@ def length_over_time(dfs, path, title, log_length=False):
 
     time_length.fig = fig
     time_length.html = time_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    time_length.save()
+    #time_length.save()
 
     return time_length
 
@@ -136,7 +136,7 @@ def quality_over_time(dfs, path, title=None):
 
     time_qual.fig = fig
     time_qual.html = time_qual.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    time_qual.save()
+    #time_qual.save()
 
     return time_qual
 
@@ -162,7 +162,7 @@ def sequencing_speed_over_time(dfs, path, title):
 
     time_duration.fig = fig
     time_duration.html = time_duration.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    time_duration.save()
+    #time_duration.save()
 
     return time_duration
 
@@ -193,7 +193,7 @@ def plot_over_time(dfs, path, title, color):
 
     num_reads.fig = fig
     num_reads.html = num_reads.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    num_reads.save()
+    #num_reads.save()
 
     plots = [num_reads]
 
@@ -214,7 +214,7 @@ def plot_over_time(dfs, path, title, color):
 
         pores_over_time.fig = fig
         pores_over_time.html = pores_over_time.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        pores_over_time.save()
+        #pores_over_time.save()
 
         plots.append(pores_over_time)
     return plots
@@ -237,7 +237,7 @@ def cumulative_yield(dfs, path, title, color):
 
     cum_yield_gb.fig = fig
     cum_yield_gb.html = cum_yield_gb.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    cum_yield_gb.save()
+    #cum_yield_gb.save()
 
     cum_yield_reads = Plot(path=path + "CumulativeYieldPlot_NumberOfReads.html",
                            title="Cumulative yield")
@@ -255,7 +255,7 @@ def cumulative_yield(dfs, path, title, color):
 
     cum_yield_reads.fig = fig
     cum_yield_reads.html = cum_yield_gb.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    cum_yield_reads.save()
+    #cum_yield_reads.save()
 
     return [cum_yield_gb, cum_yield_reads]
 

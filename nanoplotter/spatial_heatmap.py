@@ -63,7 +63,7 @@ def make_layout(maxval):
             flowcell='PromethION')
 
 
-def spatial_heatmap(array, path, title=None, color="Greens"):
+def spatial_heatmap(array, path, colormap, title=None):
     """Taking channel information and creating post run channel activity plots."""
     logging.info("Nanoplotter: Creating heatmap of reads per channel using {} reads."
                  .format(array.size))
@@ -80,7 +80,7 @@ def spatial_heatmap(array, path, title=None, color="Greens"):
 
     data = pd.DataFrame(layout.template, index=layout.yticks, columns=layout.xticks)
 
-    fig = go.Figure(data=go.Heatmap(z=data.values.tolist(), colorscale=color))
+    fig = go.Figure(data=go.Heatmap(z=data.values.tolist(), colorscale=colormap))
     fig.update_layout(xaxis_title='Channel',
                       yaxis_title='Number of reads',
                       title=title or activity_map.title,

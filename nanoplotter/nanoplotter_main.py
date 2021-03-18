@@ -28,6 +28,7 @@ import plotly.graph_objs as go
 import plotly
 import logging
 import sys
+import os
 import pandas as pd
 import numpy as np
 from nanoplotter.plot import Plot
@@ -37,33 +38,34 @@ from nanoplotter.spatial_heatmap import spatial_heatmap
 from nanoplotter.timeplots import time_plots
 
 
-# def check_valid_color(color):
-#     """Check if the color provided by the user is valid.
+def check_valid_color(color):
+    """Check if the color provided by the user is valid.
 #
-#     If color is invalid the default is returned.
-#     """
-#     from matplotlib import colors as mcolors
-#     if color in list(mcolors.CSS4_COLORS.keys()) + ["#4CB391"]:
-#         logging.info("NanoPlot:  Valid color {}.".format(color))
-#         return color
-#     else:
-#         logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
-#         sys.stderr.write("Invalid color {}, using default.\n".format(color))
-#         return "#4CB391"
+    If color is invalid the default is returned.
+    """
+    colors, _ = colors_and_colormaps()
+    if color in colors:
+        logging.info("NanoPlot:  Valid color {}.".format(color))
+        return color
+    else:
+        logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
+        sys.stderr.write("Invalid color {}, using default.\n".format(color))
+        return "#4CB391"
 
 
-# def check_valid_colormap(colormap):
-#     """Check if the colormap provided by the user is valid.
+def check_valid_colormap(colormap):
+    """Check if the colormap provided by the user is valid.
 #
-#     If colormap is invalid the default is returned.
-#     """
-#     if colormap in plt.colormaps():
-#         logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
-#         return colormap
-#     else:
-#         logging.info("NanoPlot:  Invalid colormap {}, using default.".format(colormap))
-#         sys.stderr.write("Invalid colormap {}, using default.\n".format(colormap))
-#         return "Greens"
+    If colormap is invalid the default is returned.
+    """
+    _, colormaps = colors_and_colormaps()
+    if colormap in colormaps:
+        logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
+        return colormap
+    else:
+        logging.info("NanoPlot:  Invalid colormap {}, using default.".format(colormap))
+        sys.stderr.write("Invalid colormap {}, using default.\n".format(colormap))
+        return "Greens"
 
 
 # def check_valid_format(figformat):
@@ -82,7 +84,7 @@ from nanoplotter.timeplots import time_plots
 #         return "png"
 
 
-def scatter(x, y, legacy, names, path, plots, color="#4CB391", stat=None,
+def scatter(x, y, legacy, names, path, plots, color, stat=None,
             log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
@@ -208,7 +210,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
         import matplotlib as mpl
         mpl.use('Agg')
         import seaborn as sns
-        import matplotlib.pyplots as plt
+        import matplotlib.pyplot as plt
     except ImportError:
         sys.stderr("need additional modules when running with --legacy")
         return []
@@ -384,7 +386,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
     plots = []
 
     weighted, non_weighted = {'weight': array, 'name': 'Weighted', 'ylabel': 'Number of reads'}, {
-        'weight': None, 'name': '', 'ylabel': 'Number of reads'}
+        'weight': None, 'name': 'Non weighted', 'ylabel': 'Number of reads'}
     HistType = [weighted, non_weighted]
 
     for h_type in HistType:
@@ -392,7 +394,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
         histogram = Plot(
             path=path + hist_name.replace(" ", "_") + "Histogram" +
             name.replace(' ', '') + ".html",
-            title=hist_name + "Histogram of read lengths")
+            title=hist_name + " histogram of read lengths")
 
         hist, bin_edges = np.histogram(array, bins=max(
             round(int(maxvalx) / 500), 10), weights=hist_weight)
@@ -417,7 +419,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
         log_histogram = Plot(
             path=path + hist_name.replace(" ", "_") + "LogTransformed_Histogram" +
             name.replace(' ', '') + ".html",
-            title=hist_name + "Histogram of read lengths after log transformation")
+            title=hist_name + " histogram of read lengths after log transformation")
 
         if hist_weight is None:
             hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(
@@ -467,8 +469,8 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
     Use plotly to a histogram
     Return html code, but also save as png
     """
-    dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name.replace(' ', '_')),
-                   title="Dynamic histogram of {}".format(name))
+    dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name[0].lower() + name[1:].replace(' ', '_')),
+                   title="Dynamic histogram of {}".format(name[0].lower() + name[1:]))
     ylabel = "Number of reads" if len(array) <= 10000 else "Downsampled number of reads"
     dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10000)),
                                                  color=color,
@@ -494,7 +496,8 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
     fig = go.Figure(
         {"data": data,
          "layout": go.Layout(barmode='overlay',
-                             title=title)})
+                             title=title,
+                             title_x=0.5)})
     return html, fig
 
 
@@ -522,6 +525,12 @@ def yield_by_minimal_length_plot(array, name, path,
 
     return yield_by_length
 
+
+def colors_and_colormaps():
+    colormaps = ('Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis').split(',')
+    parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+    colors = open(os.path.join(parent_directory, "extra/color_options.txt")).read().splitlines()
+    return colors, colormaps
 
 def run_tests():
     import pickle
