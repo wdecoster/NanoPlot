@@ -377,37 +377,38 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
     logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
     if n50:
-        logging.info("NanoPlot:  Using {} reads with read length N50 of {}bp and maximum of {}bp."
+        logging.info("NanoPlot: Using {} reads with read length N50 of {}bp and maximum of {}bp."
                      .format(array.size, n50, maxvalx))
     else:
-        logging.info("NanoPlot:  Using {} reads maximum of {}bp.".format(array.size, maxvalx))
+        logging.info(f"NanoPlot:  Using {array.size} reads maximum of {maxvalx}bp.")
 
     plots = []
 
-    weighted, non_weighted = {'weight': array, 'name': 'Weighted', 'ylabel': 'Number of reads'}, {
-        'weight': None, 'name': 'Non weighted', 'ylabel': 'Number of reads'}
-    HistType = [weighted, non_weighted]
+    HistType = [{'weight': array, 'name': 'Weighted', 'ylabel': 'Number of reads'},
+                {'weight': None, 'name': 'Non weighted', 'ylabel': 'Number of reads'}]
 
     for h_type in HistType:
-        hist_weight, hist_name, hist_ylabel = h_type.values()
         histogram = Plot(
-            path=path + hist_name.replace(" ", "_") + "Histogram" +
+            path=path + h_type["name"].replace(" ", "_") + "Histogram" +
             name.replace(' ', '') + ".html",
-            title=hist_name + " histogram of read lengths")
+            title=f"{h_type['name']} histogram of read lengths")
 
-        hist, bin_edges = np.histogram(array, bins=max(
-            round(int(maxvalx) / 500), 10), weights=hist_weight)
+        hist, bin_edges = np.histogram(array,
+                                       bins=max(round(int(maxvalx) / 500), 10),
+                                       weights=h_type["weight"])
 
         fig = go.Figure()
 
-        fig.add_trace(go.Bar(x=bin_edges[1:], y=hist, marker_color=color))
+        fig.add_trace(go.Bar(x=bin_edges[1:],
+                             y=hist,
+                             marker_color=color))
 
         if n50:
             fig.add_vline(n50)
             fig.add_annotation(text='N50', x=n50, y=0.95, textfont_size=8)
 
         fig.update_layout(xaxis_title='Read length',
-                          yaxis_title=hist_ylabel,
+                          yaxis_title=h_type["ylabel"],
                           title=title or histogram.title,
                           title_x=0.5)
 
@@ -416,20 +417,24 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
         histogram.save()
 
         log_histogram = Plot(
-            path=path + hist_name.replace(" ", "_") + "LogTransformed_Histogram" +
+            path=path + h_type["name"].replace(" ", "_") + "LogTransformed_Histogram" +
             name.replace(' ', '') + ".html",
-            title=hist_name + " histogram of read lengths after log transformation")
+            title=h_type["name"] + " histogram of read lengths after log transformation")
 
-        if hist_weight is None:
-            hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(
-                round(int(maxvalx) / 500), 10), weights=hist_weight)
+        if h_type["weight"] is None:
+            hist_log, bin_edges_log = np.histogram(np.log10(array),
+                                                   bins=max(round(int(maxvalx) / 500), 10),
+                                                   weights=h_type["weight"])
 
         else:
-            hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(
-                round(int(maxvalx) / 500), 10), weights=np.log10(hist_weight))
+            hist_log, bin_edges_log = np.histogram(np.log10(array),
+                                                   bins=max(round(int(maxvalx) / 500), 10),
+                                                   weights=np.log10(h_type["weight"]))
 
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=bin_edges_log[1:], y=hist_log, marker_color=color))
+        fig.add_trace(go.Bar(x=bin_edges_log[1:],
+                             y=hist_log,
+                             marker_color=color))
 
         ticks = [10**i for i in range(10) if not 10**i > 10 * maxvalx]
 
@@ -439,7 +444,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
                 tickvals=np.log10(ticks),
                 ticktext=ticks),
             xaxis_title='Read length',
-            yaxis_title=hist_ylabel,
+            yaxis_title=h_type["ylabel"],
             title=title or log_histogram.title,
             title_x=0.5)
 
@@ -453,7 +458,6 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         plots.extend([histogram, log_histogram])
 
-    plots.append(dynamic_histogram(array=array, name=name, path=path, title=title, color=color))
     plots.append(yield_by_minimal_length_plot(array=array,
                                               name=name,
                                               path=path,
