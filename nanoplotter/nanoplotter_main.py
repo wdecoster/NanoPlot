@@ -40,11 +40,11 @@ from nanoplotter.timeplots import time_plots
 
 def check_valid_color(color):
     """Check if the color provided by the user is valid.
-#
+
     If color is invalid the default is returned.
     """
     colors, _ = colors_and_colormaps()
-    if color in colors:
+    if color in colors or color == "#4CB391":
         logging.info("NanoPlot:  Valid color {}.".format(color))
         return color
     else:
@@ -55,7 +55,7 @@ def check_valid_color(color):
 
 def check_valid_colormap(colormap):
     """Check if the colormap provided by the user is valid.
-#
+
     If colormap is invalid the default is returned.
     """
     _, colormaps = colors_and_colormaps()
