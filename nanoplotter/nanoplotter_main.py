@@ -365,9 +365,8 @@ def contains_variance(arrays, names):
     """
     for ar, name in zip(arrays, names):
         if np.std(ar) == 0:
-            sys.stderr.write(
-                "No variation in '{}', skipping bivariate plots.\n".format(name.lower()))
-            logging.info("NanoPlot:  No variation in {}, skipping bivariate plot".format(name))
+            sys.stderr.write(f"No variation in '{name.lower()}', skipping bivariate plots.\n")
+            logging.info(f"NanoPlot: No variation in {name}, skipping bivariate plot")
             return False
     else:
         return True
