@@ -105,19 +105,20 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
     plots_made = []
 
     if plots["dot"]:
+        idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
         if log:
             dot_plot = Plot(
                 path=path + "_loglength_dot.html",
-                title="{} vs {} plot using dots "
-                      "after log transformation of read lengths".format(names[0], names[1]))
+                title=f"{names[0]} vs {names[1]} plot using dots "
+                      "after log transformation of read lengths")
         else:
             dot_plot = Plot(
                 path=path + "_dot.html",
-                title="{} vs {} plot using dots".format(names[0], names[1]))
+                title=f"{names[0]} vs {names[1]} plot using dots")
 
-        fig = px.scatter(x=x, y=y, marginal_x="histogram", marginal_y="histogram",
+        fig = px.scatter(x=x[idx], y=y[idx], marginal_x="histogram", marginal_y="histogram",
                          range_x=[minvalx, maxvalx], range_y=[minvaly, maxvaly])
-
+        fig.update_traces(marker=dict(color=color))
         fig.update_yaxes(rangemode="tozero")
         fig.update_xaxes(rangemode="tozero")
 
