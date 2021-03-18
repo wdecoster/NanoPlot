@@ -504,21 +504,20 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
     return html, fig
 
 
-def yield_by_minimal_length_plot(array, name, path,
-                                 title=None, color="#4CB391"):
+def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391"):
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
+    idx = np.random.choice(array.index, min(1000, len(array)), replace=False)
 
     yield_by_length = Plot(
         path=path + "Yield_By_Length.html",
         title="Yield by length")
 
-    fig = px.scatter(
-        x=df['lengths'],
-        y=df['cumyield_gb'])
+    fig = px.scatter(x=df['lengths'][idx],
+                     y=df['cumyield_gb'][idx])
 
     fig.update_layout(xaxis_title='Read length',
-                      yaxis_title='Cumulative yield for minimal length',
+                      yaxis_title='Cumulative yield for minimal length [Gb]',
                       title=title or yield_by_length.title,
                       title_x=0.5)
 
