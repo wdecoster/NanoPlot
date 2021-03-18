@@ -139,9 +139,9 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
-    # color = nanoplotter.check_valid_color(settings["color"])
+    color = nanoplotter.check_valid_color(settings["color"])
     color = settings["color"]
-    # colormap = nanoplotter.check_valid_colormap(settings["colormap"])
+    colormap = nanoplotter.check_valid_colormap(settings["colormap"])
     colormap = settings["colormap"]
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
@@ -195,7 +195,7 @@ def make_plots(datadf, settings):
                 array=datadf["channelIDs"],
                 title=settings["title"],
                 path=settings["path"] + "ActivityMap_ReadsPerChannel",
-                color=colormap)
+                colormap=colormap)
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
@@ -335,12 +335,12 @@ def make_report(plots, settings):
     logging.info("Writing html report.")
 
     html_content = [
-        '<body>',
+        '<body class="grid">',
         report.html_toc(plots, filtered=settings["filtered"]),
         report.html_stats(settings),
         report.html_plots(plots),
         report.run_info(settings) if settings["info_in_report"] else '',
-        '</div></body></html>']
+        '</main></body></html>']
     with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
         html_file.write(report.html_head + '\n'.join(html_content))
 
