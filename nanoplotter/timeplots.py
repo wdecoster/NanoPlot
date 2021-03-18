@@ -38,7 +38,7 @@ def time_plots(df, subsampled_df, path, title=None, color="#4CB391", log_length=
     """Making plots of time vs read length, time vs quality and cumulative yield."""
 
     logging.info(f"Nanoplotter: Creating timeplots using {len(df)} (full) or "
-                 "{len(subsampled_df)} (subsampled dataset) reads.")
+                 f"{len(subsampled_df)} (subsampled dataset) reads.")
     cumyields = cumulative_yield(dfs=df.set_index("start_time"),
                                  path=path,
                                  title=title,
