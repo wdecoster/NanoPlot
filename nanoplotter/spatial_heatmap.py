@@ -88,5 +88,5 @@ def spatial_heatmap(array, path, colormap, title=None):
 
     activity_map.fig = fig
     activity_map.html = activity_map.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    #activity_map.save()
+    activity_map.save()
     return [activity_map]

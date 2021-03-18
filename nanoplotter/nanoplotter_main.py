@@ -139,7 +139,7 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
 
         dot_plot.fig = fig
         dot_plot.html = dot_plot.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        #dot_plot.save()
+        dot_plot.save()
         plots_made.append(dot_plot)
 
     if plots["kde"]:
@@ -176,7 +176,7 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
 
         kde_plot.fig = fig
         kde_plot.html = kde_plot.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        #kde_plot.save()
+        kde_plot.save()
         plots_made.append(kde_plot)
 
         if legacy:
@@ -255,7 +255,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
         plt.subplots_adjust(top=0.90)
         plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
         hex_plot.fig = plot
-        #hex_plot.save(format=figformat)
+        hex_plot.save(format=figformat)
         plots_made.append(hex_plot)
 
     sns.set(style="darkgrid")
@@ -289,7 +289,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
         plt.subplots_adjust(top=0.90)
         plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
         dot_plot.fig = plot
-        #dot_plot.save(format=figformat)
+        dot_plot.save(format=figformat)
         plots_made.append(dot_plot)
 
     if plots["kde"]:
@@ -325,7 +325,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
             plt.subplots_adjust(top=0.90)
             plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
             kde_plot.fig = plot
-            #kde_plot.save(format=figformat)
+            kde_plot.save(format=figformat)
             plots_made.append(kde_plot)
         else:
             sys.stderr.write("Not enough observations (reads) to create a kde plot.\n")
@@ -414,7 +414,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         histogram.fig = fig
         histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        #histogram.save()
+        histogram.save()
 
         log_histogram = Plot(
             path=path + hist_name.replace(" ", "_") + "LogTransformed_Histogram" +
@@ -450,7 +450,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         log_histogram.fig = fig
         log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        #log_histogram.save()
+        log_histogram.save()
 
         plots.extend([histogram, log_histogram])
 
@@ -477,7 +477,7 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
                                                  title=title or dynhist.title,
                                                  xlabel=name,
                                                  ylabel=ylabel)
-    #dynhist.save()
+    dynhist.save()
     return dynhist
 
 
@@ -521,7 +521,7 @@ def yield_by_minimal_length_plot(array, name, path,
 
     yield_by_length.fig = fig
     yield_by_length.html = yield_by_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    #yield_by_length.save()
+    yield_by_length.save()
 
     return yield_by_length
 
