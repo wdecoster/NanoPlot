@@ -5,7 +5,6 @@ from time import time
 import logging
 from nanoplot.version import __version__
 from argparse import HelpFormatter, Action, ArgumentParser
-import plotly.express as px
 import textwrap as _textwrap
 
 
@@ -33,13 +32,12 @@ class Action_Print_Colors(Action):
             default=default,
             nargs=0,
             help=help)
-#
+
     def __call__(self, parser, namespace, values, option_string=None):
         list_colors()
-#
-#
+
+
 class Action_Print_Colormaps(Action):
-#
     def __init__(self, option_strings, dest="==SUPPRESS==", default="==SUPPRESS==", help=None):
         super(Action_Print_Colormaps, self).__init__(
             option_strings=option_strings,
@@ -47,7 +45,7 @@ class Action_Print_Colormaps(Action):
             default=default,
             nargs=0,
             help=help)
-#
+
     def __call__(self, parser, namespace, values, option_string=None):
         list_colormaps()
 
@@ -277,7 +275,8 @@ def list_colors():
 
 
 def list_colormaps():
-    print('Valid colormaps:\nGreys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis')
+    print('Valid colormaps:\nGreys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,'
+          'Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis')
     sys.exit(0)
 
 

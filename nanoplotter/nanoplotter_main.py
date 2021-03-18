@@ -532,6 +532,7 @@ def colors_and_colormaps():
     colors = open(os.path.join(parent_directory, "extra/color_options.txt")).read().splitlines()
     return colors, colormaps
 
+
 def run_tests():
     import pickle
     df = pickle.load(open("nanotest/sequencing_summary.pickle", "rb"))
