@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 
 
-def check_valid_time_and_sort(df, timescol, days=5, warning=True):
+def check_valid_time_and_sort(df, timescol="start_time", days=5, warning=True):
     """Check if the data contains reads created within the same `days` timeframe.
 
     if not, print warning and only return part of the data which is within `days` days
