@@ -514,7 +514,7 @@ def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391")
 
     fig = px.scatter(x=df['lengths'][idx],
                      y=df['cumyield_gb'][idx])
-
+    fig.update_traces(marker=dict(color=color))
     fig.update_layout(xaxis_title='Read length',
                       yaxis_title='Cumulative yield for minimal length [Gb]',
                       title=title or yield_by_length.title,
