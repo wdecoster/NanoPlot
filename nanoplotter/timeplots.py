@@ -255,7 +255,7 @@ def cumulative_yield(dfs, path, title, color):
                       title_x=0.5)
 
     cum_yield_reads.fig = fig
-    cum_yield_reads.html = cum_yield_gb.fig.to_html(full_html=False, include_plotlyjs='cdn')
+    cum_yield_reads.html = cum_yield_reads.fig.to_html(full_html=False, include_plotlyjs='cdn')
     cum_yield_reads.save()
 
     return [cum_yield_gb, cum_yield_reads]
