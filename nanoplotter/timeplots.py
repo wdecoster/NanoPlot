@@ -48,14 +48,15 @@ def time_plots(df, subsampled_df, path, title=None, color="#4CB391", log_length=
                                            path=path,
                                            title=title,
                                            color=color)
-    violins = violin_plots_over_time(dfs=subsampled_df,
+    violins = violin_plots_over_time(dfs=check_valid_time_and_sort(subsampled_df),
                                      path=path,
                                      title=title,
-                                     log_length=log_length)
+                                     log_length=log_length,
+                                     color=color)
     return cumyields + reads_pores_over_time + violins
 
 
-def violin_plots_over_time(dfs, path, title, log_length=False):
+def violin_plots_over_time(dfs, path, title, log_length=False, color="#4CB391"):
 
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
@@ -65,19 +66,22 @@ def violin_plots_over_time(dfs, path, title, log_length=False):
     plots.append(length_over_time(dfs=dfs,
                                   path=path,
                                   title=title,
-                                  log_length=log_length))
+                                  log_length=log_length,
+                                  color=color))
     if "quals" in dfs:
         plots.append(quality_over_time(dfs=dfs,
                                        path=path,
-                                       title=title))
+                                       title=title,
+                                       color=color))
     if "duration" in dfs:
         plots.append(sequencing_speed_over_time(dfs=dfs,
                                                 path=path,
-                                                title=title))
+                                                title=title,
+                                                color=color))
     return plots
 
 
-def length_over_time(dfs, path, title, log_length=False):
+def length_over_time(dfs, path, title, log_length=False, color="#4CB391"):
     if log_length:
         time_length = Plot(path=path + "TimeLogLengthViolinPlot.html",
                            title="Violin plot of log read lengths over time")
@@ -94,8 +98,11 @@ def length_over_time(dfs, path, title, log_length=False):
 
     fig = go.Figure()
 
-    fig.add_trace(go.Violin(y=temp_dfs[length_column], x=temp_dfs["timebin"], points=False))
-
+    fig.add_trace(go.Violin(y=temp_dfs[length_column],
+                            x=temp_dfs["timebin"],
+                            points=False, spanmode="hard",
+                            line_color='black', line_width=1.5,
+                            fillcolor=color, opacity=0.8))
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Read length',
                       title=title or time_length.title,
@@ -120,13 +127,17 @@ def length_over_time(dfs, path, title, log_length=False):
     return time_length
 
 
-def quality_over_time(dfs, path, title=None):
+def quality_over_time(dfs, path, title=None, color="#4CB391"):
     time_qual = Plot(path=path + "TimeQualityViolinPlot.html",
                      title="Violin plot of quality over time")
 
     fig = go.Figure()
 
-    fig.add_trace(go.Violin(y=dfs["quals"], x=dfs["timebin"], points=False))
+    fig.add_trace(go.Violin(y=dfs["quals"],
+                            x=dfs["timebin"],
+                            points=False, spanmode="hard",
+                            line_color='black', line_width=1.5,
+                            fillcolor=color, opacity=0.8))
 
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Basecall quality',
@@ -142,7 +153,7 @@ def quality_over_time(dfs, path, title=None):
     return time_qual
 
 
-def sequencing_speed_over_time(dfs, path, title):
+def sequencing_speed_over_time(dfs, path, title, color="#4CB391"):
     time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html",
                          title="Violin plot of sequencing speed over time")
 
@@ -152,7 +163,10 @@ def sequencing_speed_over_time(dfs, path, title):
 
     fig.add_trace(
         go.Violin(x=dfs.loc[mask, "timebin"],
-                  y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"], points=False))
+                  y=dfs.loc[mask, "lengths"] / dfs.loc[mask, "duration"],
+                  points=False, spanmode="hard",
+                  line_color='black', line_width=1.5,
+                  fillcolor=color, opacity=0.8))
 
     fig.update_layout(xaxis_title='Interval (hours)',
                       yaxis_title='Sequencing speed (nucleotides/second)',
@@ -177,7 +191,7 @@ def add_time_bins(dfs, bin_length=3):
                   labels=labels)
 
 
-def plot_over_time(dfs, path, title, color):
+def plot_over_time(dfs, path, title, color="#4CB391"):
     num_reads = Plot(path=path + "NumberOfReads_Over_Time.html",
                      title="Number of reads over time")
     s = dfs.loc[:, "lengths"].resample('10T').count()
@@ -186,6 +200,7 @@ def plot_over_time(dfs, path, title, color):
         data_frame=None,
         x=s.index.total_seconds() / 3600,
         y=s)
+    fig.update_traces(marker=dict(color=color))
 
     fig.update_layout(xaxis_title='Run time (hours)',
                       yaxis_title='Number of reads per 10 minutes',
@@ -207,6 +222,7 @@ def plot_over_time(dfs, path, title, color):
             data_frame=None,
             x=s.index.total_seconds() / 3600,
             y=s)
+        fig.update_traces(marker=dict(color=color))
 
         fig.update_layout(xaxis_title='Run time (hours)',
                           yaxis_title='Active pores per 10 minutes',
@@ -225,11 +241,12 @@ def cumulative_yield(dfs, path, title, color):
     cum_yield_gb = Plot(path=path + "CumulativeYieldPlot_Gigabases.html",
                         title="Cumulative yield")
 
-    s = dfs.loc[:, "lengths"].cumsum().resample('1T').max() / 1e9
+    s = dfs.loc[:, "lengths"].cumsum().resample('10T').max() / 1e9
 
     fig = px.scatter(
         x=s.index.total_seconds() / 3600,
         y=s)
+    fig.update_traces(marker=dict(color=color))
 
     fig.update_layout(xaxis_title='Run time (hours)',
                       yaxis_title='Cumulative yield in gigabase',
@@ -248,6 +265,7 @@ def cumulative_yield(dfs, path, title, color):
     fig = px.scatter(
         x=s.index.total_seconds() / 3600,
         y=s)
+    fig.update_traces(marker=dict(color=color))
 
     fig.update_layout(xaxis_title='Run time (hours)',
                       yaxis_title='Cumulative yield in number of reads',
@@ -261,7 +279,7 @@ def cumulative_yield(dfs, path, title, color):
     return [cum_yield_gb, cum_yield_reads]
 
 
-def subsample_datasets(df, minimal=1000):
+def subsample_datasets(df, minimal=10000):
 
     if 'dataset' in df:
         list_df = []
