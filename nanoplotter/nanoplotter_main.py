@@ -84,8 +84,8 @@ def check_valid_colormap(colormap):
 #         return "png"
 
 
-def scatter(x, y, legacy, names, path, plots, color, stat=None,
-            log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
+def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens",
+            stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
     -> update from scatter_legacy function to utilise plotly package
@@ -155,10 +155,10 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
                 path=path + "_kde.html",
                 title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
 
-        # colorscale = ['#7A4579', '#D56073', 'rgb(236,158,105)', (1, 1, 0.2), (0.98, 0.98, 0.98)]
-
-        fig = ff.create_2d_density(x[idx], y[idx], point_size=3)
-
+        fig = ff.create_2d_density(x[idx], y[idx], point_size=1,
+                                   hist_color=color,
+                                   point_color=color,
+                                   colorscale=colormap)
         fig.update_layout(xaxis_title=names[0],
                           yaxis_title=names[1],
                           title=title or kde_plot.title,
