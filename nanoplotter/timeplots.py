@@ -39,11 +39,12 @@ def time_plots(df, subsampled_df, path, title=None, color="#4CB391", log_length=
 
     logging.info(f"Nanoplotter: Creating timeplots using {len(df)} (full) or "
                  f"{len(subsampled_df)} (subsampled dataset) reads.")
-    cumyields = cumulative_yield(dfs=df.set_index("start_time"),
+    dfs = check_valid_time_and_sort(df)
+    cumyields = cumulative_yield(dfs=dfs.set_index("start_time"),
                                  path=path,
                                  title=title,
                                  color=color)
-    reads_pores_over_time = plot_over_time(dfs=df.set_index("start_time"),
+    reads_pores_over_time = plot_over_time(dfs=dfs.set_index("start_time"),
                                            path=path,
                                            title=title,
                                            color=color)
