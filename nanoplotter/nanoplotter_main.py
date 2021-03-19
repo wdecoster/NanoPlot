@@ -40,11 +40,11 @@ from nanoplotter.timeplots import time_plots
 
 def check_valid_color(color):
     """Check if the color provided by the user is valid.
-#
+
     If color is invalid the default is returned.
     """
     colors, _ = colors_and_colormaps()
-    if color in colors:
+    if color in colors or color == "#4CB391":
         logging.info("NanoPlot:  Valid color {}.".format(color))
         return color
     else:
@@ -55,7 +55,7 @@ def check_valid_color(color):
 
 def check_valid_colormap(colormap):
     """Check if the colormap provided by the user is valid.
-#
+
     If colormap is invalid the default is returned.
     """
     _, colormaps = colors_and_colormaps()
@@ -84,8 +84,8 @@ def check_valid_colormap(colormap):
 #         return "png"
 
 
-def scatter(x, y, legacy, names, path, plots, color, stat=None,
-            log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
+def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens",
+            stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
     -> update from scatter_legacy function to utilise plotly package
@@ -99,25 +99,25 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
     if not contains_variance([x, y], names):
         return []
 
-    maxvalx = xmax or np.amax(x)
-    maxvaly = ymax or np.amax(y)
-
     plots_made = []
+    idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
+    maxvalx = xmax or np.amax(x[idx])
+    maxvaly = ymax or np.amax(y[idx])
 
     if plots["dot"]:
         if log:
             dot_plot = Plot(
                 path=path + "_loglength_dot.html",
-                title="{} vs {} plot using dots "
-                      "after log transformation of read lengths".format(names[0], names[1]))
+                title=f"{names[0]} vs {names[1]} plot using dots "
+                      "after log transformation of read lengths")
         else:
             dot_plot = Plot(
                 path=path + "_dot.html",
-                title="{} vs {} plot using dots".format(names[0], names[1]))
+                title=f"{names[0]} vs {names[1]} plot using dots")
 
-        fig = px.scatter(x=x, y=y, marginal_x="histogram", marginal_y="histogram",
+        fig = px.scatter(x=x[idx], y=y[idx], marginal_x="histogram", marginal_y="histogram",
                          range_x=[minvalx, maxvalx], range_y=[minvaly, maxvaly])
-
+        fig.update_traces(marker=dict(color=color))
         fig.update_yaxes(rangemode="tozero")
         fig.update_xaxes(rangemode="tozero")
 
@@ -143,7 +143,6 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
         plots_made.append(dot_plot)
 
     if plots["kde"]:
-        idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
         if log:
             kde_plot = Plot(
                 path=path + "_loglength_kde.html",
@@ -154,10 +153,10 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
                 path=path + "_kde.html",
                 title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
 
-        # colorscale = ['#7A4579', '#D56073', 'rgb(236,158,105)', (1, 1, 0.2), (0.98, 0.98, 0.98)]
-
-        fig = ff.create_2d_density(x[idx], y[idx], point_size=3)
-
+        fig = ff.create_2d_density(x[idx], y[idx], point_size=1,
+                                   hist_color=color,
+                                   point_color=color,
+                                   colorscale=colormap)
         fig.update_layout(xaxis_title=names[0],
                           yaxis_title=names[1],
                           title=title or kde_plot.title,
@@ -180,8 +179,8 @@ def scatter(x, y, legacy, names, path, plots, color, stat=None,
         plots_made.append(kde_plot)
 
         if legacy:
-            plots_made += scatter_legacy(x=x,
-                                         y=y,
+            plots_made += scatter_legacy(x=x[idx],
+                                         y=y[idx],
                                          names=names,
                                          path=path,
                                          plots=plots,
@@ -365,9 +364,8 @@ def contains_variance(arrays, names):
     """
     for ar, name in zip(arrays, names):
         if np.std(ar) == 0:
-            sys.stderr.write(
-                "No variation in '{}', skipping bivariate plots.\n".format(name.lower()))
-            logging.info("NanoPlot:  No variation in {}, skipping bivariate plot".format(name))
+            sys.stderr.write(f"No variation in '{name.lower()}', skipping bivariate plots.\n")
+            logging.info(f"NanoPlot: No variation in {name}, skipping bivariate plot")
             return False
     else:
         return True
@@ -378,37 +376,38 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
     logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
     if n50:
-        logging.info("NanoPlot:  Using {} reads with read length N50 of {}bp and maximum of {}bp."
+        logging.info("NanoPlot: Using {} reads with read length N50 of {}bp and maximum of {}bp."
                      .format(array.size, n50, maxvalx))
     else:
-        logging.info("NanoPlot:  Using {} reads maximum of {}bp.".format(array.size, maxvalx))
+        logging.info(f"NanoPlot:  Using {array.size} reads maximum of {maxvalx}bp.")
 
     plots = []
 
-    weighted, non_weighted = {'weight': array, 'name': 'Weighted', 'ylabel': 'Number of reads'}, {
-        'weight': None, 'name': 'Non weighted', 'ylabel': 'Number of reads'}
-    HistType = [weighted, non_weighted]
+    HistType = [{'weight': array, 'name': 'Weighted', 'ylabel': 'Number of reads'},
+                {'weight': None, 'name': 'Non weighted', 'ylabel': 'Number of reads'}]
 
     for h_type in HistType:
-        hist_weight, hist_name, hist_ylabel = h_type.values()
         histogram = Plot(
-            path=path + hist_name.replace(" ", "_") + "Histogram" +
+            path=path + h_type["name"].replace(" ", "_") + "Histogram" +
             name.replace(' ', '') + ".html",
-            title=hist_name + " histogram of read lengths")
+            title=f"{h_type['name']} histogram of read lengths")
 
-        hist, bin_edges = np.histogram(array, bins=max(
-            round(int(maxvalx) / 500), 10), weights=hist_weight)
+        hist, bin_edges = np.histogram(array,
+                                       bins=max(round(int(maxvalx) / 500), 10),
+                                       weights=h_type["weight"])
 
         fig = go.Figure()
 
-        fig.add_trace(go.Bar(x=bin_edges[1:], y=hist, marker_color=color))
+        fig.add_trace(go.Bar(x=bin_edges[1:],
+                             y=hist,
+                             marker_color=color))
 
         if n50:
             fig.add_vline(n50)
             fig.add_annotation(text='N50', x=n50, y=0.95, textfont_size=8)
 
         fig.update_layout(xaxis_title='Read length',
-                          yaxis_title=hist_ylabel,
+                          yaxis_title=h_type["ylabel"],
                           title=title or histogram.title,
                           title_x=0.5)
 
@@ -417,20 +416,24 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
         histogram.save()
 
         log_histogram = Plot(
-            path=path + hist_name.replace(" ", "_") + "LogTransformed_Histogram" +
+            path=path + h_type["name"].replace(" ", "_") + "LogTransformed_Histogram" +
             name.replace(' ', '') + ".html",
-            title=hist_name + " histogram of read lengths after log transformation")
+            title=h_type["name"] + " histogram of read lengths after log transformation")
 
-        if hist_weight is None:
-            hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(
-                round(int(maxvalx) / 500), 10), weights=hist_weight)
+        if h_type["weight"] is None:
+            hist_log, bin_edges_log = np.histogram(np.log10(array),
+                                                   bins=max(round(int(maxvalx) / 500), 10),
+                                                   weights=h_type["weight"])
 
         else:
-            hist_log, bin_edges_log = np.histogram(np.log10(array), bins=max(
-                round(int(maxvalx) / 500), 10), weights=np.log10(hist_weight))
+            hist_log, bin_edges_log = np.histogram(np.log10(array),
+                                                   bins=max(round(int(maxvalx) / 500), 10),
+                                                   weights=np.log10(h_type["weight"]))
 
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=bin_edges_log[1:], y=hist_log, marker_color=color))
+        fig.add_trace(go.Bar(x=bin_edges_log[1:],
+                             y=hist_log,
+                             marker_color=color))
 
         ticks = [10**i for i in range(10) if not 10**i > 10 * maxvalx]
 
@@ -440,7 +443,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
                 tickvals=np.log10(ticks),
                 ticktext=ticks),
             xaxis_title='Read length',
-            yaxis_title=hist_ylabel,
+            yaxis_title=h_type["ylabel"],
             title=title or log_histogram.title,
             title_x=0.5)
 
@@ -454,7 +457,6 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         plots.extend([histogram, log_histogram])
 
-    plots.append(dynamic_histogram(array=array, name=name, path=path, title=title, color=color))
     plots.append(yield_by_minimal_length_plot(array=array,
                                               name=name,
                                               path=path,
@@ -501,21 +503,20 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
     return html, fig
 
 
-def yield_by_minimal_length_plot(array, name, path,
-                                 title=None, color="#4CB391"):
+def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391"):
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
+    idx = np.random.choice(array.index, min(1000, len(array)), replace=False)
 
     yield_by_length = Plot(
         path=path + "Yield_By_Length.html",
         title="Yield by length")
 
-    fig = px.scatter(
-        x=df['lengths'],
-        y=df['cumyield_gb'])
-
+    fig = px.scatter(x=df['lengths'][idx],
+                     y=df['cumyield_gb'][idx])
+    fig.update_traces(marker=dict(color=color))
     fig.update_layout(xaxis_title='Read length',
-                      yaxis_title='Cumulative yield for minimal length',
+                      yaxis_title='Cumulative yield for minimal length [Gb]',
                       title=title or yield_by_length.title,
                       title_x=0.5)
 
@@ -531,6 +532,7 @@ def colors_and_colormaps():
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
     colors = open(os.path.join(parent_directory, "extra/color_options.txt")).read().splitlines()
     return colors, colormaps
+
 
 def run_tests():
     import pickle

@@ -51,9 +51,9 @@ def stats2html(statsf):
     values = df["value"].str.strip().str.replace('\t', ' ').str.split().replace(np.nan, '')
     num = len(values[0]) or 1
     v = [chunks(i, num) for i in values]
-    df = pd.DataFrame(v, index=df["feature"]).iloc[1:]
-    df.columns.name=None
-    df.index.name = None    
+    df = pd.DataFrame(v, index=df["feature"])
+    df.columns.name = None
+    df.index.name = None
     return df.to_html(header=False)
 
 
@@ -68,7 +68,7 @@ def html_toc(plots, filtered=False):
             '<li><a href="#stats1">Summary Statistics after filtering</a></li>')
     else:
         toc.append('<li><a href="#stats0">Summary Statistics</a></li>')
-        
+
     toc.append('<li class="submenu"><a href="#plots" class="submenubtn">Plots</a>')
     toc.append('<ul class="submenu-items">')
     toc.extend(['<li><a href="#'
@@ -79,19 +79,20 @@ def html_toc(plots, filtered=False):
     toc.append('</nav></header>')
     return '\n'.join(toc)
 
+
 def html_plots(plots):
     html_plots = []
     html_plots.append('<main class="grid-main"><h3 id="plots">Plots</h3>')
     for plot in plots:
-        html_plots.append('<button class="collapsible">'+plot.title+'</button>')   
-        html_plots.append('<section class="collapsible-content"><h4 class="hiddentitle" id="' + plot.title.replace(' ', '_') + '">'+ plot.title + '</h4>') 
+        html_plots.append('<button class="collapsible">'+plot.title+'</button>')
+        html_plots.append('<section class="collapsible-content"><h4 class="hiddentitle" id="' +
+                          plot.title.replace(' ', '_') + '">' + plot.title + '</h4>')
         html_plots.append(plot.encode())
         html_plots.append('</section>')
 
-    html_plots.append('<script>var coll = document.getElementsByClassName("collapsible");var i;for (i = 0; i < coll.length; i++) {coll[i].addEventListener("click", function() {this.classList.toggle("active");var content = this.nextElementSibling;if (content.style.display === "none") {content.style.display = "block";} else {content.style.display = "none";}});}</script>')    
-    
-    
-    
+    html_plots.append(
+        '<script>var coll = document.getElementsByClassName("collapsible");var i;for (i = 0; i < coll.length; i++) {coll[i].addEventListener("click", function() {this.classList.toggle("active");var content = this.nextElementSibling;if (content.style.display === "none") {content.style.display = "block";} else {content.style.display = "none";}});}</script>')
+
     return '\n'.join(html_plots)
 
 
@@ -108,7 +109,8 @@ def run_info(settings):
         html_info.append(f"{k}:\t{settings[k]}<br>")
     # html_info.append('</p>')
     return '\n'.join(html_info)
-    
+
+
 html_head = """
 <!DOCTYPE html>
 <html>

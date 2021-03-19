@@ -172,6 +172,7 @@ def make_plots(datadf, settings):
                 names=['Read lengths', 'Average read quality'],
                 path=settings["path"] + "LengthvsQualityScatterPlot",
                 color=color,
+                colormap=colormap,
                 plots=plotdict,
                 title=settings["title"])
         )
@@ -184,6 +185,7 @@ def make_plots(datadf, settings):
                     names=['Read lengths', 'Average read quality'],
                     path=settings["path"] + "LengthvsQualityScatterPlot",
                     color=color,
+                    colormap=colormap,
                     plots=plotdict,
                     log=True,
                     title=settings["title"])
@@ -228,6 +230,7 @@ def make_plots(datadf, settings):
                 path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
                 plots=plotdict,
                 color=color,
+                colormap=colormap,
                 title=settings["title"])
         )
         logging.info("Created AlignedLength vs Length plot.")
@@ -240,6 +243,7 @@ def make_plots(datadf, settings):
                 names=["Read mapping quality", "Average basecall quality"],
                 path=settings["path"] + "MappingQualityvsAverageBaseQuality",
                 color=color,
+                colormap=colormap,
                 plots=plotdict,
                 title=settings["title"])
         )
@@ -252,6 +256,7 @@ def make_plots(datadf, settings):
                 names=["Read length", "Read mapping quality"],
                 path=settings["path"] + "MappingQualityvsReadLength",
                 color=color,
+                colormap=colormap,
                 plots=plotdict,
                 title=settings["title"])
         )
@@ -264,6 +269,7 @@ def make_plots(datadf, settings):
                     names=["Read length", "Read mapping quality"],
                     path=settings["path"] + "MappingQualityvsReadLength",
                     color=color,
+                    colormap=colormap,
                     plots=plotdict,
                     log=True,
                     title=settings["title"])
@@ -280,6 +286,7 @@ def make_plots(datadf, settings):
                     names=["Percent identity", "Average Base Quality"],
                     path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
                     color=color,
+                    colormap=colormap,
                     plots=plotdict,
                     stat=stats.pearsonr if not settings["hide_stats"] else None,
                     minvalx=minPID,
@@ -294,6 +301,7 @@ def make_plots(datadf, settings):
                 names=["Aligned read length", "Percent identity"],
                 path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                 color=color,
+                colormap=colormap,
                 plots=plotdict,
                 stat=stats.pearsonr if not settings["hide_stats"] else None,
                 minvaly=minPID,
@@ -308,6 +316,7 @@ def make_plots(datadf, settings):
                     names=["Aligned read length", "Percent identity"],
                     path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                     color=color,
+                    colormap=colormap,
                     plots=plotdict,
                     stat=stats.pearsonr if not settings["hide_stats"] else None,
                     log=True,
