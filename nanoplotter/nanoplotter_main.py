@@ -99,13 +99,12 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
     if not contains_variance([x, y], names):
         return []
 
-    maxvalx = xmax or np.amax(x)
-    maxvaly = ymax or np.amax(y)
-
     plots_made = []
+    idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
+    maxvalx = xmax or np.amax(x[idx])
+    maxvaly = ymax or np.amax(y[idx])
 
     if plots["dot"]:
-        idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
         if log:
             dot_plot = Plot(
                 path=path + "_loglength_dot.html",
@@ -144,7 +143,6 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
         plots_made.append(dot_plot)
 
     if plots["kde"]:
-        idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
         if log:
             kde_plot = Plot(
                 path=path + "_loglength_kde.html",
@@ -181,8 +179,8 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
         plots_made.append(kde_plot)
 
         if legacy:
-            plots_made += scatter_legacy(x=x,
-                                         y=y,
+            plots_made += scatter_legacy(x=x[idx],
+                                         y=y[idx],
                                          names=names,
                                          path=path,
                                          plots=plots,
