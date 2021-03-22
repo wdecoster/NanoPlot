@@ -404,7 +404,8 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         if n50:
             fig.add_vline(n50)
-            fig.add_annotation(text='N50', x=n50, y=0.95, textfont_size=8)
+            fig.add_annotation(text='N50', x=n50, y=0.95)
+            fig.update_annotations(font_size=8)
 
         fig.update_layout(xaxis_title='Read length',
                           yaxis_title=h_type["ylabel"],
@@ -449,7 +450,8 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         if n50:
             fig.add_vline(np.log10(n50))
-            fig.add_annotation(text='N50', x=np.log10(n50), y=0.95, textfont_size=8)
+            fig.add_annotation(text='N50', x=np.log10(n50), y=0.95)
+            fig.update_annotations(font_size=8)
 
         log_histogram.fig = fig
         log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
