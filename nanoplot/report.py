@@ -26,7 +26,7 @@ def html_stats(settings):
     as_tsv = settings['tsv_stats']
 
     stats_html = []
-    stats_html.append('<h2>NanoPlot reports</h2>')
+    stats_html.append('<main class="grid-main"><h2>NanoPlot reports</h2>')
     if filtered:
         stats_html.append('<h3 id="stats0">Summary statistics prior to filtering</h3>')
         if as_tsv:
@@ -76,13 +76,13 @@ def html_toc(plots, filtered=False):
     toc.append('</ul>')
     toc.append('</li>')
     toc.append('<li><a href="https://github.com/wdecoster/NanoPlot/issues" target="_blank"  class="reporting">Report issue on Github</a></li>')
-    toc.append('</nav></header>')
+    toc.append('</ul></nav></header>')
     return '\n'.join(toc)
 
 
 def html_plots(plots):
     html_plots = []
-    html_plots.append('<main class="grid-main"><h3 id="plots">Plots</h3>')
+    html_plots.append('<h3 id="plots">Plots</h3>')
     for plot in plots:
         html_plots.append('<button class="collapsible">'+plot.title+'</button>')
         html_plots.append('<section class="collapsible-content"><h4 class="hiddentitle" id="' +
@@ -212,6 +212,7 @@ li {
 
 li:last-child {
   border-right: none;
+  float: right;
 }
 
 .hiddentitle { /* hides titles that are not necessary for content, but are for outline */
