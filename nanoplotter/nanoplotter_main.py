@@ -48,12 +48,11 @@ def check_valid_color(color):
     if color in colors:
         logging.info("NanoPlot:  Valid color {}.".format(color))
         return colors.get(color)
-        
- 
+
     elif re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):
-    	logging.info("NanoPlot:  Valid color {}.".format(color))
-    	return color
-    	
+        logging.info("NanoPlot:  Valid color {}.".format(color))
+        return color
+
     else:
         logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
         sys.stderr.write("Invalid color {}, using default.\n".format(color))
@@ -481,8 +480,9 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
     Use plotly to a histogram
     Return html code, but also save as png
     """
-    dynhist = Plot(path=path + "Dynamic_Histogram_{}.html".format(name[0].lower() + name[1:].replace(' ', '_')),
-                   title="Dynamic histogram of {}".format(name[0].lower() + name[1:]))
+    dynhist = Plot(
+        path=path + f"Dynamic_Histogram_{name[0].lower() + name[1:].replace(' ', '_')}.html",
+        title="Dynamic histogram of {}".format(name[0].lower() + name[1:]))
     ylabel = "Number of reads" if len(array) <= 10000 else "Downsampled number of reads"
     dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10000)),
                                                  color=color,
@@ -522,8 +522,7 @@ def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391")
         path=path + "Yield_By_Length.html",
         title="Yield by length")
 
-
-    fig = px.scatter(x=df.reindex(idx)["lengths"],y=df.reindex(idx)["cumyield_gb"])
+    fig = px.scatter(x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
     fig.update_traces(marker=dict(color=color))
     fig.update_layout(xaxis_title='Read length',
                       yaxis_title='Cumulative yield for minimal length [Gb]',
@@ -538,7 +537,8 @@ def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391")
 
 
 def colors_and_colormaps():
-    colormaps = ('Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis').split(',')
+    colormaps = ('Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,'
+                 'Hot,Blackbody,Earth,Electric,Viridis,Cividis').split(',')
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
     colours = open(os.path.join(parent_directory, "extra/color_options_hex.txt"))
     col_hex = {}
@@ -546,12 +546,13 @@ def colors_and_colormaps():
     for line in colours:
         key, value = line.split(",")
         col_hex[key] = value.strip()
-    
+
     return col_hex, colormaps
+
 
 def hex_to_rgb_scale_0_1(hexcolor):
     color = hexcolor.lstrip("#")
-    RGB_color=tuple(int(color[x:x+2], 16) for x in (0,2,4))
+    RGB_color = tuple(int(color[x:x+2], 16) for x in (0, 2, 4))
 
     RGB_color = [x/255 for x in RGB_color]
 
