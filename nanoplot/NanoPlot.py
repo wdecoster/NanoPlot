@@ -139,9 +139,9 @@ def make_plots(datadf, settings):
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
     color = nanoplotter.check_valid_color(settings["color"])
-    color = settings["color"]
+    #color = settings["color"]
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
-    colormap = settings["colormap"]
+    #colormap = settings["colormap"]
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
 

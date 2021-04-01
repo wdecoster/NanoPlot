@@ -270,8 +270,13 @@ def custom_formatter(prog):
 
 def list_colors():
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    colours = open(os.path.join(parent_directory, "extra/color_options.txt")).read().splitlines()
-    print("Valid colors: {}".format(", ".join([c.strip() for c in colours])))
+    colours = open(os.path.join(parent_directory, "extra/color_options_hex.txt"))
+    col_hex = {}
+
+    for line in colours:
+        key, value = line.split(",")
+        col_hex[key] = value.strip()
+    print("Valid colors: {}".format("\n".join([c.strip() for c in list(col_hex.keys())])))
     sys.exit(0)
 
 

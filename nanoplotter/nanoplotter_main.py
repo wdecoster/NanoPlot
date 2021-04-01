@@ -36,6 +36,7 @@ import plotly.express as px
 import plotly.figure_factory as ff
 from nanoplotter.spatial_heatmap import spatial_heatmap
 from nanoplotter.timeplots import time_plots
+import re
 
 
 def check_valid_color(color):
@@ -44,9 +45,15 @@ def check_valid_color(color):
     If color is invalid the default is returned.
     """
     colors, _ = colors_and_colormaps()
-    if color in colors or color == "#4CB391":
+    if color in colors:
         logging.info("NanoPlot:  Valid color {}.".format(color))
-        return color
+        return colors.get(color)
+        
+ 
+    elif re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):
+    	logging.info("NanoPlot:  Valid color {}.".format(color))
+    	return color
+    	
     else:
         logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
         sys.stderr.write("Invalid color {}, using default.\n".format(color))
@@ -153,9 +160,10 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
                 path=path + "_kde.html",
                 title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
 
+        col = hex_to_rgb_scale_0_1(color)
         fig = ff.create_2d_density(x[idx], y[idx], point_size=1,
-                                   hist_color=color,
-                                   point_color=color,
+                                   hist_color=col,
+                                   point_color=col,
                                    colorscale=colormap)
         fig.update_layout(xaxis_title=names[0],
                           yaxis_title=names[1],
@@ -508,14 +516,14 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
 def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391"):
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
-    idx = np.random.choice(array.index, min(1000, len(array)), replace=False)
+    idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
 
     yield_by_length = Plot(
         path=path + "Yield_By_Length.html",
         title="Yield by length")
 
-    fig = px.scatter(x=df['lengths'][idx],
-                     y=df['cumyield_gb'][idx])
+
+    fig = px.scatter(x=df.reindex(idx)["lengths"],y=df.reindex(idx)["cumyield_gb"])
     fig.update_traces(marker=dict(color=color))
     fig.update_layout(xaxis_title='Read length',
                       yaxis_title='Cumulative yield for minimal length [Gb]',
@@ -532,8 +540,22 @@ def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391")
 def colors_and_colormaps():
     colormaps = ('Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis').split(',')
     parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    colors = open(os.path.join(parent_directory, "extra/color_options.txt")).read().splitlines()
-    return colors, colormaps
+    colours = open(os.path.join(parent_directory, "extra/color_options_hex.txt"))
+    col_hex = {}
+
+    for line in colours:
+        key, value = line.split(",")
+        col_hex[key] = value.strip()
+    
+    return col_hex, colormaps
+
+def hex_to_rgb_scale_0_1(hexcolor):
+    color = hexcolor.lstrip("#")
+    RGB_color=tuple(int(color[x:x+2], 16) for x in (0,2,4))
+
+    RGB_color = [x/255 for x in RGB_color]
+
+    return tuple(RGB_color)
 
 
 def run_tests():
