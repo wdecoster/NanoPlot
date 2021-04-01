@@ -22,7 +22,6 @@ import nanoplot.report as report
 from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
-from nanoplotter.timeplots import subsample_datasets
 import nanoplotter
 import pickle
 import sys
@@ -146,7 +145,7 @@ def make_plots(datadf, settings):
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     plots = []
 
-    subdf = subsample_datasets(datadf)
+    subdf = utils.subsample_datasets(datadf)
     if settings["N50"]:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
     else:
