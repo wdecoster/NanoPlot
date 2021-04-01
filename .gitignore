@@ -5,3 +5,5 @@ README.rst
 dist/
 nanoplotter/__pycache__/
 build/
+nanotest/
+tests/
