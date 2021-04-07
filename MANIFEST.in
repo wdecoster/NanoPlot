@@ -1,4 +1,4 @@
-include extra/color_options.txt
+include extra/color_options_hex.txt
 include scripts/test.sh
 include scripts/sequencing_speed_only.py
 include README.md
