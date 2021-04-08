@@ -75,7 +75,7 @@ def html_toc(plots, filtered=False):
                 + p.title.replace(' ', '_') + '">' + p.title + '</a></li>' for p in plots])
     toc.append('</ul>')
     toc.append('</li>')
-    toc.append('<li><a href="https://github.com/wdecoster/NanoPlot/issues" target="_blank"  class="reporting">Report issue on Github</a></li>')
+    toc.append('<li class="issue-btn"><a href="https://github.com/wdecoster/NanoPlot/issues" target="_blank"  class="reporting">Report issue on Github</a></li>')
     toc.append('</ul></nav></header>')
     return '\n'.join(toc)
 
@@ -210,7 +210,7 @@ li {
   border-right: 1px solid #bbb;
 }
 
-li:last-child {
+.issue-btn {
   border-right: none;
   float: right;
 }
