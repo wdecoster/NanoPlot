@@ -185,20 +185,20 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
         kde_plot.save()
         plots_made.append(kde_plot)
 
-        if legacy:
-            plots_made += scatter_legacy(x=x[idx],
-                                         y=y[idx],
-                                         names=names,
-                                         path=path,
-                                         plots=plots,
-                                         color=color,
-                                         figformat="png",
-                                         stat=stat,
-                                         log=log,
-                                         minvalx=minvalx,
-                                         minvaly=minvaly,
-                                         title=title)
-        return plots_made
+    if legacy:
+        plots_made += scatter_legacy(x=x[idx],
+                                     y=y[idx],
+                                     names=names,
+                                     path=path,
+                                     plots=plots,
+                                     color=color,
+                                     figformat="png",
+                                     stat=stat,
+                                     log=log,
+                                     minvalx=minvalx,
+                                     minvaly=minvaly,
+                                     title=title)
+    return plots_made
 
 
 def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
