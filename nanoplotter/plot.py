@@ -1,5 +1,7 @@
+import os
 from base64 import b64encode
 from io import BytesIO
+from pathlib import Path
 from urllib.parse import quote as urlquote
 import sys
 from kaleido.scopes.plotly import PlotlyScope
@@ -43,6 +45,15 @@ class Plot(object):
             try:
                 self.save_static()
             except (AttributeError, ValueError) as e:
+                # p = str(self.path).rsplit(".", 1)
+                # p[-1] = ".png"
+                # p = ''.join(p)
+                # p = Path(self.path)
+                # p.rename(p.with_suffix('.png'))
+                p = os.path.splitext(self.path)[0]+".png"
+                if os.path.exists(p):
+                    os.remove(p)
+
                 logging.warning("No static plots are saved due to some kaleido problem:")
                 logging.warning(e)
 
