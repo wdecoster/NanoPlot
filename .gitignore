@@ -7,3 +7,4 @@ nanoplotter/__pycache__/
 build/
 nanotest/
 tests/
+.idea
