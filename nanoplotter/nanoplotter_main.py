@@ -160,14 +160,15 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
                 title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
 
         col = hex_to_rgb_scale_0_1(color)
-        fig = ff.create_2d_density(x[idx], y[idx], point_size=1,
+        fig = ff.create_2d_density(x[idx], y[idx], point_size=3,
                                    hist_color=col,
                                    point_color=col,
                                    colorscale=colormap)
         fig.update_layout(xaxis_title=names[0],
                           yaxis_title=names[1],
                           title=title or kde_plot.title,
-                          title_x=0.5)
+                          title_x=0.5,
+                          xaxis=dict(tickangle=45))
 
         if log:
             ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvaly)]
