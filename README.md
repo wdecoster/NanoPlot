@@ -131,6 +131,7 @@ This script now also provides read length vs mean quality plots in the '[pauvre]
 
 
 ## ACKNOWLEDGMENTS/CONTRIBUTORS
+- [Ilias Bukraa](https://github.com/iliasbukraa) for tremendous improvements and maintenance of the code
 - Andreas Sjödin for building and maintaining conda recipes
 - Darrin Schultz [@conchoecia](https://github.com/conchoecia) for Pauvre code
 - [@alexomics](https://github.com/alexomics) for fixing the indentation of the printed stats
