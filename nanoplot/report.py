@@ -15,7 +15,7 @@ class BarcodeTitle(object):
 def chunks(values, chunks):
     if values:
         chunksize = int(len(values) / chunks)
-        return([' '.join(values[i:i + chunksize]) for i in range(0, len(values), chunksize)])
+        return ([' '.join(values[i:i + chunksize]) for i in range(0, len(values), chunksize)])
     else:
         return [" "] * chunks
 
@@ -75,7 +75,8 @@ def html_toc(plots, filtered=False):
                 + p.title.replace(' ', '_') + '">' + p.title + '</a></li>' for p in plots])
     toc.append('</ul>')
     toc.append('</li>')
-    toc.append('<li class="issue-btn"><a href="https://github.com/wdecoster/NanoPlot/issues" target="_blank"  class="reporting">Report issue on Github</a></li>')
+    toc.append(
+        '<li class="issue-btn"><a href="https://github.com/wdecoster/NanoPlot/issues" target="_blank"  class="reporting">Report issue on Github</a></li>')
     toc.append('</ul></nav></header>')
     return '\n'.join(toc)
 
@@ -84,7 +85,7 @@ def html_plots(plots):
     html_plots = []
     html_plots.append('<h3 id="plots">Plots</h3>')
     for plot in plots:
-        html_plots.append('<button class="collapsible">'+plot.title+'</button>')
+        html_plots.append('<button class="collapsible">' + plot.title + '</button>')
         html_plots.append('<section class="collapsible-content"><h4 class="hiddentitle" id="' +
                           plot.title.replace(' ', '_') + '">' + plot.title + '</h4>')
         html_plots.append(plot.encode())
@@ -232,7 +233,6 @@ h4 { color: #111; font-family: 'Helvetica Neue', sans-serif; font-size: 16px; fo
 table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
-  margin: 15px;
   table-layout: auto;
   border-collapse: collapse;
   width: 100%;
@@ -272,6 +272,7 @@ table tr:hover {background-color: #ddd;}
   display: block;
   overflow: hidden;
   background-color: #FFFFFF;
+  text-align: center;
 }
 
 .collapsible:after {
@@ -286,7 +287,6 @@ table tr:hover {background-color: #ddd;}
 .active:after {
   content: '+'; /* Unicode character for "minus" sign (-) */
       color: white;
-
 }
 </style>
 <title>NanoPlot Report</title>

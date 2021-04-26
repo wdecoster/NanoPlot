@@ -32,7 +32,7 @@ echo ""
 echo ""
 echo ""
 echo "testing fastq minimal:"
-NanoPlot --fastq_minimal nanotest/reads.fastq.gz --store --verbose --plot dot -o tests
+NanoPlot --fastq_minimal nanotest/reads.fastq.gz --store --verbose --plots dot -o tests
 echo ""
 echo ""
 echo ""

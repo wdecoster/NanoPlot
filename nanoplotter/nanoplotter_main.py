@@ -23,7 +23,6 @@ spatialHeatmap(array, title, path, color, format)
 
 """
 
-
 import plotly.graph_objs as go
 import plotly
 import logging
@@ -74,22 +73,6 @@ def check_valid_colormap(colormap):
         return "Greens"
 
 
-# def check_valid_format(figformat):
-#     """Check if the specified figure format is valid.
-#
-#     If format is invalid the default is returned.
-#     Probably installation-dependent
-#     """
-#     fig = plt.figure()
-#     if figformat in list(fig.canvas.get_supported_filetypes().keys()):
-#         logging.info("NanoPlot:  valid output format {}".format(figformat))
-#         return figformat
-#     else:
-#         logging.info("NanoPlot:  invalid output format {}".format(figformat))
-#         sys.stderr.write("Invalid format {}, using default.\n".format(figformat))
-#         return "png"
-
-
 def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens",
             stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
@@ -133,9 +116,9 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
                           title_x=0.5)
 
         if log:
-            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvaly)]
+            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             fig.update_layout(
-                yaxis=dict(
+                xaxis=dict(
                     tickmode='array',
                     tickvals=np.log10(ticks),
                     ticktext=ticks,
@@ -163,7 +146,8 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
         fig = ff.create_2d_density(x[idx], y[idx], point_size=3,
                                    hist_color=col,
                                    point_color=col,
-                                   colorscale=colormap)
+                                   colorscale=colormap, width=1870)
+
         fig.update_layout(xaxis_title=names[0],
                           yaxis_title=names[1],
                           title=title or kde_plot.title,
@@ -171,9 +155,9 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
                           xaxis=dict(tickangle=45))
 
         if log:
-            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvaly)]
+            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             fig.update_layout(
-                yaxis=dict(
+                xaxis=dict(
                     tickmode='array',
                     tickvals=np.log10(ticks),
                     ticktext=ticks,
@@ -186,12 +170,12 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
         kde_plot.save()
         plots_made.append(kde_plot)
 
-    if legacy:
+    if 1 in legacy.values():
         plots_made += scatter_legacy(x=x[idx],
                                      y=y[idx],
                                      names=names,
                                      path=path,
-                                     plots=plots,
+                                     plots=legacy,
                                      color=color,
                                      figformat="png",
                                      stat=stat,
@@ -255,7 +239,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
             height=10)
         plot.set_axis_labels(names[0], names[1])
         if log:
-            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
+            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
             plot.ax_joint.set_xticklabels(ticks)
@@ -289,7 +273,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
             joint_kws={"s": 1})
         plot.set_axis_labels(names[0], names[1])
         if log:
-            ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
+            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
             plot.ax_joint.set_xticklabels(ticks)
@@ -325,7 +309,7 @@ def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
                 height=10)
             plot.set_axis_labels(names[0], names[1])
             if log:
-                ticks = [10**i for i in range(10) if not 10**i > 10 * (10**maxvalx)]
+                ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
                 plot.ax_joint.set_xticks(np.log10(ticks))
                 plot.ax_marg_x.set_xticks(np.log10(ticks))
                 plot.ax_joint.set_xticklabels(ticks)
@@ -397,7 +381,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
     for h_type in HistType:
         histogram = Plot(
             path=path + h_type["name"].replace(" ", "_") + "Histogram" +
-            name.replace(' ', '') + ".html",
+                 name.replace(' ', '') + ".html",
             title=f"{h_type['name']} histogram of read lengths")
 
         hist, bin_edges = np.histogram(array,
@@ -426,7 +410,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         log_histogram = Plot(
             path=path + h_type["name"].replace(" ", "_") + "LogTransformed_Histogram" +
-            name.replace(' ', '') + ".html",
+                 name.replace(' ', '') + ".html",
             title=h_type["name"] + " histogram of read lengths after log transformation")
 
         if h_type["weight"] is None:
@@ -444,7 +428,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
                              y=hist_log,
                              marker_color=color))
 
-        ticks = [10**i for i in range(10) if not 10**i > 10 * maxvalx]
+        ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * maxvalx]
 
         fig.update_layout(
             xaxis=dict(
@@ -516,7 +500,7 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
 
 def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391"):
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
-    df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
+    df["cumyield_gb"] = df["lengths"].cumsum() / 10 ** 9
     idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
 
     yield_by_length = Plot(
@@ -553,9 +537,9 @@ def colors_and_colormaps():
 
 def hex_to_rgb_scale_0_1(hexcolor):
     color = hexcolor.lstrip("#")
-    RGB_color = tuple(int(color[x:x+2], 16) for x in (0, 2, 4))
+    RGB_color = tuple(int(color[x:x + 2], 16) for x in (0, 2, 4))
 
-    RGB_color = [x/255 for x in RGB_color]
+    RGB_color = [x / 255 for x in RGB_color]
 
     return tuple(RGB_color)
 
