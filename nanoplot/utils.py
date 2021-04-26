@@ -100,10 +100,6 @@ def get_args():
     general.add_argument("--info_in_report",
                          help="Add NanoPlot run info in the report.",
                          action='store_true')
-    general.add_argument("--legacy", help="Create four types of bivariate plots of x vs y, "
-                         "containing marginal summaries, "
-                         "using the matplotlib and seaborn package",
-                         action='store_true')
     filtering = parser.add_argument_group(
         title='Options for filtering or transforming input prior to plotting')
     filtering.add_argument("--maxlength",
@@ -169,7 +165,12 @@ def get_args():
                         default=['kde', 'dot'],
                         type=str,
                         nargs='*',
-                        choices=['kde', 'hex', 'dot', 'pauvre'])
+                        choices=['kde', 'hex', 'dot'])
+    visual.add_argument("--legacy", help="Specify which bivariate plots have to be made (legacy mode).",
+                        default=['hex'],
+                        type=str,
+                        nargs='*',
+                        choices=['kde', 'dot', 'hex'])
     visual.add_argument("--listcolors",
                         help="List the colors which are available for plotting and exit.",
                         action=Action_Print_Colors,
