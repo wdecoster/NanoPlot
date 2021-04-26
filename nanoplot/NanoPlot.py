@@ -142,9 +142,13 @@ def make_plots(datadf, settings):
 
     plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
     if "hex" in settings["plots"]:
-        print("WARNING: hex as part of --plots has been deprecated and will be ignored. To get the hex output, rerun with --legacy hex.")
+        print(
+            "WARNING: hex as part of --plots has been deprecated and will be ignored. To get the hex output, rerun with --legacy hex.")
 
-    plotdict_legacy = {plot: settings["legacy"].count(plot) for plot in ["kde", "hex", "dot"]}
+    if settings["legacy"] is None:
+        plotdict_legacy = {}
+    else:
+        plotdict_legacy = {plot: settings["legacy"].count(plot) for plot in ["kde", "hex", "dot"]}
 
     plots = []
 
