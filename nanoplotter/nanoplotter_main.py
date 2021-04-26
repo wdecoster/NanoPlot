@@ -116,9 +116,9 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
                           title_x=0.5)
 
         if log:
-            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvaly)]
+            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             fig.update_layout(
-                yaxis=dict(
+                xaxis=dict(
                     tickmode='array',
                     tickvals=np.log10(ticks),
                     ticktext=ticks,
