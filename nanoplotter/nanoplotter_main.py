@@ -155,7 +155,7 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
                           xaxis=dict(tickangle=45))
 
         if log:
-            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvaly)]
+            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             fig.update_layout(
                 xaxis=dict(
                     tickmode='array',
