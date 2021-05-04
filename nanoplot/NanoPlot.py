@@ -230,7 +230,7 @@ def make_plots(datadf, settings):
             nanoplotter.scatter(
                 x=datadf[datadf["length_filter"]]["aligned_lengths"],
                 y=datadf[datadf["length_filter"]]["lengths"],
-                legacy=legacy,
+                legacy=plotdict_legacy,
                 names=["Aligned read lengths", "Sequenced read length"],
                 path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
                 plots=plotdict,
@@ -244,7 +244,7 @@ def make_plots(datadf, settings):
             nanoplotter.scatter(
                 x=datadf["mapQ"],
                 y=datadf["quals"],
-                legacy=legacy,
+                legacy=plotdict_legacy,
                 names=["Read mapping quality", "Average basecall quality"],
                 path=settings["path"] + "MappingQualityvsAverageBaseQuality",
                 color=color,
@@ -257,7 +257,7 @@ def make_plots(datadf, settings):
             nanoplotter.scatter(
                 x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["mapQ"],
-                legacy=legacy,
+                legacy=plotdict_legacy,
                 names=["Read length", "Read mapping quality"],
                 path=settings["path"] + "MappingQualityvsReadLength",
                 color=color,
@@ -270,7 +270,7 @@ def make_plots(datadf, settings):
                 nanoplotter.scatter(
                     x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
                     y=datadf[datadf["length_filter"]]["mapQ"],
-                    legacy=legacy,
+                    legacy=plotdict_legacy,
                     names=["Read length", "Read mapping quality"],
                     path=settings["path"] + "MappingQualityvsReadLength",
                     color=color,
@@ -287,7 +287,7 @@ def make_plots(datadf, settings):
                 nanoplotter.scatter(
                     x=datadf["percentIdentity"],
                     y=datadf["aligned_quals"],
-                    legacy=legacy,
+                    legacy=plotdict_legacy,
                     names=["Percent identity", "Average Base Quality"],
                     path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
                     color=color,
@@ -302,7 +302,7 @@ def make_plots(datadf, settings):
             nanoplotter.scatter(
                 x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["percentIdentity"],
-                legacy=legacy,
+                legacy=plotdict_legacy,
                 names=["Aligned read length", "Percent identity"],
                 path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                 color=color,
@@ -317,7 +317,7 @@ def make_plots(datadf, settings):
                 nanoplotter.scatter(
                     x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
                     y=datadf[datadf["length_filter"]]["percentIdentity"],
-                    legacy=legacy,
+                    legacy=plotdict_legacy,
                     names=["Aligned read length", "Percent identity"],
                     path=settings["path"] + "PercentIdentityvsAlignedReadLength",
                     color=color,
