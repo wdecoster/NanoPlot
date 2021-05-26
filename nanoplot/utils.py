@@ -154,12 +154,11 @@ def get_args():
     visual.add_argument("-cm", "--colormap",
                         help="Specify a valid matplotlib colormap for the heatmap",
                         default="Greens")
-    # visual.add_argument("-f", "--format",
-    #                     help="Specify the output format of the plots.",
-    #                     default="png",
-    #                     type=str,
-    #                     choices=['eps', 'jpeg', 'jpg', 'pdf', 'pgf', 'png', 'ps',
-    #                              'raw', 'rgba', 'svg', 'svgz', 'tif', 'tiff'])
+    visual.add_argument("-f", "--format",
+                        help="Specify the output format of the plots.",
+                        default="png",
+                        type=str,
+                        choices=['png','jpg','jpeg','webp','svg','pdf','eps','json'])
     visual.add_argument("--plots",
                         help="Specify which bivariate plots have to be made.",
                         default=['kde', 'dot'],
@@ -167,6 +166,7 @@ def get_args():
                         nargs='*',
                         choices=['kde', 'hex', 'dot'])
     visual.add_argument("--legacy", help="Specify which bivariate plots have to be made (legacy mode).",
+                        default=["hex"],
                         type=str,
                         nargs='*',
                         choices=['kde', 'dot', 'hex'])
@@ -281,8 +281,8 @@ def list_colors():
 
 
 def list_colormaps():
-    print('Valid colormaps:\nGreys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,'
-          'Rainbow,Portland,Jet,Hot,Blackbody,Earth,Electric,Viridis,Cividis')
+    print('Valid colormaps:\nGreys\nYlGnBu\nGreens\nYlOrRd\nBluered\nRdBu\nReds\nBlues\nPicnic\n'
+          'Rainbow\nPortland\nJet\nHot\nBlackbody\nEarth\nElectric\nViridis\nCividis')
     sys.exit(0)
 
 

@@ -55,8 +55,9 @@ NanoPlot [-h] [-v] [-t THREADS] [--verbose] [--store] [--raw]
                 [--percentqual] [--alength] [--minqual N]
                 [--readtype {1D,2D,1D2}] [--barcoded] [--runtime_until N]
                 [-c COLOR]
-                [-f {eps,jpeg,jpg,pdf,pgf,png,ps,raw,rgba,svg,svgz,tif,tiff}]
-                [--plots [{kde,hex,dot,pauvre} [{kde,hex,dot,pauvre} ...]]]
+                [-f {png,jpg,jpeg,webp,svg,pdf,eps,json}]
+                [--plots [{kde,hex,dot}]]
+                [--legacy [{kde,hex,dot}]]
                 [--listcolors] [--no-N50] [--N50] [--title TITLE]
                 (--fastq file [file ...] | --fasta file [file ...] | --fastq_rich file [file ...] | --fastq_minimal file [file ...] | --summary file [file ...] | --bam file [file ...] | --cram file [file ...] | --pickle pickle)
 
@@ -88,9 +89,9 @@ Options for filtering or transforming input prior to plotting:
 Options for customizing the plots created:
   -c, --color COLOR     Specify a color for the plots, must be a valid matplotlib color
   -f, --format          Specify the output format of the plots.
-                        One of png [default], eps,jpeg,jpg,pdf,pgf,ps,raw,rgba,svg,svgz,tif,tiff
-  --plots               Specify which bivariate plots have to be made.
-                        One or more of 'dot' (default), 'kde' (default), 'hex' and 'pauvre'
+                        Default = png, other options: jpg,jpeg,webp,svg,pdf,eps,json. Saving the figure as a json file allows for further customisation and can be plotted locally with plotly (https://plotly.com/python-api-reference/generated/plotly.io.read_json.html).
+  --plots               Specify which bivariate plots have to be made. Default plots are kde and dot.
+  --legacy              Plot bivariate plots using seaborn/matplotlib.                     
   --listcolors          List the colors which are available for plotting and exit.
   --no-N50              Hide the N50 mark in the read length histogram
   --N50                 Show the N50 mark in the read length histogram
@@ -119,15 +120,16 @@ Input data sources, one of these is required.:
 
 ### NOTES
  - `--downsample` won't save you tons of time, as down sampling is only done after collecting all data and probably would only make a difference for a huge amount of data. If you want to save time you could down sample your data upfront. Note also that extracting information from a summary file is faster than other formats, and that you can extract from multiple files simultaneously (which will happen in parallel then). Some plot types (especially kde) are slower than others and you can take a look at the input for `--plots` to speed things up (default is to make both kde and dot plot). If you are only interested in say the read length histogram it is possible to write a script to just get you that and avoid wasting time on the rest. Let me know if you need any help here.
-
+ - `--plots` uses the plotly package to plot kde and dot plots. Hex option will be ignored.
+ - `--legacy` plotting of a hex plot currently is only possible using this option,which uses the seaborn and matplotlib package, since there is no support for it in plotly (yet). Plots like kde and dot are also possible with this option. 
 
 ### EXAMPLE USAGE
 ```bash
 Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed  
-NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots hex dot
+NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots dot --legacy hex
 NanoPlot -t 12 --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000 -o bamplots_downsampled
 ```
-This script now also provides read length vs mean quality plots in the '[pauvre](https://github.com/conchoecia/pauvre)'-style from [@conchoecia](https://github.com/conchoecia).
+<!-- This script now also provides read length vs mean quality plots in the '[pauvre](https://github.com/conchoecia/pauvre)'-style from [@conchoecia](https://github.com/conchoecia). -->
 
 
 ## ACKNOWLEDGMENTS/CONTRIBUTORS
@@ -146,7 +148,7 @@ Plot|Fastq|Fastq_rich|Fastq_minimal|Bam|Summary|Options|Style
 ----|----|----|----|----|----|----|----
 Histogram of read length|x|x|x|x|x|N50|
 Histogram of (log transformed) read length|x|x|x|x|x|N50|
-Bivariate plot of length against base call quality|x|x||x|x|log transformation|dot, hex, kde, pauvre
+Bivariate plot of length against base call quality|x|x||x|x|log transformation|dot, hex, kde
 Heatmap of reads per channel||x|||x||
 Cumulative yield plot||x|x||x||
 Violin plot of read length over time||x|x||x||
