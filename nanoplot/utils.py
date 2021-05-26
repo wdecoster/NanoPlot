@@ -155,7 +155,7 @@ def get_args():
                         help="Specify a valid matplotlib colormap for the heatmap",
                         default="Greens")
     visual.add_argument("-f", "--format",
-                        help="Specify the output format of the plots.",
+                        help="Specify the output format of the plots, which are in addition to the html files",
                         default="png",
                         type=str,
                         choices=['png','jpg','jpeg','webp','svg','pdf','eps','json'])
@@ -166,7 +166,6 @@ def get_args():
                         nargs='*',
                         choices=['kde', 'hex', 'dot'])
     visual.add_argument("--legacy", help="Specify which bivariate plots have to be made (legacy mode).",
-                        default=["hex"],
                         type=str,
                         nargs='*',
                         choices=['kde', 'dot', 'hex'])

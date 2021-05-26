@@ -70,6 +70,7 @@ class Plot(object):
         settings, args = utils.get_args()
 
         scope = PlotlyScope()
-        format = settings["format"]
-        with open(self.path.replace('html', format), "wb") as f:
-                f.write(scope.transform(self.fig, format=format))
+        plot_format = settings["format"]
+        with open(self.path.replace('html', plot_format), "wb") as f:
+                f.write(scope.transform(self.fig, format=plot_format))
+                logging.info('Saved {} plot using the {} format'.format(self.path.replace('.html', ''), plot_format))
