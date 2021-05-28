@@ -36,6 +36,7 @@ import plotly.figure_factory as ff
 from nanoplotter.spatial_heatmap import spatial_heatmap
 from nanoplotter.timeplots import time_plots
 import re
+import nanoplot.utils as utils
 
 
 def check_valid_color(color):
@@ -73,7 +74,7 @@ def check_valid_colormap(colormap):
         return "Greens"
 
 
-def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens",
+def scatter(x, y, legacy, names, path, plots, color, colormap,
             stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
@@ -171,13 +172,15 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
         plots_made.append(kde_plot)
 
     if 1 in legacy.values():
+        settings, args = utils.get_args()
+        figformat = settings["format"]
         plots_made += scatter_legacy(x=x[idx],
                                      y=y[idx],
                                      names=names,
                                      path=path,
                                      plots=legacy,
                                      color=color,
-                                     figformat="png",
+                                     figformat=figformat,
                                      stat=stat,
                                      log=log,
                                      minvalx=minvalx,
@@ -186,7 +189,7 @@ def scatter(x, y, legacy, names, path, plots, color="#4CB391", colormap="Greens"
     return plots_made
 
 
-def scatter_legacy(x, y, names, path, plots, color="#4CB391", figformat="png",
+def scatter_legacy(x, y, names, path, plots, color, figformat,
                    stat=None, log=False, minvalx=0, minvaly=0, title=None,
                    xmax=None, ymax=None):
     """Create bivariate plots.
