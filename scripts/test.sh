@@ -7,7 +7,12 @@ else
 fi
 
 NanoPlot -h
-# NanoPlot --listcolors
+NanoPlot --listcolors
+echo ""
+echo ""
+echo ""
+echo "testing figformat pdf with:"
+NanoPlot --bam nanotest/alignment.bam --verbose -o tests -o tests --format pdf --drop_outliers
 echo ""
 echo ""
 echo ""
@@ -17,7 +22,7 @@ echo ""
 echo ""
 echo ""
 echo "testing bam:"
-NanoPlot --bam nanotest/alignment.bam --verbose -o tests
+NanoPlot --bam nanotest/alignment.bam --verbose -o tests --title testing
 echo ""
 echo ""
 echo ""
@@ -51,5 +56,3 @@ NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000 -o tests
 echo ""
 echo ""
 echo ""
-# echo "testing feather:"
-# NanoPlot --feather nanotest/summary1.feather --verbose --outdir plots
