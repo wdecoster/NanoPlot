@@ -11,6 +11,11 @@ NanoPlot -h
 echo ""
 echo ""
 echo ""
+echo "testing fasta with --tsv_stats:"
+NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000 -o tests --tsv_stats
+echo ""
+echo ""
+echo ""
 echo "testing bam:"
 NanoPlot --bam nanotest/alignment.bam --verbose -o tests
 echo ""
