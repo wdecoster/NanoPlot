@@ -6,7 +6,7 @@ from urllib.parse import quote as urlquote
 import sys
 from kaleido.scopes.plotly import PlotlyScope
 import logging
-
+import nanoplot.utils as utils
 
 class Plot(object):
     """A Plot object is defined by a path to the output file and the title of the plot."""
@@ -67,6 +67,10 @@ class Plot(object):
             sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
 
     def save_static(self):
+        settings, args = utils.get_args()
+
         scope = PlotlyScope()
-        with open(self.path.replace('html', 'png'), "wb") as f:
-            f.write(scope.transform(self.fig, format="png"))
+        plot_format = settings["format"]
+        with open(self.path.replace('html', plot_format), "wb") as f:
+                f.write(scope.transform(self.fig, format=plot_format))
+                logging.info('Saved {} plot using the {} format'.format(self.path.replace('.html', ''), plot_format))
