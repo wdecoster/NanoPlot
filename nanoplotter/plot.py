@@ -6,7 +6,6 @@ from urllib.parse import quote as urlquote
 import sys
 from kaleido.scopes.plotly import PlotlyScope
 import logging
-import nanoplot.utils as utils
 
 class Plot(object):
     """A Plot object is defined by a path to the output file and the title of the plot."""
@@ -38,12 +37,12 @@ class Plot(object):
         string = b64encode(buf.read())
         return '<img src="data:image/png;base64,{0}">'.format(urlquote(string))
 
-    def save(self, format=None):
+    def save(self, figformat):
         if self.html:
             with open(self.path, 'w') as html_out:
                 html_out.write(self.html)
             try:
-                self.save_static()
+                self.save_static(figformat)
             except (AttributeError, ValueError) as e:
                 p = os.path.splitext(self.path)[0]+".png"
                 if os.path.exists(p):
@@ -55,7 +54,7 @@ class Plot(object):
         elif self.fig:
             self.fig.savefig(
                 fname=self.path,
-                format=format,
+                format=figformat,
                 bbox_inches='tight')
         else:
             sys.exit("No method to save plot object: no html or fig defined.")
@@ -66,11 +65,8 @@ class Plot(object):
         else:
             sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
 
-    def save_static(self):
-        settings, args = utils.get_args()
-
+    def save_static(self,figformat):
         scope = PlotlyScope()
-        plot_format = settings["format"]
-        with open(self.path.replace('html', plot_format), "wb") as f:
-                f.write(scope.transform(self.fig, format=plot_format))
-                logging.info('Saved {} plot using the {} format'.format(self.path.replace('.html', ''), plot_format))
+        with open(self.path.replace('html', figformat), "wb") as f:
+                f.write(scope.transform(self.fig, format=figformat))
+                logging.info('Saved {} plot using the {} format (defaulted to png if legacy was used)'.format(self.path.replace('.html', ''), figformat))

@@ -137,6 +137,11 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
+
+    print(settings["plots"])
+    print(settings["legacy"])
+
+    
     color = nanoplotter.check_valid_color(settings["color"])
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
 
@@ -149,7 +154,6 @@ def make_plots(datadf, settings):
         plotdict_legacy = {}
     else:
         plotdict_legacy = {plot: settings["legacy"].count(plot) for plot in ["kde", "hex", "dot"]}
-
     plots = []
 
     subdf = utils.subsample_datasets(datadf)
@@ -165,7 +169,8 @@ def make_plots(datadf, settings):
             path=settings["path"],
             n50=n50,
             color=color,
-            title=settings["title"])
+            title=settings["title"],
+            figformat=settings["format"])
     )
     logging.info("Created length plots")
     if "quals" in datadf:
@@ -179,7 +184,8 @@ def make_plots(datadf, settings):
                 color=color,
                 colormap=colormap,
                 plots=plotdict,
-                title=settings["title"])
+                title=settings["title"],
+                figformat=settings["format"])
         )
         if settings["logBool"]:
             plots.extend(
@@ -193,7 +199,8 @@ def make_plots(datadf, settings):
                     colormap=colormap,
                     plots=plotdict,
                     log=True,
-                    title=settings["title"])
+                    title=settings["title"]),
+                    figformat=settings["format"]
             )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
@@ -202,7 +209,8 @@ def make_plots(datadf, settings):
                 array=datadf["channelIDs"],
                 title=settings["title"],
                 path=settings["path"] + "ActivityMap_ReadsPerChannel",
-                colormap=colormap)
+                colormap=colormap),
+                figformat=settings["format"]
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
@@ -212,7 +220,8 @@ def make_plots(datadf, settings):
                 subsampled_df=subdf,
                 path=settings["path"],
                 color=color,
-                title=settings["title"])
+                title=settings["title"]),
+                figformat=settings["format"]
         )
         if settings["logBool"]:
             plots.extend(
@@ -222,7 +231,8 @@ def make_plots(datadf, settings):
                     path=settings["path"],
                     color=color,
                     title=settings["title"],
-                    log_length=True)
+                    log_length=True),
+                    figformat=settings["format"]
             )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
@@ -236,7 +246,8 @@ def make_plots(datadf, settings):
                 plots=plotdict,
                 color=color,
                 colormap=colormap,
-                title=settings["title"])
+                title=settings["title"]),
+                figformat=settings["format"]
         )
         logging.info("Created AlignedLength vs Length plot.")
     if "mapQ" in datadf and "quals" in datadf:
@@ -250,7 +261,8 @@ def make_plots(datadf, settings):
                 color=color,
                 colormap=colormap,
                 plots=plotdict,
-                title=settings["title"])
+                title=settings["title"]),
+                figformat=settings["format"]
         )
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
@@ -263,7 +275,8 @@ def make_plots(datadf, settings):
                 color=color,
                 colormap=colormap,
                 plots=plotdict,
-                title=settings["title"])
+                title=settings["title"]),
+                figformat=settings["format"]
         )
         if settings["logBool"]:
             plots.extend(
@@ -277,7 +290,8 @@ def make_plots(datadf, settings):
                     colormap=colormap,
                     plots=plotdict,
                     log=True,
-                    title=settings["title"])
+                    title=settings["title"]),
+                    figformat=settings["format"]
             )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
@@ -295,7 +309,8 @@ def make_plots(datadf, settings):
                     plots=plotdict,
                     stat=stats.pearsonr if not settings["hide_stats"] else None,
                     minvalx=minPID,
-                    title=settings["title"])
+                    title=settings["title"]),
+                    figformat=settings["format"]
             )
             logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
@@ -310,7 +325,8 @@ def make_plots(datadf, settings):
                 plots=plotdict,
                 stat=stats.pearsonr if not settings["hide_stats"] else None,
                 minvaly=minPID,
-                title=settings["title"])
+                title=settings["title"]),
+                figformat=settings["format"]
         )
         if settings["logBool"]:
             plots.extend(
@@ -326,15 +342,17 @@ def make_plots(datadf, settings):
                     stat=stats.pearsonr if not settings["hide_stats"] else None,
                     log=True,
                     minvaly=minPID,
-                    title=settings["title"])
+                    title=settings["title"]),
+                    figformat=settings["format"]
             )
 
         plots.append(nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],
-                                                   name="percent identity",
-                                                   path=settings["path"]
+                                                    name="percent identity",
+                                                    path=settings["path"]
                                                         + "PercentIdentityHistogram",
-                                                   title=settings["title"],
-                                                   color=color))
+                                                    title=settings["title"],
+                                                    color=color),
+                                                    figformat=settings["format"])
         logging.info("Created Percent ID vs Length plot")
     return plots
 

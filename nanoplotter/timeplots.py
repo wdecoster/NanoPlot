@@ -81,7 +81,7 @@ def violin_plots_over_time(dfs, path, title, log_length=False, color="#4CB391"):
     return plots
 
 
-def length_over_time(dfs, path, title, log_length=False, color="#4CB391"):
+def length_over_time(dfs, path, title, figformat, log_length=False, color="#4CB391"):
     if log_length:
         time_length = Plot(path=path + "TimeLogLengthViolinPlot.html",
                            title="Violin plot of log read lengths over time")
@@ -122,12 +122,12 @@ def length_over_time(dfs, path, title, log_length=False, color="#4CB391"):
 
     time_length.fig = fig
     time_length.html = time_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    time_length.save()
+    time_length.save(figformat)
 
     return time_length
 
 
-def quality_over_time(dfs, path, title=None, color="#4CB391"):
+def quality_over_time(dfs, path, figformat, title=None, color="#4CB391"):
     time_qual = Plot(path=path + "TimeQualityViolinPlot.html",
                      title="Violin plot of quality over time")
 
@@ -148,12 +148,12 @@ def quality_over_time(dfs, path, title=None, color="#4CB391"):
 
     time_qual.fig = fig
     time_qual.html = time_qual.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    time_qual.save()
+    time_qual.save(figformat)
 
     return time_qual
 
 
-def sequencing_speed_over_time(dfs, path, title, color="#4CB391"):
+def sequencing_speed_over_time(dfs, path, title, figformat, color="#4CB391"):
     time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html",
                          title="Violin plot of sequencing speed over time")
 
@@ -177,7 +177,7 @@ def sequencing_speed_over_time(dfs, path, title, color="#4CB391"):
 
     time_duration.fig = fig
     time_duration.html = time_duration.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    time_duration.save()
+    time_duration.save(figformat)
 
     return time_duration
 
@@ -191,7 +191,7 @@ def add_time_bins(dfs, bin_length=3):
                   labels=labels)
 
 
-def plot_over_time(dfs, path, title, color="#4CB391"):
+def plot_over_time(dfs, path, title, figformat, color="#4CB391"):
     num_reads = Plot(path=path + "NumberOfReads_Over_Time.html",
                      title="Number of reads over time")
     s = dfs.loc[:, "lengths"].resample('10T').count()
@@ -209,7 +209,7 @@ def plot_over_time(dfs, path, title, color="#4CB391"):
 
     num_reads.fig = fig
     num_reads.html = num_reads.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    num_reads.save()
+    num_reads.save(figformat)
 
     plots = [num_reads]
 
@@ -231,13 +231,13 @@ def plot_over_time(dfs, path, title, color="#4CB391"):
 
         pores_over_time.fig = fig
         pores_over_time.html = pores_over_time.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        pores_over_time.save()
+        pores_over_time.save(figformat)
 
         plots.append(pores_over_time)
     return plots
 
 
-def cumulative_yield(dfs, path, title, color):
+def cumulative_yield(dfs, path, title, color, figformat):
     cum_yield_gb = Plot(path=path + "CumulativeYieldPlot_Gigabases.html",
                         title="Cumulative yield")
 
@@ -255,7 +255,7 @@ def cumulative_yield(dfs, path, title, color):
 
     cum_yield_gb.fig = fig
     cum_yield_gb.html = cum_yield_gb.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    cum_yield_gb.save()
+    cum_yield_gb.save(figformat)
 
     cum_yield_reads = Plot(path=path + "CumulativeYieldPlot_NumberOfReads.html",
                            title="Cumulative yield")
@@ -274,6 +274,6 @@ def cumulative_yield(dfs, path, title, color):
 
     cum_yield_reads.fig = fig
     cum_yield_reads.html = cum_yield_reads.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    cum_yield_reads.save()
+    cum_yield_reads.save(figformat)
 
     return [cum_yield_gb, cum_yield_reads]

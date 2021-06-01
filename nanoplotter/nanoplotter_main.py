@@ -74,8 +74,7 @@ def check_valid_colormap(colormap):
         return "Greens"
 
 
-def scatter(x, y, legacy, names, path, plots, color, colormap,
-            stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
+def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
     -> update from scatter_legacy function to utilise plotly package
@@ -129,7 +128,7 @@ def scatter(x, y, legacy, names, path, plots, color, colormap,
 
         dot_plot.fig = fig
         dot_plot.html = dot_plot.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        dot_plot.save()
+        dot_plot.save(figformat)
         plots_made.append(dot_plot)
 
     if plots["kde"]:
@@ -168,12 +167,11 @@ def scatter(x, y, legacy, names, path, plots, color, colormap,
 
         kde_plot.fig = fig
         kde_plot.html = kde_plot.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        kde_plot.save()
+        kde_plot.save(figformat)
         plots_made.append(kde_plot)
 
     if 1 in legacy.values():
         settings, args = utils.get_args()
-        figformat = settings["format"]
         plots_made += scatter_legacy(x=x[idx],
                                      y=y[idx],
                                      names=names,
@@ -209,7 +207,10 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
         sys.stderr("need additional modules when running with --legacy")
         return []
 
-    logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads.".format(
+    if figformat in ["webp", "json"]:
+        figformat = "png"
+
+    logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads (legacy mode).".format(
         names[0], names[1], x.size))
     if not contains_variance([x, y], names):
         return []
@@ -249,11 +250,12 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
         plt.subplots_adjust(top=0.90)
         plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
         hex_plot.fig = plot
-        hex_plot.save(format=figformat)
+        hex_plot.save(figformat)
         plots_made.append(hex_plot)
 
     sns.set(style="darkgrid")
     if plots["dot"]:
+        print("we here")
         if log:
             dot_plot = Plot(
                 path=path + "_loglength_dot." + figformat,
@@ -283,7 +285,7 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
         plt.subplots_adjust(top=0.90)
         plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
         dot_plot.fig = plot
-        dot_plot.save(format=figformat)
+        dot_plot.save(figformat)
         plots_made.append(dot_plot)
 
     if plots["kde"]:
@@ -319,7 +321,7 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
             plt.subplots_adjust(top=0.90)
             plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
             kde_plot.fig = plot
-            kde_plot.save(format=figformat)
+            kde_plot.save(figformat)
             plots_made.append(kde_plot)
         else:
             sys.stderr.write("Not enough observations (reads) to create a kde plot.\n")
@@ -366,7 +368,7 @@ def contains_variance(arrays, names):
         return True
 
 
-def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
+def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB391"):
     """Create histogram of normal and log transformed read lengths."""
     logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
@@ -409,7 +411,7 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         histogram.fig = fig
         histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        histogram.save()
+        histogram.save(figformat)
 
         log_histogram = Plot(
             path=path + h_type["name"].replace(" ", "_") + "LogTransformed_Histogram" +
@@ -450,20 +452,21 @@ def length_plots(array, name, path, title=None, n50=None, color="#4CB391"):
 
         log_histogram.fig = fig
         log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        log_histogram.save()
+        log_histogram.save(figformat)
 
         plots.extend([histogram, log_histogram])
 
     plots.append(yield_by_minimal_length_plot(array=array,
-                                              name=name,
-                                              path=path,
-                                              title=title,
-                                              color=color))
+                                                name=name,
+                                                path=path,
+                                                title=title,
+                                                color=color,
+                                                figformat=figformat))
 
     return plots
 
 
-def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
+def dynamic_histogram(array, name, path, figformat, title=None, color="#4CB391"):
     """
     Use plotly to a histogram
     Return html code, but also save as png
@@ -477,7 +480,7 @@ def dynamic_histogram(array, name, path, title=None, color="#4CB391"):
                                                  title=title or dynhist.title,
                                                  xlabel=name,
                                                  ylabel=ylabel)
-    dynhist.save()
+    dynhist.save(figformat)
     return dynhist
 
 
@@ -501,7 +504,7 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
     return html, fig
 
 
-def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391"):
+def yield_by_minimal_length_plot(array, name, path, figformat, title=None, color="#4CB391"):
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10 ** 9
     idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
@@ -519,7 +522,7 @@ def yield_by_minimal_length_plot(array, name, path, title=None, color="#4CB391")
 
     yield_by_length.fig = fig
     yield_by_length.html = yield_by_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    yield_by_length.save()
+    yield_by_length.save(figformat)
 
     return yield_by_length
 
