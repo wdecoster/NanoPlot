@@ -137,11 +137,6 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     '''
-
-    print(settings["plots"])
-    print(settings["legacy"])
-
-    
     color = nanoplotter.check_valid_color(settings["color"])
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
 
