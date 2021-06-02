@@ -6,8 +6,8 @@ else
     git clone https://github.com/wdecoster/nanotest.git
 fi
 
-# NanoPlot -h
-# NanoPlot --listcolors
+NanoPlot -h
+NanoPlot --listcolors
 echo ""
 echo ""
 echo ""
@@ -56,3 +56,5 @@ NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000 -o tests
 echo ""
 echo ""
 echo ""
+#echo "testing legacy with summary:"
+#NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy
