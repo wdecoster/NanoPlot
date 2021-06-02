@@ -63,7 +63,7 @@ def make_layout(maxval):
             flowcell='PromethION')
 
 
-def spatial_heatmap(array, path, colormap, title=None):
+def spatial_heatmap(array, path, colormap, figformat, title=None):
     """Taking channel information and creating post run channel activity plots."""
     logging.info("Nanoplotter: Creating heatmap of reads per channel using {} reads."
                  .format(array.size))
@@ -88,5 +88,5 @@ def spatial_heatmap(array, path, colormap, title=None):
 
     activity_map.fig = fig
     activity_map.html = activity_map.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    activity_map.save()
+    activity_map.save(figformat)
     return [activity_map]
