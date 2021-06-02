@@ -34,7 +34,7 @@ def check_valid_time_and_sort(df, timescol="start_time", days=5, warning=True):
             .reset_index()
 
 
-def time_plots(df, subsampled_df, path, title=None, color="#4CB391", log_length=False):
+def time_plots(df, subsampled_df, path, figformat, title=None, color="#4CB391", log_length=False):
     """Making plots of time vs read length, time vs quality and cumulative yield."""
 
     logging.info(f"Nanoplotter: Creating timeplots using {len(df)} (full) or "
@@ -43,20 +43,23 @@ def time_plots(df, subsampled_df, path, title=None, color="#4CB391", log_length=
     cumyields = cumulative_yield(dfs=dfs.set_index("start_time"),
                                  path=path,
                                  title=title,
-                                 color=color)
+                                 color=color,
+                                 figformat=figformat)
     reads_pores_over_time = plot_over_time(dfs=dfs.set_index("start_time"),
                                            path=path,
                                            title=title,
-                                           color=color)
+                                           color=color,
+                                           figformat=figformat)
     violins = violin_plots_over_time(dfs=check_valid_time_and_sort(subsampled_df),
                                      path=path,
                                      title=title,
                                      log_length=log_length,
-                                     color=color)
+                                     color=color,
+                                     figformat=figformat)
     return cumyields + reads_pores_over_time + violins
 
 
-def violin_plots_over_time(dfs, path, title, log_length=False, color="#4CB391"):
+def violin_plots_over_time(dfs, path, title, figformat, log_length=False, color="#4CB391"):
 
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
@@ -67,17 +70,20 @@ def violin_plots_over_time(dfs, path, title, log_length=False, color="#4CB391"):
                                   path=path,
                                   title=title,
                                   log_length=log_length,
-                                  color=color))
+                                  color=color,
+                                  figformat=figformat))
     if "quals" in dfs:
         plots.append(quality_over_time(dfs=dfs,
                                        path=path,
                                        title=title,
-                                       color=color))
+                                       color=color,
+                                       figformat=figformat))
     if "duration" in dfs:
         plots.append(sequencing_speed_over_time(dfs=dfs,
                                                 path=path,
                                                 title=title,
-                                                color=color))
+                                                color=color,
+                                                figformat=figformat))
     return plots
 
 

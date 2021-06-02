@@ -6,8 +6,8 @@ else
     git clone https://github.com/wdecoster/nanotest.git
 fi
 
-NanoPlot -h
-NanoPlot --listcolors
+# NanoPlot -h
+# NanoPlot --listcolors
 echo ""
 echo ""
 echo ""
