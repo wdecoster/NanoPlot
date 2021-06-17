@@ -1,11 +1,11 @@
 import os
 from base64 import b64encode
 from io import BytesIO
-from pathlib import Path
 from urllib.parse import quote as urlquote
 import sys
 from kaleido.scopes.plotly import PlotlyScope
 import logging
+
 
 class Plot(object):
     """A Plot object is defined by a path to the output file and the title of the plot."""
@@ -65,8 +65,9 @@ class Plot(object):
         else:
             sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
 
-    def save_static(self,figformat):
+    def save_static(self, figformat):
         scope = PlotlyScope()
         with open(self.path.replace('html', figformat), "wb") as f:
-                f.write(scope.transform(self.fig, format=figformat))
-                logging.info('Saved {} plot using the {} format (defaulted to png if legacy was used)'.format(self.path.replace('.html', ''), figformat))
+            f.write(scope.transform(self.fig, format=figformat))
+            logging.info(
+                f"Saved {self.path.replace('.html', '')}  as {figformat} (or png for --legacy)")
