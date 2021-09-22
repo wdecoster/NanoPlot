@@ -121,11 +121,11 @@ Input data sources, one of these is required.:
 ### NOTES
  - `--downsample` won't save you tons of time, as down sampling is only done after collecting all data and probably would only make a difference for a huge amount of data. If you want to save time you could down sample your data upfront. Note also that extracting information from a summary file is faster than other formats, and that you can extract from multiple files simultaneously (which will happen in parallel then). Some plot types (especially kde) are slower than others and you can take a look at the input for `--plots` to speed things up (default is to make both kde and dot plot). If you are only interested in say the read length histogram it is possible to write a script to just get you that and avoid wasting time on the rest. Let me know if you need any help here.
  - `--plots` uses the plotly package to plot kde and dot plots. Hex option will be ignored.
- - `--legacy` plotting of a hex plot currently is only possible using this option,which uses the seaborn and matplotlib package, since there is no support for it in plotly (yet). Plots like kde and dot are also possible with this option. 
+ - `--legacy` plotting of a hex plot currently is only possible using this option,which uses the seaborn and matplotlib package, since there is no support for it in plotly (yet). Plots like kde and dot are also possible with this option.
 
 ### EXAMPLE USAGE
 ```bash
-Nanoplot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed  
+NanoPlot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed  
 NanoPlot -t 2 --fastq reads1.fastq.gz reads2.fastq.gz --maxlength 40000 --plots dot --legacy hex
 NanoPlot -t 12 --color yellow --bam alignment1.bam alignment2.bam alignment3.bam --downsample 10000 -o bamplots_downsampled
 ```
