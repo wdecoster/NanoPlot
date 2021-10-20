@@ -145,10 +145,10 @@ def make_plots(datadf, settings):
         print(
             "WARNING: hex as part of --plots has been deprecated and will be ignored. To get the hex output, rerun with --legacy hex.")
 
-    if settings["legacy"] is None:
-        plotdict_legacy = {}
-    else:
+    if settings["legacy"]:
         plotdict_legacy = {plot: settings["legacy"].count(plot) for plot in ["kde", "hex", "dot"]}
+    else:
+        plotdict_legacy = {}
     plots = []
 
     subdf = utils.subsample_datasets(datadf)
@@ -342,12 +342,12 @@ def make_plots(datadf, settings):
             )
 
         plots.append(nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],
-                                                    name="percent identity",
-                                                    path=settings["path"]
-                                                        + "PercentIdentityHistogram",
-                                                    title=settings["title"],
-                                                    color=color,
-                                                    figformat=settings["format"]))
+                                                   name="percent identity",
+                                                   path=settings["path"]
+                                                   + "PercentIdentityHistogram",
+                                                   title=settings["title"],
+                                                   color=color,
+                                                   figformat=settings["format"]))
         logging.info("Created Percent ID vs Length plot")
     return plots
 
