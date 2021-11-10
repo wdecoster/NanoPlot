@@ -46,16 +46,16 @@ def check_valid_color(color):
     """
     colors, _ = colors_and_colormaps()
     if color in colors:
-        logging.info("NanoPlot:  Valid color {}.".format(color))
+        logging.info(f"NanoPlot:  Valid color {color}.")
         return colors.get(color)
 
     elif re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):
-        logging.info("NanoPlot:  Valid color {}.".format(color))
+        logging.info(f"NanoPlot:  Valid color {color}.")
         return color
 
     else:
-        logging.info("NanoPlot:  Invalid color {}, using default.".format(color))
-        sys.stderr.write("Invalid color {}, using default.\n".format(color))
+        logging.info(f"NanoPlot:  Invalid color {color}, using default.")
+        sys.stderr.write("Invalid color {color}, using default.\n")
         return "#4CB391"
 
 
@@ -66,11 +66,11 @@ def check_valid_colormap(colormap):
     """
     _, colormaps = colors_and_colormaps()
     if colormap in colormaps:
-        logging.info("NanoPlot:  Valid colormap {}.".format(colormap))
+        logging.info(f"NanoPlot:  Valid colormap {colormap}.")
         return colormap
     else:
-        logging.info("NanoPlot:  Invalid colormap {}, using default.".format(colormap))
-        sys.stderr.write("Invalid colormap {}, using default.\n".format(colormap))
+        logging.info(f"NanoPlot:  Invalid colormap {colormap}, using default.")
+        sys.stderr.write(f"Invalid colormap {colormap}, using default.\n")
         return "Greens"
 
 
@@ -83,8 +83,7 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
     - hexbin not implemented yet
     - pauvre plot temporarily not available
     """
-    logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads.".format(
-        names[0], names[1], x.size))
+    logging.info(f"NanoPlot: Creating {names[0]} vs {names[1]} plots using {x.size} reads.")
     if not contains_variance([x, y], names):
         return []
 
@@ -132,15 +131,9 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
         plots_made.append(dot_plot)
 
     if plots["kde"]:
-        if log:
-            kde_plot = Plot(
-                path=path + "_loglength_kde.html",
-                title="{} vs {} plot using a kernel density estimation "
-                      "after log transformation of read lengths".format(names[0], names[1]))
-        else:
-            kde_plot = Plot(
-                path=path + "_kde.html",
-                title="{} vs {} plot using a kernel density estimation".format(names[0], names[1]))
+        kde_plot = Plot(
+            path=path + "_loglength_kde.html" if log else path + "_kde.html",
+            title=f"{names[0]} vs {names[1]} kde plot")
 
         col = hex_to_rgb_scale_0_1(color)
         fig = ff.create_2d_density(x[idx], y[idx], point_size=3,
@@ -210,8 +203,7 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
     if figformat in ["webp", "json"]:
         figformat = "png"
 
-    logging.info("NanoPlot:  Creating {} vs {} plots using statistics from {} reads (legacy mode).".format(
-        names[0], names[1], x.size))
+    logging.info(f"NanoPlot: Creating {names[0]} vs {names[1]} legacy plots using {x.size} reads.")
     if not contains_variance([x, y], names):
         return []
     sns.set(style="ticks")
@@ -386,7 +378,7 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
     for h_type in HistType:
         histogram = Plot(
             path=path + h_type["name"].replace(" ", "_") + "Histogram" +
-                 name.replace(' ', '') + ".html",
+            name.replace(' ', '') + ".html",
             title=f"{h_type['name']} histogram of read lengths")
 
         hist, bin_edges = np.histogram(array,
@@ -415,7 +407,7 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
 
         log_histogram = Plot(
             path=path + h_type["name"].replace(" ", "_") + "LogTransformed_Histogram" +
-                 name.replace(' ', '') + ".html",
+            name.replace(' ', '') + ".html",
             title=h_type["name"] + " histogram of read lengths after log transformation")
 
         if h_type["weight"] is None:
@@ -457,11 +449,11 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
         plots.extend([histogram, log_histogram])
 
     plots.append(yield_by_minimal_length_plot(array=array,
-                                                name=name,
-                                                path=path,
-                                                title=title,
-                                                color=color,
-                                                figformat=figformat))
+                                              name=name,
+                                              path=path,
+                                              title=title,
+                                              color=color,
+                                              figformat=figformat))
 
     return plots
 
@@ -513,7 +505,7 @@ def yield_by_minimal_length_plot(array, name, path, figformat, title=None, color
         path=path + "Yield_By_Length.html",
         title="Yield by length")
 
-    fig = px.scatter(df,x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
+    fig = px.scatter(df, x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
     fig.update_traces(marker=dict(color=color))
     fig.update_layout(xaxis_title='Read length',
                       yaxis_title='Cumulative yield for minimal length [Gb]',
