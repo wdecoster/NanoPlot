@@ -146,7 +146,7 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
         fig = ff.create_2d_density(x[idx], y[idx], point_size=3,
                                    hist_color=col,
                                    point_color=col,
-                                   colorscale=colormap, width=1870)
+                                   colorscale=colormap)
 
         fig.update_layout(xaxis_title=names[0],
                           yaxis_title=names[1],
