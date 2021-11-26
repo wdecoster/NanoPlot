@@ -90,6 +90,9 @@ def get_args():
     general.add_argument("-o", "--outdir",
                          help="Specify directory in which output has to be created.",
                          default=".")
+    general.add_argument("--no_static",
+                         help="Do not make static (png) plots.",
+                         action="store_true")
     general.add_argument("-p", "--prefix",
                          help="Specify an optional prefix to be used for the output files.",
                          default="",
@@ -158,7 +161,7 @@ def get_args():
                         help="Specify the output format of the plots, which are in addition to the html files",
                         default="png",
                         type=str,
-                        choices=['png','jpg','jpeg','webp','svg','pdf','eps','json'])
+                        choices=['png', 'jpg', 'jpeg', 'webp', 'svg', 'pdf', 'eps', 'json'])
     visual.add_argument("--plots",
                         help="Specify which bivariate plots have to be made.",
                         default=['kde', 'dot'],
@@ -254,10 +257,13 @@ def get_args():
     if args.listcolormaps:
         list_colormaps()
     if args.no_N50:
-        sys.stderr.write('DeprecationWarning: --no-N50 is currently the default setting.\n')
-        sys.stderr.write('The argument is thus unnecessary but kept for backwards compatibility.')
+        sys.stderr.write(
+            'DeprecationWarning: --no-N50 is currently the default setting.\n')
+        sys.stderr.write(
+            'The argument is thus unnecessary but kept for backwards compatibility.')
     if args.barcoded and not args.summary:
-        sys.exit('ARGUMENT ERROR: --barcoded only works with data provided as --summary!')
+        sys.exit(
+            'ARGUMENT ERROR: --barcoded only works with data provided as --summary!')
     settings = vars(args)
     settings["path"] = os.path.join(args.outdir, args.prefix)
     return settings, args
@@ -268,14 +274,17 @@ def custom_formatter(prog):
 
 
 def list_colors():
-    parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    colours = open(os.path.join(parent_directory, "extra/color_options_hex.txt"))
+    parent_directory = os.path.dirname(
+        os.path.abspath(os.path.dirname(__file__)))
+    colours = open(os.path.join(parent_directory,
+                   "extra/color_options_hex.txt"))
     col_hex = {}
 
     for line in colours:
         key, value = line.split(",")
         col_hex[key] = value.strip()
-    print("Valid colors: {}".format("\n".join([c.strip() for c in list(col_hex.keys())])))
+    print("Valid colors: {}".format(
+        "\n".join([c.strip() for c in list(col_hex.keys())])))
     sys.exit(0)
 
 
@@ -296,7 +305,8 @@ def make_output_dir(path):
 def init_logs(args, tool="NanoPlot"):
     """Initiate log file and log arguments."""
     start_time = dt.fromtimestamp(time()).strftime('%Y%m%d_%H%M')
-    logname = os.path.join(args.outdir, args.prefix + tool + "_" + start_time + ".log")
+    logname = os.path.join(args.outdir, args.prefix +
+                           tool + "_" + start_time + ".log")
     handlers = [logging.FileHandler(logname)]
     if args.verbose:
         handlers.append(logging.StreamHandler())
@@ -304,8 +314,10 @@ def init_logs(args, tool="NanoPlot"):
         format='%(asctime)s %(message)s',
         handlers=handlers,
         level=logging.INFO)
-    logging.info('{} {} started with arguments {}'.format(tool, __version__, args))
-    logging.info('Python version is: {}'.format(sys.version.replace('\n', ' ')))
+    logging.info('{} {} started with arguments {}'.format(
+        tool, __version__, args))
+    logging.info('Python version is: {}'.format(
+        sys.version.replace('\n', ' ')))
     return logname
 
 

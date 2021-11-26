@@ -26,7 +26,8 @@ class Plot(object):
 
     def encode1(self):
         """Return the base64 encoding of the figure file and insert in html image tag."""
-        data_uri = b64encode(open(self.path, 'rb').read()).decode('utf-8').replace('\n', '')
+        data_uri = b64encode(open(self.path, 'rb').read()
+                             ).decode('utf-8').replace('\n', '')
         return '<img src="data:image/png;base64,{0}">'.format(data_uri)
 
     def encode2(self):
@@ -37,19 +38,22 @@ class Plot(object):
         string = b64encode(buf.read())
         return '<img src="data:image/png;base64,{0}">'.format(urlquote(string))
 
-    def save(self, figformat):
+    def save(self, settings):
+        figformat = settings["figformat"]
         if self.html:
             with open(self.path, 'w') as html_out:
                 html_out.write(self.html)
-            try:
-                self.save_static(figformat)
-            except (AttributeError, ValueError) as e:
-                p = os.path.splitext(self.path)[0]+".png"
-                if os.path.exists(p):
-                    os.remove(p)
+            if not settings["no_static"]:
+                try:
+                    self.save_static(figformat)
+                except (AttributeError, ValueError) as e:
+                    p = os.path.splitext(self.path)[0]+".png"
+                    if os.path.exists(p):
+                        os.remove(p)
 
-                logging.warning("No static plots are saved due to some kaleido problem:")
-                logging.warning(e)
+                    logging.warning(
+                        "No static plots are saved due to some kaleido problem:")
+                    logging.warning(e)
 
         elif self.fig:
             self.fig.savefig(
@@ -63,7 +67,8 @@ class Plot(object):
         if self.fig:
             return self.fig.fig
         else:
-            sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
+            sys.stderr.write(
+                ".show not implemented for Plot instance without fig attribute!")
 
     def save_static(self, figformat):
         scope = PlotlyScope()

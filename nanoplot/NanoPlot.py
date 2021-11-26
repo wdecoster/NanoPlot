@@ -43,7 +43,8 @@ def main():
         elif args.feather:
             from nanoget import combine_dfs
             from pandas import read_feather
-            datadf = combine_dfs([read_feather(p) for p in args.feather], method="simple")
+            datadf = combine_dfs([read_feather(p)
+                                 for p in args.feather], method="simple")
         else:
             sources = {
                 "fastq": args.fastq,
@@ -74,7 +75,8 @@ def main():
                           index=False,
                           compression="gzip")
 
-        settings["statsfile"] = [make_stats(datadf, settings, suffix="", tsv_stats=args.tsv_stats)]
+        settings["statsfile"] = [make_stats(
+            datadf, settings, suffix="", tsv_stats=args.tsv_stats)]
         datadf, settings = filter_and_transform_data(datadf, settings)
         if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
             settings["statsfile"].append(
@@ -91,14 +93,17 @@ def main():
                 dfbarc = datadf[datadf["barcode"] == barc]
                 if len(dfbarc) > 5:
                     settings["title"] = barc
-                    settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
+                    settings["path"] = path.join(
+                        args.outdir, args.prefix + barc + "_")
                     plots.append(report.BarcodeTitle(barc))
                     plots.extend(
                         make_plots(dfbarc, settings)
                     )
                 else:
-                    sys.stderr.write("Found barcode {} less than 5x, ignoring...\n".format(barc))
-                    logging.info("Found barcode {} less than 5 times, ignoring".format(barc))
+                    sys.stderr.write(
+                        "Found barcode {} less than 5x, ignoring...\n".format(barc))
+                    logging.info(
+                        "Found barcode {} less than 5 times, ignoring".format(barc))
             settings["path"] = main_path
         else:
             plots = make_plots(datadf, settings)
@@ -106,7 +111,8 @@ def main():
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
-        print("\n\n\nIf you read this then NanoPlot {} has crashed :-(".format(__version__))
+        print(
+            "\n\n\nIf you read this then NanoPlot {} has crashed :-(".format(__version__))
         print("Please try updating NanoPlot and see if that helps...\n")
         print("If not, please report this issue at https://github.com/wdecoster/NanoPlot/issues")
         print("If you could include the log file that would be really helpful.")
@@ -140,13 +146,15 @@ def make_plots(datadf, settings):
     color = nanoplotter.check_valid_color(settings["color"])
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
 
-    plotdict = {type: settings["plots"].count(type) for type in ["kde", "hex", "dot", 'pauvre']}
+    plotdict = {type: settings["plots"].count(
+        type) for type in ["kde", "hex", "dot", 'pauvre']}
     if "hex" in settings["plots"]:
         print(
             "WARNING: hex as part of --plots has been deprecated and will be ignored. To get the hex output, rerun with --legacy hex.")
 
     if settings["legacy"]:
-        plotdict_legacy = {plot: settings["legacy"].count(plot) for plot in ["kde", "hex", "dot"]}
+        plotdict_legacy = {plot: settings["legacy"].count(plot) for plot in [
+            "kde", "hex", "dot"]}
     else:
         plotdict_legacy = {}
     plots = []
@@ -165,13 +173,14 @@ def make_plots(datadf, settings):
             n50=n50,
             color=color,
             title=settings["title"],
-            figformat=settings["format"])
+            settings=settings)
     )
     logging.info("Created length plots")
     if "quals" in datadf:
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
+                x=datadf[datadf["length_filter"]
+                         ][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["quals"],
                 legacy=plotdict_legacy,
                 names=['Read lengths', 'Average read quality'],
@@ -180,12 +189,13 @@ def make_plots(datadf, settings):
                 colormap=colormap,
                 plots=plotdict,
                 title=settings["title"],
-                figformat=settings["format"])
+                settings=settings)
         )
         if settings["logBool"]:
             plots.extend(
                 nanoplotter.scatter(
-                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    x=datadf[datadf["length_filter"]
+                             ][settings["lengths_pointer"]],
                     y=datadf[datadf["length_filter"]]["quals"],
                     legacy=plotdict_legacy,
                     names=['Read lengths', 'Average read quality'],
@@ -195,7 +205,7 @@ def make_plots(datadf, settings):
                     plots=plotdict,
                     log=True,
                     title=settings["title"],
-                    figformat=settings["format"])
+                    settings=settings)
             )
         logging.info("Created LengthvsQual plot")
     if "channelIDs" in datadf:
@@ -205,7 +215,7 @@ def make_plots(datadf, settings):
                 title=settings["title"],
                 path=settings["path"] + "ActivityMap_ReadsPerChannel",
                 colormap=colormap,
-                figformat=settings["format"])
+                settings=settings)
         )
         logging.info("Created spatialheatmap for succesfull basecalls.")
     if "start_time" in datadf:
@@ -237,7 +247,8 @@ def make_plots(datadf, settings):
                 y=datadf[datadf["length_filter"]]["lengths"],
                 legacy=plotdict_legacy,
                 names=["Aligned read lengths", "Sequenced read length"],
-                path=settings["path"] + "AlignedReadlengthvsSequencedReadLength",
+                path=settings["path"] +
+                "AlignedReadlengthvsSequencedReadLength",
                 plots=plotdict,
                 color=color,
                 colormap=colormap,
@@ -262,7 +273,8 @@ def make_plots(datadf, settings):
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
+                x=datadf[datadf["length_filter"]
+                         ][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["mapQ"],
                 legacy=plotdict_legacy,
                 names=["Read length", "Read mapping quality"],
@@ -276,7 +288,8 @@ def make_plots(datadf, settings):
         if settings["logBool"]:
             plots.extend(
                 nanoplotter.scatter(
-                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    x=datadf[datadf["length_filter"]
+                             ][settings["lengths_pointer"]],
                     y=datadf[datadf["length_filter"]]["mapQ"],
                     legacy=plotdict_legacy,
                     names=["Read length", "Read mapping quality"],
@@ -298,7 +311,8 @@ def make_plots(datadf, settings):
                     y=datadf["aligned_quals"],
                     legacy=plotdict_legacy,
                     names=["Percent identity", "Average Base Quality"],
-                    path=settings["path"] + "PercentIdentityvsAverageBaseQuality",
+                    path=settings["path"] +
+                    "PercentIdentityvsAverageBaseQuality",
                     color=color,
                     colormap=colormap,
                     plots=plotdict,
@@ -310,7 +324,8 @@ def make_plots(datadf, settings):
             logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
             nanoplotter.scatter(
-                x=datadf[datadf["length_filter"]][settings["lengths_pointer"].replace('log_', '')],
+                x=datadf[datadf["length_filter"]
+                         ][settings["lengths_pointer"].replace('log_', '')],
                 y=datadf[datadf["length_filter"]]["percentIdentity"],
                 legacy=plotdict_legacy,
                 names=["Aligned read length", "Percent identity"],
@@ -326,11 +341,13 @@ def make_plots(datadf, settings):
         if settings["logBool"]:
             plots.extend(
                 nanoplotter.scatter(
-                    x=datadf[datadf["length_filter"]][settings["lengths_pointer"]],
+                    x=datadf[datadf["length_filter"]
+                             ][settings["lengths_pointer"]],
                     y=datadf[datadf["length_filter"]]["percentIdentity"],
                     legacy=plotdict_legacy,
                     names=["Aligned read length", "Percent identity"],
-                    path=settings["path"] + "PercentIdentityvsAlignedReadLength",
+                    path=settings["path"] +
+                    "PercentIdentityvsAlignedReadLength",
                     color=color,
                     colormap=colormap,
                     plots=plotdict,
@@ -347,7 +364,7 @@ def make_plots(datadf, settings):
                                                    + "PercentIdentityHistogram",
                                                    title=settings["title"],
                                                    color=color,
-                                                   figformat=settings["format"]))
+                                                   settings=settings))
         logging.info("Created Percent ID vs Length plot")
     return plots
 

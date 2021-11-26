@@ -58,3 +58,5 @@ echo ""
 echo ""
 #echo "testing legacy with summary:"
 #NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy
+echo "testing --no_static:"
+NanoPlot --summary nanotest/sequencing_summary.txt  --verbose --maxlength 35000 -o tests --no_static

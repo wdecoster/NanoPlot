@@ -74,7 +74,7 @@ def check_valid_colormap(colormap):
         return "Greens"
 
 
-def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
+def scatter(x, y, legacy, names, path, plots, color, colormap, settings, stat=None, log=False, minvalx=0, minvaly=0, title=None, xmax=None, ymax=None):
     """->
     create marginalised scatterplots and KDE plot with marginalized histograms
     -> update from scatter_legacy function to utilise plotly package
@@ -83,10 +83,11 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
     - hexbin not implemented yet
     - pauvre plot temporarily not available
     """
-    logging.info(f"NanoPlot: Creating {names[0]} vs {names[1]} plots using {x.size} reads.")
+    logging.info(
+        f"NanoPlot: Creating {names[0]} vs {names[1]} plots using {x.size} reads.")
     if not contains_variance([x, y], names):
         return []
-
+    figformat = settings["figformat"]
     plots_made = []
     idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
     maxvalx = xmax or np.amax(x[idx])
@@ -115,7 +116,8 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
                           title_x=0.5)
 
         if log:
-            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
+            ticks = [
+                10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             fig.update_layout(
                 xaxis=dict(
                     tickmode='array',
@@ -126,8 +128,9 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
             )
 
         dot_plot.fig = fig
-        dot_plot.html = dot_plot.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        dot_plot.save(figformat)
+        dot_plot.html = dot_plot.fig.to_html(
+            full_html=False, include_plotlyjs='cdn')
+        dot_plot.save(settings)
         plots_made.append(dot_plot)
 
     if plots["kde"]:
@@ -148,7 +151,8 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
                           xaxis=dict(tickangle=45))
 
         if log:
-            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
+            ticks = [
+                10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             fig.update_layout(
                 xaxis=dict(
                     tickmode='array',
@@ -159,8 +163,9 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
             )
 
         kde_plot.fig = fig
-        kde_plot.html = kde_plot.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        kde_plot.save(figformat)
+        kde_plot.html = kde_plot.fig.to_html(
+            full_html=False, include_plotlyjs='cdn')
+        kde_plot.save(settings)
         plots_made.append(kde_plot)
 
     if 1 in legacy.values():
@@ -171,7 +176,7 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
                                      path=path,
                                      plots=legacy,
                                      color=color,
-                                     figformat=figformat,
+                                     settings=settings,
                                      stat=stat,
                                      log=log,
                                      minvalx=minvalx,
@@ -180,7 +185,7 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, figformat, stat=N
     return plots_made
 
 
-def scatter_legacy(x, y, names, path, plots, color, figformat,
+def scatter_legacy(x, y, names, path, plots, color, settings,
                    stat=None, log=False, minvalx=0, minvaly=0, title=None,
                    xmax=None, ymax=None):
     """Create bivariate plots.
@@ -197,13 +202,14 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
         import seaborn as sns
         import matplotlib.pyplot as plt
     except ImportError:
-        sys.stderr("need additional modules when running with --legacy")
+        sys.stderr("NanoPlot needs seaborn and matplotlib with --legacy")
         return []
-
+    figformat = settings["figformat"]
     if figformat in ["webp", "json"]:
         figformat = "png"
 
-    logging.info(f"NanoPlot: Creating {names[0]} vs {names[1]} legacy plots using {x.size} reads.")
+    logging.info(
+        f"NanoPlot: Creating {names[0]} vs {names[1]} legacy plots using {x.size} reads.")
     if not contains_variance([x, y], names):
         return []
     sns.set(style="ticks")
@@ -235,14 +241,16 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
             height=10)
         plot.set_axis_labels(names[0], names[1])
         if log:
-            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
+            ticks = [
+                10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
             plot.ax_joint.set_xticklabels(ticks)
         plt.subplots_adjust(top=0.90)
-        plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
+        plot.fig.suptitle(title or "{} vs {} plot".format(
+            names[0], names[1]), fontsize=25)
         hex_plot.fig = plot
-        hex_plot.save(figformat)
+        hex_plot.save(settings)
         plots_made.append(hex_plot)
 
     sns.set(style="darkgrid")
@@ -270,14 +278,16 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
             joint_kws={"s": 1})
         plot.set_axis_labels(names[0], names[1])
         if log:
-            ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
+            ticks = [
+                10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
             plot.ax_joint.set_xticks(np.log10(ticks))
             plot.ax_marg_x.set_xticks(np.log10(ticks))
             plot.ax_joint.set_xticklabels(ticks)
         plt.subplots_adjust(top=0.90)
-        plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
+        plot.fig.suptitle(title or "{} vs {} plot".format(
+            names[0], names[1]), fontsize=25)
         dot_plot.fig = plot
-        dot_plot.save(figformat)
+        dot_plot.save(settings)
         plots_made.append(dot_plot)
 
     if plots["kde"]:
@@ -306,18 +316,22 @@ def scatter_legacy(x, y, names, path, plots, color, figformat,
                 height=10)
             plot.set_axis_labels(names[0], names[1])
             if log:
-                ticks = [10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
+                ticks = [
+                    10 ** i for i in range(10) if not 10 ** i > 10 * (10 ** maxvalx)]
                 plot.ax_joint.set_xticks(np.log10(ticks))
                 plot.ax_marg_x.set_xticks(np.log10(ticks))
                 plot.ax_joint.set_xticklabels(ticks)
             plt.subplots_adjust(top=0.90)
-            plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
+            plot.fig.suptitle(title or "{} vs {} plot".format(
+                names[0], names[1]), fontsize=25)
             kde_plot.fig = plot
-            kde_plot.save(figformat)
+            kde_plot.save(settings)
             plots_made.append(kde_plot)
         else:
-            sys.stderr.write("Not enough observations (reads) to create a kde plot.\n")
-            logging.info("NanoPlot: Not enough observations (reads) to create a kde plot")
+            sys.stderr.write(
+                "Not enough observations (reads) to create a kde plot.\n")
+            logging.info(
+                "NanoPlot: Not enough observations (reads) to create a kde plot")
     plt.close("all")
     return plots_made
 
@@ -353,22 +367,26 @@ def contains_variance(arrays, names):
     """
     for ar, name in zip(arrays, names):
         if np.std(ar) == 0:
-            sys.stderr.write(f"No variation in '{name.lower()}', skipping bivariate plots.\n")
-            logging.info(f"NanoPlot: No variation in {name}, skipping bivariate plot")
+            sys.stderr.write(
+                f"No variation in '{name.lower()}', skipping bivariate plots.\n")
+            logging.info(
+                f"NanoPlot: No variation in {name}, skipping bivariate plot")
             return False
     else:
         return True
 
 
-def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB391"):
+def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB391"):
     """Create histogram of normal and log transformed read lengths."""
     logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
+    figformat = settings["figformat"]
     if n50:
         logging.info("NanoPlot: Using {} reads with read length N50 of {}bp and maximum of {}bp."
                      .format(array.size, n50, maxvalx))
     else:
-        logging.info(f"NanoPlot:  Using {array.size} reads maximum of {maxvalx}bp.")
+        logging.info(
+            f"NanoPlot:  Using {array.size} reads maximum of {maxvalx}bp.")
 
     plots = []
 
@@ -402,8 +420,9 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
                           title_x=0.5)
 
         histogram.fig = fig
-        histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        histogram.save(figformat)
+        histogram.html = histogram.fig.to_html(
+            full_html=False, include_plotlyjs='cdn')
+        histogram.save(settings)
 
         log_histogram = Plot(
             path=path + h_type["name"].replace(" ", "_") + "LogTransformed_Histogram" +
@@ -412,12 +431,14 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
 
         if h_type["weight"] is None:
             hist_log, bin_edges_log = np.histogram(np.log10(array),
-                                                   bins=max(round(int(maxvalx) / 500), 10),
+                                                   bins=max(
+                                                       round(int(maxvalx) / 500), 10),
                                                    weights=h_type["weight"])
 
         else:
             hist_log, bin_edges_log = np.histogram(np.log10(array),
-                                                   bins=max(round(int(maxvalx) / 500), 10),
+                                                   bins=max(
+                                                       round(int(maxvalx) / 500), 10),
                                                    weights=np.log10(h_type["weight"]))
 
         fig = go.Figure()
@@ -443,8 +464,9 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
             fig.update_annotations(font_size=8)
 
         log_histogram.fig = fig
-        log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs='cdn')
-        log_histogram.save(figformat)
+        log_histogram.html = log_histogram.fig.to_html(
+            full_html=False, include_plotlyjs='cdn')
+        log_histogram.save(settings)
 
         plots.extend([histogram, log_histogram])
 
@@ -458,21 +480,24 @@ def length_plots(array, name, path, figformat, title=None, n50=None, color="#4CB
     return plots
 
 
-def dynamic_histogram(array, name, path, figformat, title=None, color="#4CB391"):
+def dynamic_histogram(array, name, path, settings, title=None, color="#4CB391"):
     """
     Use plotly to a histogram
     Return html code, but also save as png
     """
+    figformat = settings["figformat"]
     dynhist = Plot(
-        path=path + f"Dynamic_Histogram_{name[0].lower() + name[1:].replace(' ', '_')}.html",
+        path=path +
+        f"Dynamic_Histogram_{name[0].lower() + name[1:].replace(' ', '_')}.html",
         title="Dynamic histogram of {}".format(name[0].lower() + name[1:]))
-    ylabel = "Number of reads" if len(array) <= 10000 else "Downsampled number of reads"
+    ylabel = "Number of reads" if len(
+        array) <= 10000 else "Downsampled number of reads"
     dynhist.html, dynhist.fig = plotly_histogram(array=array.sample(min(len(array), 10000)),
                                                  color=color,
                                                  title=title or dynhist.title,
                                                  xlabel=name,
                                                  ylabel=ylabel)
-    dynhist.save(figformat)
+    dynhist.save(settings)
     return dynhist
 
 
@@ -496,7 +521,8 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
     return html, fig
 
 
-def yield_by_minimal_length_plot(array, name, path, figformat, title=None, color="#4CB391"):
+def yield_by_minimal_length_plot(array, name, path, settings, title=None, color="#4CB391"):
+    figformat = settings["figformat"]
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10 ** 9
     idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
@@ -505,7 +531,8 @@ def yield_by_minimal_length_plot(array, name, path, figformat, title=None, color
         path=path + "Yield_By_Length.html",
         title="Yield by length")
 
-    fig = px.scatter(df, x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
+    fig = px.scatter(df, x=df.reindex(
+        idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
     fig.update_traces(marker=dict(color=color))
     fig.update_layout(xaxis_title='Read length',
                       yaxis_title='Cumulative yield for minimal length [Gb]',
@@ -513,8 +540,9 @@ def yield_by_minimal_length_plot(array, name, path, figformat, title=None, color
                       title_x=0.5)
 
     yield_by_length.fig = fig
-    yield_by_length.html = yield_by_length.fig.to_html(full_html=False, include_plotlyjs='cdn')
-    yield_by_length.save(figformat)
+    yield_by_length.html = yield_by_length.fig.to_html(
+        full_html=False, include_plotlyjs='cdn')
+    yield_by_length.save(settings)
 
     return yield_by_length
 
@@ -522,8 +550,10 @@ def yield_by_minimal_length_plot(array, name, path, figformat, title=None, color
 def colors_and_colormaps():
     colormaps = ('Greys,YlGnBu,Greens,YlOrRd,Bluered,RdBu,Reds,Blues,Picnic,Rainbow,Portland,Jet,'
                  'Hot,Blackbody,Earth,Electric,Viridis,Cividis').split(',')
-    parent_directory = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    colours = open(os.path.join(parent_directory, "extra/color_options_hex.txt"))
+    parent_directory = os.path.dirname(
+        os.path.abspath(os.path.dirname(__file__)))
+    colours = open(os.path.join(parent_directory,
+                   "extra/color_options_hex.txt"))
     col_hex = {}
 
     for line in colours:
