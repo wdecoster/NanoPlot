@@ -250,7 +250,7 @@ def plot_over_time(dfs, path, title, settings, color="#4CB391"):
     return plots
 
 
-def cumulative_yield(dfs, path, title, color, figformat):
+def cumulative_yield(dfs, path, title, color, settings):
     cum_yield_gb = Plot(path=path + "CumulativeYieldPlot_Gigabases.html",
                         title="Cumulative yield")
 
@@ -269,7 +269,7 @@ def cumulative_yield(dfs, path, title, color, figformat):
     cum_yield_gb.fig = fig
     cum_yield_gb.html = cum_yield_gb.fig.to_html(
         full_html=False, include_plotlyjs='cdn')
-    cum_yield_gb.save(figformat)
+    cum_yield_gb.save(settings)
 
     cum_yield_reads = Plot(path=path + "CumulativeYieldPlot_NumberOfReads.html",
                            title="Cumulative yield")
@@ -289,6 +289,6 @@ def cumulative_yield(dfs, path, title, color, figformat):
     cum_yield_reads.fig = fig
     cum_yield_reads.html = cum_yield_reads.fig.to_html(
         full_html=False, include_plotlyjs='cdn')
-    cum_yield_reads.save(figformat)
+    cum_yield_reads.save(settings)
 
     return [cum_yield_gb, cum_yield_reads]
