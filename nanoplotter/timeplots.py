@@ -35,7 +35,7 @@ def check_valid_time_and_sort(df, timescol="start_time", days=5, warning=True):
             .reset_index()
 
 
-def time_plots(df, subsampled_df, path, figformat, title=None, color="#4CB391", log_length=False):
+def time_plots(df, subsampled_df, path, settings, title=None, color="#4CB391", log_length=False):
     """Making plots of time vs read length, time vs quality and cumulative yield."""
 
     logging.info(f"Nanoplotter: Creating timeplots using {len(df)} (full) or "
@@ -45,18 +45,18 @@ def time_plots(df, subsampled_df, path, figformat, title=None, color="#4CB391", 
                                  path=path,
                                  title=title,
                                  color=color,
-                                 figformat=figformat)
+                                 settings=settings)
     reads_pores_over_time = plot_over_time(dfs=dfs.set_index("start_time"),
                                            path=path,
                                            title=title,
                                            color=color,
-                                           figformat=figformat)
+                                           settings=settings)
     violins = violin_plots_over_time(dfs=check_valid_time_and_sort(subsampled_df),
                                      path=path,
                                      title=title,
                                      log_length=log_length,
                                      color=color,
-                                     figformat=figformat)
+                                     settings=settings)
     return cumyields + reads_pores_over_time + violins
 
 

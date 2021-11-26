@@ -226,7 +226,7 @@ def make_plots(datadf, settings):
                 path=settings["path"],
                 color=color,
                 title=settings["title"],
-                figformat=settings["format"])
+                settings=settings)
         )
         if settings["logBool"]:
             plots.extend(
@@ -237,7 +237,7 @@ def make_plots(datadf, settings):
                     color=color,
                     title=settings["title"],
                     log_length=True,
-                    figformat=settings["format"])
+                    settings=settings)
             )
         logging.info("Created timeplots.")
     if "aligned_lengths" in datadf and "lengths" in datadf:
@@ -253,7 +253,7 @@ def make_plots(datadf, settings):
                 color=color,
                 colormap=colormap,
                 title=settings["title"],
-                figformat=settings["format"])
+                settings=settings)
         )
         logging.info("Created AlignedLength vs Length plot.")
     if "mapQ" in datadf and "quals" in datadf:
@@ -268,7 +268,7 @@ def make_plots(datadf, settings):
                 colormap=colormap,
                 plots=plotdict,
                 title=settings["title"],
-                figformat=settings["format"])
+                settings=settings)
         )
         logging.info("Created MapQvsBaseQ plot.")
         plots.extend(
@@ -283,7 +283,7 @@ def make_plots(datadf, settings):
                 colormap=colormap,
                 plots=plotdict,
                 title=settings["title"],
-                figformat=settings["format"])
+                settings=settings)
         )
         if settings["logBool"]:
             plots.extend(
@@ -299,7 +299,7 @@ def make_plots(datadf, settings):
                     plots=plotdict,
                     log=True,
                     title=settings["title"],
-                    figformat=settings["format"])
+                    settings=settings)
             )
         logging.info("Created Mapping quality vs read length plot.")
     if "percentIdentity" in datadf:
@@ -319,7 +319,7 @@ def make_plots(datadf, settings):
                     stat=stats.pearsonr if not settings["hide_stats"] else None,
                     minvalx=minPID,
                     title=settings["title"],
-                    figformat=settings["format"])
+                    settings=settings)
             )
             logging.info("Created Percent ID vs Base quality plot.")
         plots.extend(
@@ -336,7 +336,7 @@ def make_plots(datadf, settings):
                 stat=stats.pearsonr if not settings["hide_stats"] else None,
                 minvaly=minPID,
                 title=settings["title"],
-                figformat=settings["format"])
+                settings=settings)
         )
         if settings["logBool"]:
             plots.extend(
@@ -355,7 +355,7 @@ def make_plots(datadf, settings):
                     log=True,
                     minvaly=minPID,
                     title=settings["title"],
-                    figformat=settings["format"])
+                    settings=settings)
             )
 
         plots.append(nanoplotter.dynamic_histogram(array=datadf["percentIdentity"],

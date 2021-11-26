@@ -87,7 +87,6 @@ def scatter(x, y, legacy, names, path, plots, color, colormap, settings, stat=No
         f"NanoPlot: Creating {names[0]} vs {names[1]} plots using {x.size} reads.")
     if not contains_variance([x, y], names):
         return []
-    figformat = settings["figformat"]
     plots_made = []
     idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
     maxvalx = xmax or np.amax(x[idx])
@@ -204,7 +203,7 @@ def scatter_legacy(x, y, names, path, plots, color, settings,
     except ImportError:
         sys.stderr("NanoPlot needs seaborn and matplotlib with --legacy")
         return []
-    figformat = settings["figformat"]
+    figformat = settings["format"]
     if figformat in ["webp", "json"]:
         figformat = "png"
 
@@ -247,8 +246,8 @@ def scatter_legacy(x, y, names, path, plots, color, settings,
             plot.ax_marg_x.set_xticks(np.log10(ticks))
             plot.ax_joint.set_xticklabels(ticks)
         plt.subplots_adjust(top=0.90)
-        plot.fig.suptitle(title or "{} vs {} plot".format(
-            names[0], names[1]), fontsize=25)
+        plot.fig.suptitle(
+            title or f"{names[0]} vs {names[1]} plot", fontsize=25)
         hex_plot.fig = plot
         hex_plot.save(settings)
         plots_made.append(hex_plot)
@@ -380,7 +379,6 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
     """Create histogram of normal and log transformed read lengths."""
     logging.info("NanoPlot:  Creating length plots for {}.".format(name))
     maxvalx = np.amax(array)
-    figformat = settings["figformat"]
     if n50:
         logging.info("NanoPlot: Using {} reads with read length N50 of {}bp and maximum of {}bp."
                      .format(array.size, n50, maxvalx))
@@ -475,7 +473,7 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
                                               path=path,
                                               title=title,
                                               color=color,
-                                              figformat=figformat))
+                                              settings=settings))
 
     return plots
 
@@ -485,7 +483,6 @@ def dynamic_histogram(array, name, path, settings, title=None, color="#4CB391"):
     Use plotly to a histogram
     Return html code, but also save as png
     """
-    figformat = settings["figformat"]
     dynhist = Plot(
         path=path +
         f"Dynamic_Histogram_{name[0].lower() + name[1:].replace(' ', '_')}.html",
@@ -522,7 +519,6 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
 
 
 def yield_by_minimal_length_plot(array, name, path, settings, title=None, color="#4CB391"):
-    figformat = settings["figformat"]
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10 ** 9
     idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
