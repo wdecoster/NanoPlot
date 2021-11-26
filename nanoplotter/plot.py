@@ -39,13 +39,12 @@ class Plot(object):
         return '<img src="data:image/png;base64,{0}">'.format(urlquote(string))
 
     def save(self, settings):
-        figformat = settings["figformat"]
         if self.html:
             with open(self.path, 'w') as html_out:
                 html_out.write(self.html)
             if not settings["no_static"]:
                 try:
-                    self.save_static(figformat)
+                    self.save_static(settings["format"])
                 except (AttributeError, ValueError) as e:
                     p = os.path.splitext(self.path)[0]+".png"
                     if os.path.exists(p):
@@ -58,7 +57,7 @@ class Plot(object):
         elif self.fig:
             self.fig.savefig(
                 fname=self.path,
-                format=figformat,
+                format=settings["format"],
                 bbox_inches='tight')
         else:
             sys.exit("No method to save plot object: no html or fig defined.")
