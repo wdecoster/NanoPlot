@@ -26,39 +26,35 @@ class Plot(object):
 
     def encode1(self):
         """Return the base64 encoding of the figure file and insert in html image tag."""
-        data_uri = b64encode(open(self.path, 'rb').read()
-                             ).decode('utf-8').replace('\n', '')
+        data_uri = b64encode(open(self.path, "rb").read()).decode("utf-8").replace("\n", "")
         return '<img src="data:image/png;base64,{0}">'.format(data_uri)
 
     def encode2(self):
         """Return the base64 encoding of the fig attribute and insert in html image tag."""
         buf = BytesIO()
-        self.fig.savefig(buf, format='png', bbox_inches='tight', dpi=100)
+        self.fig.savefig(buf, format="png", bbox_inches="tight", dpi=100)
         buf.seek(0)
         string = b64encode(buf.read())
         return '<img src="data:image/png;base64,{0}">'.format(urlquote(string))
 
     def save(self, settings):
         if self.html:
-            with open(self.path, 'w') as html_out:
+            with open(self.path, "w") as html_out:
                 html_out.write(self.html)
             if not settings["no_static"]:
                 try:
-                    self.save_static(settings["format"])
+                    for fmt in settings["format"]:
+                        self.save_static(fmt)
                 except (AttributeError, ValueError) as e:
-                    p = os.path.splitext(self.path)[0]+".png"
+                    p = os.path.splitext(self.path)[0] + ".png"
                     if os.path.exists(p):
                         os.remove(p)
 
-                    logging.warning(
-                        "No static plots are saved due to some kaleido problem:")
+                    logging.warning("No static plots are saved due to some kaleido problem:")
                     logging.warning(e)
 
         elif self.fig:
-            self.fig.savefig(
-                fname=self.path,
-                format=settings["format"],
-                bbox_inches='tight')
+            self.fig.savefig(fname=self.path, format=settings["format"], bbox_inches="tight")
         else:
             sys.exit("No method to save plot object: no html or fig defined.")
 
@@ -66,12 +62,12 @@ class Plot(object):
         if self.fig:
             return self.fig.fig
         else:
-            sys.stderr.write(
-                ".show not implemented for Plot instance without fig attribute!")
+            sys.stderr.write(".show not implemented for Plot instance without fig attribute!")
 
     def save_static(self, figformat):
         scope = PlotlyScope()
-        with open(self.path.replace('html', figformat), "wb") as f:
+        with open(self.path.replace("html", figformat), "wb") as f:
             f.write(scope.transform(self.fig, format=figformat))
             logging.info(
-                f"Saved {self.path.replace('.html', '')}  as {figformat} (or png for --legacy)")
+                f"Saved {self.path.replace('.html', '')}  as {figformat} (or png for --legacy)"
+            )
