@@ -246,13 +246,13 @@ def scatter_legacy(
     if plots["hex"]:
         if log:
             hex_plot = Plot(
-                path=path + "_loglength_hex." + figformat,
+                path=path + "_loglength_hex." + figformat[0],
                 title="{} vs {} plot using hexagonal bins "
                 "after log transformation of read lengths".format(names[0], names[1]),
             )
         else:
             hex_plot = Plot(
-                path=path + "_hex." + figformat,
+                path=path + "_hex." + figformat[0],
                 title="{} vs {} plot using hexagonal bins".format(names[0], names[1]),
             )
         plot = sns.jointplot(
@@ -283,13 +283,13 @@ def scatter_legacy(
         print("we here")
         if log:
             dot_plot = Plot(
-                path=path + "_loglength_dot." + figformat,
+                path=path + "_loglength_dot." + figformat[0],
                 title="{} vs {} plot using dots "
                 "after log transformation of read lengths".format(names[0], names[1]),
             )
         else:
             dot_plot = Plot(
-                path=path + "_dot." + figformat,
+                path=path + "_dot." + figformat[0],
                 title="{} vs {} plot using dots".format(names[0], names[1]),
             )
         plot = sns.jointplot(
@@ -321,13 +321,13 @@ def scatter_legacy(
             idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
             if log:
                 kde_plot = Plot(
-                    path=path + "_loglength_kde." + figformat,
+                    path=path + "_loglength_kde." + figformat[0],
                     title="{} vs {} plot using a kernel density estimation "
                     "after log transformation of read lengths".format(names[0], names[1]),
                 )
             else:
                 kde_plot = Plot(
-                    path=path + "_kde." + figformat,
+                    path=path + "_kde." + figformat[0],
                     title=f"{names[0]} vs {names[1]} plot using a kernel density estimation",
                 )
             plot = sns.jointplot(
