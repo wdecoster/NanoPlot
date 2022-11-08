@@ -17,7 +17,7 @@ setup(
     url="https://github.com/wdecoster/NanoPlot",
     author="Wouter De Coster",
     author_email="decosterwouter@gmail.com",
-    license="GPLv3",
+    license="MIT",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
