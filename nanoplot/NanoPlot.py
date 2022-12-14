@@ -89,27 +89,26 @@ def main():
 
         if args.barcoded:
             main_path = settings["path"]
-            barcodes = list(datadf["barcode"].unique())
-            plots = []
-            for barc in barcodes:
-                logging.info("Processing {}".format(barc))
+            for barc in list(datadf["barcode"].unique()):
                 dfbarc = datadf[datadf["barcode"] == barc]
                 if len(dfbarc) > 5:
+                    logging.info(f"Processing {barc}")
                     settings["title"] = barc
                     settings["path"] = path.join(args.outdir, args.prefix + barc + "_")
-                    plots.append(report.BarcodeTitle(barc))
+                    plots = [report.BarcodeTitle(barc)]
                     plots.extend(make_plots(dfbarc, settings))
+                    make_report(plots, settings)
                 else:
-                    sys.stderr.write("Found barcode {} less than 5x, ignoring...\n".format(barc))
-                    logging.info("Found barcode {} less than 5 times, ignoring".format(barc))
+                    sys.stderr.write(f"Found barcode {barc} less than 5x, ignoring...\n")
+                    logging.info(f"Found barcode {barc} less than 5 times, ignoring")
             settings["path"] = main_path
         else:
             plots = make_plots(datadf, settings)
-        make_report(plots, settings)
+            make_report(plots, settings)
         logging.info("Finished!")
     except Exception as e:
         logging.error(e, exc_info=True)
-        print("\n\n\nIf you read this then NanoPlot {} has crashed :-(".format(__version__))
+        print(f"\n\n\nIf you read this then NanoPlot {__version__} has crashed :-(")
         print("Please try updating NanoPlot and see if that helps...\n")
         print("If not, please report this issue at https://github.com/wdecoster/NanoPlot/issues")
         print("If you could include the log file that would be really helpful.")
