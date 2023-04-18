@@ -56,7 +56,7 @@ NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000 -o tests
 echo ""
 echo ""
 echo ""
-#echo "testing legacy with summary:"
-#NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy
+echo "testing legacy with summary:"
+NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy hex --raw -p prefix --plots dot
 echo "testing --no_static:"
 NanoPlot --summary nanotest/sequencing_summary.txt  --verbose --maxlength 35000 -o tests --no_static

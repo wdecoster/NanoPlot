@@ -227,7 +227,7 @@ def scatter_legacy(
         import seaborn as sns
         import matplotlib.pyplot as plt
     except ImportError:
-        sys.stderr("NanoPlot needs seaborn and matplotlib with --legacy")
+        sys.stderr.write("NanoPlot needs seaborn and matplotlib with --legacy")
         return []
     figformat = settings["format"]
     if figformat in ["webp", "json"]:
