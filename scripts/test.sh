@@ -26,6 +26,8 @@ echo "testing fastq plain:"
 NanoPlot --fastq nanotest/reads.fastq.gz --verbose --minqual 4 --color red -o tests
 echo "testing fasta:"
 NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000 -o tests
+pip install matplotlib
+pip install seaborn
 echo "testing legacy with summary:"
 NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy hex --raw -p prefix --plots dot
 echo "testing legacy with multiple output formats:"
