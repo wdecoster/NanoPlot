@@ -18,7 +18,7 @@ def non_filtered_reads(df):
 
 
 def filter_and_transform_data(df, settings):
-    '''
+    """
     Perform filtering on the data based on arguments set on commandline
     - use aligned length or sequenced length (bam mode only)
     - hide outliers from length plots*
@@ -32,7 +32,7 @@ def filter_and_transform_data(df, settings):
               judged by length below 20 and quality above 30
 
     * using a boolean column length_filter
-    '''
+    """
     df["length_filter"] = True
     settings["filtered"] = False
 
@@ -47,33 +47,42 @@ def filter_and_transform_data(df, settings):
         num_reads_prior = non_filtered_reads(df)
         df.loc[flag_length_outliers(df, settings["lengths_pointer"]), "length_filter"] = False
         num_reads_post = non_filtered_reads(df)
-        logging.info("Hidding {} length outliers in length plots.".format(
-            str(num_reads_prior - num_reads_post)))
+        logging.info(
+            "Hidding {} length outliers in length plots.".format(
+                str(num_reads_prior - num_reads_post)
+            )
+        )
 
     if settings.get("maxlength"):
         num_reads_prior = non_filtered_reads(df)
         df.loc[df[settings["lengths_pointer"]] > settings["maxlength"], "length_filter"] = False
         num_reads_post = non_filtered_reads(df)
-        logging.info("Hidding {} reads longer than {}bp in length plots.".format(
-            str(num_reads_prior - num_reads_post),
-            str(settings["maxlength"])))
+        logging.info(
+            "Hidding {} reads longer than {}bp in length plots.".format(
+                str(num_reads_prior - num_reads_post), str(settings["maxlength"])
+            )
+        )
 
     if settings.get("minlength"):
         num_reads_prior = non_filtered_reads(df)
         df.loc[df[settings["lengths_pointer"]] < settings["minlength"], "length_filter"] = False
         num_reads_post = non_filtered_reads(df)
-        logging.info("Hidding {} reads shorter than {}bp in length plots.".format(
-            str(num_reads_prior - num_reads_post),
-            str(settings["minlength"])))
+        logging.info(
+            "Hidding {} reads shorter than {}bp in length plots.".format(
+                str(num_reads_prior - num_reads_post), str(settings["minlength"])
+            )
+        )
 
     if settings.get("minqual"):
         if "quals" in df:
             num_reads_prior = non_filtered_reads(df)
             df = df.loc[df["quals"] > settings["minqual"]].copy()
             num_reads_post = non_filtered_reads(df)
-            logging.info("Removing {} reads with quality below Q{}.".format(
-                str(num_reads_prior - num_reads_post),
-                str(settings["minqual"])))
+            logging.info(
+                "Removing {} reads with quality below Q{}.".format(
+                    str(num_reads_prior - num_reads_post), str(settings["minqual"])
+                )
+            )
             settings["filtered"] = True
         else:
             sys.stderr.write("--minqual is ignored since no quality information in the data.")
@@ -92,9 +101,11 @@ def filter_and_transform_data(df, settings):
             num_reads_prior = non_filtered_reads(df)
             df = df[df.start_time < timedelta(hours=settings["runtime_until"])]
             num_reads_post = non_filtered_reads(df)
-            logging.info("Removing {} reads generated after {} hours in the run.".format(
-                str(num_reads_prior - num_reads_post),
-                str(settings["runtime_until"])))
+            logging.info(
+                "Removing {} reads generated after {} hours in the run.".format(
+                    str(num_reads_prior - num_reads_post), str(settings["runtime_until"])
+                )
+            )
             settings["filtered"] = True
         else:
             sys.stderr.write("--runtime_until is ignored since no time information in the data.")
@@ -106,14 +117,15 @@ def filter_and_transform_data(df, settings):
         num_reads_post = len(df)
         if num_reads_prior - num_reads_post > 0:
             logging.info(
-                "Removed {} artefactual reads with very short length and very high quality."
-                .format(num_reads_prior - num_reads_post))
+                "Removed {} artefactual reads with very short length and very high quality.".format(
+                    num_reads_prior - num_reads_post
+                )
+            )
             settings["filtered"] = True
 
     if settings.get("downsample"):
         new_size = min(settings["downsample"], len(df))
-        logging.info("Downsampling the dataset from {} to {} reads".format(
-            len(df), new_size))
+        logging.info("Downsampling the dataset from {} to {} reads".format(len(df), new_size))
         df = df.sample(new_size)
         settings["filtered"] = True
 
@@ -121,4 +133,7 @@ def filter_and_transform_data(df, settings):
         df["quals"] = df["quals"].apply(phred_to_percent)
         logging.info("Converting quality scores to theoretical percent identities.")
 
-    return(df, settings)
+    if len(df) == 0:
+        sys.exit("\n\nFATAL: No reads left after filtering!. Exiting!\n")
+
+    return (df, settings)
