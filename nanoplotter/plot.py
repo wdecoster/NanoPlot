@@ -54,7 +54,16 @@ class Plot(object):
                     logging.warning(e)
 
         elif self.fig:
-            self.fig.savefig(fname=self.path, format=settings["format"], bbox_inches="tight")
+            # if settings["format"] is a list, save the figure in all formats
+            if isinstance(settings["format"], list):
+                for fmt in settings["format"]:
+                    self.fig.savefig(
+                        fname=self.path + "." + fmt,
+                        format=fmt,
+                        bbox_inches="tight",
+                    )
+            else:
+                self.fig.savefig(fname=self.path, format=settings["format"], bbox_inches="tight")
         else:
             sys.exit("No method to save plot object: no html or fig defined.")
 
