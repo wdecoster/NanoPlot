@@ -188,6 +188,7 @@ Bivariate plot of mapping quality against basecall quality||||x|||dot, hex, kde
 
 
 ## CITATION
-If you use this tool, please consider citing our [publication](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty149/4934939).
+If you use this tool, please consider citing our [publication](https://academic.oup.com/bioinformatics/article/39/5/btad311/7160911).
+
 
 Copyright: 2016-2020 Wouter De Coster <decosterwouter@gmail.com>
