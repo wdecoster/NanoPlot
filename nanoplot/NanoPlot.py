@@ -21,6 +21,7 @@ import nanoplot.report as report
 from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
+from nanoplotter.plot import Plot
 import nanoplotter
 import pickle
 import sys
@@ -87,6 +88,9 @@ def main():
                 )
             )
 
+        if args.only_report:
+                Plot.only_report = True
+                
         if args.barcoded:
             main_path = settings["path"]
             for barc in list(datadf["barcode"].unique()):

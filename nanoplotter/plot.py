@@ -10,6 +10,8 @@ import logging
 class Plot(object):
     """A Plot object is defined by a path to the output file and the title of the plot."""
 
+    only_report = False
+    
     def __init__(self, path, title):
         self.path = path
         self.title = title
@@ -38,34 +40,35 @@ class Plot(object):
         return '<img src="data:image/png;base64,{0}">'.format(urlquote(string))
 
     def save(self, settings):
-        if self.html:
-            with open(self.path, "w") as html_out:
-                html_out.write(self.html)
-            if not settings["no_static"]:
-                try:
+        if not(self.only_report):
+            if self.html:
+                with open(self.path, "w") as html_out:
+                    html_out.write(self.html)
+                if not settings["no_static"]:
+                    try:
+                        for fmt in settings["format"]:
+                            self.save_static(fmt)
+                    except (AttributeError, ValueError) as e:
+                        p = os.path.splitext(self.path)[0] + ".png"
+                        if os.path.exists(p):
+                            os.remove(p)
+
+                        logging.warning("No static plots are saved due to some kaleido problem:")
+                        logging.warning(e)
+
+            elif self.fig:
+                # if settings["format"] is a list, save the figure in all formats
+                if isinstance(settings["format"], list):
                     for fmt in settings["format"]:
-                        self.save_static(fmt)
-                except (AttributeError, ValueError) as e:
-                    p = os.path.splitext(self.path)[0] + ".png"
-                    if os.path.exists(p):
-                        os.remove(p)
-
-                    logging.warning("No static plots are saved due to some kaleido problem:")
-                    logging.warning(e)
-
-        elif self.fig:
-            # if settings["format"] is a list, save the figure in all formats
-            if isinstance(settings["format"], list):
-                for fmt in settings["format"]:
-                    self.fig.savefig(
-                        fname=self.path + "." + fmt,
-                        format=fmt,
-                        bbox_inches="tight",
-                    )
+                        self.fig.savefig(
+                            fname=self.path + "." + fmt,
+                            format=fmt,
+                            bbox_inches="tight",
+                        )
+                else:
+                    self.fig.savefig(fname=self.path, format=settings["format"], bbox_inches="tight")
             else:
-                self.fig.savefig(fname=self.path, format=settings["format"], bbox_inches="tight")
-        else:
-            sys.exit("No method to save plot object: no html or fig defined.")
+                sys.exit("No method to save plot object: no html or fig defined.")
 
     def show(self):
         if self.fig:
