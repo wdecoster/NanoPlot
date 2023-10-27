@@ -102,6 +102,12 @@ def get_args():
         action="store_true",
     )
     general.add_argument(
+        "--only-report",
+        help="Output only the report",
+        action="store_true",
+        default=False,
+    )
+    general.add_argument(
         "--info_in_report", help="Add NanoPlot run info in the report.", action="store_true"
     )
     filtering = parser.add_argument_group(

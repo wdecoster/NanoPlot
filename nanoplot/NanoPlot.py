@@ -21,6 +21,7 @@ import nanoplot.report as report
 from nanoget import get_input
 from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
+from nanoplotter.plot import Plot
 import nanoplotter
 import pickle
 import sys
@@ -103,6 +104,8 @@ def main():
                     logging.info(f"Found barcode {barc} less than 5 times, ignoring")
             settings["path"] = main_path
         else:
+            if args.only_report:
+                Plot.only_report = True
             plots = make_plots(datadf, settings)
             make_report(plots, settings)
         logging.info("Finished!")
