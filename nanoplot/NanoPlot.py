@@ -88,6 +88,9 @@ def main():
                 )
             )
 
+        if args.only_report:
+                Plot.only_report = True
+                
         if args.barcoded:
             main_path = settings["path"]
             for barc in list(datadf["barcode"].unique()):
@@ -104,8 +107,6 @@ def main():
                     logging.info(f"Found barcode {barc} less than 5 times, ignoring")
             settings["path"] = main_path
         else:
-            if args.only_report:
-                Plot.only_report = True
             plots = make_plots(datadf, settings)
             make_report(plots, settings)
         logging.info("Finished!")
