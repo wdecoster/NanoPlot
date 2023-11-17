@@ -73,7 +73,7 @@ def spatial_heatmap(array, path, colormap, settings, title=None):
         title="Number of reads generated per channel")
 
     layout = make_layout(maxval=np.amax(array))
-    valueCounts = pd.value_counts(pd.Series(array))
+    valueCounts = pd.Series(array).value_counts()
 
     for entry in valueCounts.keys():
         layout.template[np.where(layout.structure == entry)
