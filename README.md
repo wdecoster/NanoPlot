@@ -1,10 +1,6 @@
 # NanoPlot
 Plotting tool for long read sequencing data and alignments.   
 
-[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/wouter_decoster.svg?style=social&label=Follow%20%40wouter_decoster)](https://twitter.com/wouter_decoster)
-[![conda badge](https://anaconda.org/bioconda/nanoplot/badges/installer/conda.svg)](https://anaconda.org/bioconda/nanoplot)
-[![Build Status](https://travis-ci.org/wdecoster/NanoPlot.svg?branch=master)](https://travis-ci.org/wdecoster/NanoPlot)
-
 ### NanoPlot is also available as a [web service](http://nanoplot.bioinf.be).
 
 ![Example plot](https://github.com/wdecoster/NanoPlot/blob/master/examples/scaled_Log_Downsampled_LengthvsQualityScatterPlot_kde.png)
@@ -23,7 +19,8 @@ This script performs data extraction from Oxford Nanopore sequencing data in the
 (can be gzip, bz2, zip and xz compressed)
 - fasta files
 (can be bgzip, bzip2 or gzip compressed)  
-Multiple files of the same type can be offered simultaneously
+- arrow files (as created by other tools I have developed)
+Multiple files of the same type can be provided simultaneously
 
 ### INSTALLATION
 
@@ -129,8 +126,8 @@ Input data sources, one of these is required.:
   --cram file [file ...]
                         Data is in one or more sorted cram file(s).
   --pickle pickle       Data is a pickle file stored earlier.
-  --feather file [file ...]
-                        Data is in one or more feather file(s).
+  --feather/--arrow file [file ...]
+                        Data is in one or more feather/arrow file(s).
 
 EXAMPLES:
     NanoPlot --summary sequencing_summary.txt --loglength -o summary-plots-log-transformed
