@@ -13,7 +13,6 @@ Input data can be given as one or multiple of:
 
 from os import path
 import logging
-import nanomath
 import numpy as np
 from scipy import stats
 import nanoplot.utils as utils
@@ -23,6 +22,7 @@ from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
 from nanoplotter.plot import Plot
 import nanoplotter
+import nanomath
 import pickle
 import sys
 

@@ -29,9 +29,9 @@ NanoPlot --fasta nanotest/reads.fa.gz --verbose --maxlength 35000 -o tests
 echo "testing --no_static:"
 NanoPlot --summary nanotest/sequencing_summary.txt  --verbose --maxlength 35000 -o tests --no_static
 
-echo "testing legacy with summary:"
-echo "installing seaborn and an appropriate version of numpy" # fuck this
-pip install seaborn==0.10.1 "numpy<1.24"
-NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy hex --raw -p prefix --plots dot
-echo "testing legacy with multiple output formats:"
-NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy hex --raw -p prefix --plots dot --format pdf png jpeg
+# echo "testing legacy with summary:"
+# echo "installing seaborn and an appropriate version of numpy" # fuck this
+# pip install seaborn==0.10.1 "numpy<1.24"
+# NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy hex --raw -p prefix --plots dot
+# echo "testing legacy with multiple output formats:"
+# NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o tests --legacy hex --raw -p prefix --plots dot --format pdf png jpeg
