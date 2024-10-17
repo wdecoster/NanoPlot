@@ -126,7 +126,7 @@ def make_stats(datadf, settings, suffix, tsv_stats=True):
     logging.info("Calculated statistics")
     if settings["barcoded"]:
         barcodes = list(datadf["barcode"].unique())
-        statsfile = settings["path"] + "NanoStats_barcoded.txt"
+        statsfile = settings["path"] + "NanoStats_barcoded" + suffix + ".txt"
         stats_df = nanomath.write_stats(
             datadfs=[datadf[datadf["barcode"] == b] for b in barcodes],
             outputfile=statsfile,
