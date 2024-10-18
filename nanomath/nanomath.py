@@ -58,7 +58,7 @@ class Stats(object):
                 25,
                 30,
             ]  # needs 5 elements in current implementation
-            self.mean_qual = ave_qual(df["quals"].astype("int").to_list())
+            self.mean_qual = ave_qual(df["quals"].to_list())
             self.median_qual = np.median(df["quals"])
             self._top5_lengths = get_top_5(
                 df=df, col="lengths", values=["lengths", "quals"]

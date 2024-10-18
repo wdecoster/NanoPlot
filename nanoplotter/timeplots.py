@@ -205,7 +205,7 @@ def add_time_bins(dfs, bin_length=3):
 def plot_over_time(dfs, path, title, settings, color="#4CB391"):
     num_reads = Plot(path=path + "NumberOfReads_Over_Time.html",
                      title="Number of reads over time")
-    s = dfs.loc[:, "lengths"].resample('10T').count()
+    s = dfs.loc[:, "lengths"].resample('10min').count()
 
     fig = px.scatter(
         data_frame=None,
@@ -228,7 +228,7 @@ def plot_over_time(dfs, path, title, settings, color="#4CB391"):
     if "channelIDs" in dfs:
         pores_over_time = Plot(path=path + "ActivePores_Over_Time.html",
                                title="Number of active pores over time")
-        s = dfs.loc[:, "channelIDs"].resample('10T').nunique()
+        s = dfs.loc[:, "channelIDs"].resample('10min').nunique()
 
         fig = px.scatter(
             data_frame=None,
@@ -254,7 +254,7 @@ def cumulative_yield(dfs, path, title, color, settings):
     cum_yield_gb = Plot(path=path + "CumulativeYieldPlot_Gigabases.html",
                         title="Cumulative yield")
 
-    s = dfs.loc[:, "lengths"].cumsum().resample('10T').max() / 1e9
+    s = dfs.loc[:, "lengths"].cumsum().resample('10min').max() / 1e9
 
     fig = px.scatter(
         x=s.index.total_seconds() / 3600,
@@ -274,7 +274,7 @@ def cumulative_yield(dfs, path, title, color, settings):
     cum_yield_reads = Plot(path=path + "CumulativeYieldPlot_NumberOfReads.html",
                            title="Cumulative yield")
 
-    s = dfs.loc[:, "lengths"].resample('10T').count().cumsum()
+    s = dfs.loc[:, "lengths"].resample('10min').count().cumsum()
 
     fig = px.scatter(
         x=s.index.total_seconds() / 3600,
