@@ -58,7 +58,7 @@ class Stats(object):
                 25,
                 30,
             ]  # needs 5 elements in current implementation
-            self.mean_qual = ave_qual(df["quals"].to_list())
+            self.mean_qual = ave_qual_floats(df["quals"])
             self.median_qual = np.median(df["quals"])
             self._top5_lengths = get_top_5(
                 df=df, col="lengths", values=["lengths", "quals"]
@@ -160,7 +160,6 @@ def get_N50(readlengths):
     ]
 
 
-
 def errs_tab(n):
     """Generate list of error rates for qualities less than equal than n."""
     return [10 ** (q / -10) for q in range(n + 1)]
@@ -183,6 +182,14 @@ def ave_qual(quals, qround=False, tab=errs_tab(128)):
     else:
         return None
 
+def ave_qual_floats(quals):
+    """
+    This function is to create the average quality across reads, where the input is a float
+    """
+    convert_to_probs = lambda q: 10 ** (-q / 10)
+    vfunc = np.vectorize(convert_to_probs)
+    probs = vfunc(quals)
+    return -10 * log(probs.sum() / len(probs), 10)
 
 def get_top_5(df, col, values, fill=False):
     if "readIDs" in df:
