@@ -555,13 +555,14 @@ def plotly_histogram(array, color="#4CB391", title=None, xlabel=None, ylabel=Non
 
 
 def yield_by_minimal_length_plot(array, name, path, settings, title=None, color="#4CB391"):
+    logging.info(f"NanoPlot: Creating yield by minimal length plot for {name}.")
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
     idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
 
     yield_by_length = Plot(path=path + "Yield_By_Length.html", title="Yield by length")
 
-    fig = px.scatter(df, x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
+    fig = px.scatter(x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
     fig.update_traces(marker=dict(color=color))
     fig.update_layout(
         xaxis_title="Read length",
