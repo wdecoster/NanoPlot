@@ -144,6 +144,7 @@ def scatter(
 
         dot_plot.fig = fig
         dot_plot.html = dot_plot.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        dot_plot.save_json()
         dot_plot.save(settings)
         plots_made.append(dot_plot)
 
@@ -174,6 +175,7 @@ def scatter(
 
         kde_plot.fig = fig
         kde_plot.html = kde_plot.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        kde_plot.save_json()
         kde_plot.save(settings)
         plots_made.append(kde_plot)
 
@@ -275,6 +277,7 @@ def scatter_legacy(
         plt.subplots_adjust(top=0.90)
         plot.fig.suptitle(title or f"{names[0]} vs {names[1]} plot", fontsize=25)
         hex_plot.fig = plot
+        hex_plot.save_json()
         hex_plot.save(settings)
         plots_made.append(hex_plot)
 
@@ -313,6 +316,7 @@ def scatter_legacy(
         plt.subplots_adjust(top=0.90)
         plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
         dot_plot.fig = plot
+        dot_plot.save_json()
         dot_plot.save(settings)
         plots_made.append(dot_plot)
 
@@ -352,6 +356,7 @@ def scatter_legacy(
             plt.subplots_adjust(top=0.90)
             plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
             kde_plot.fig = plot
+            kde_plot.save_json()
             kde_plot.save(settings)
             plots_made.append(kde_plot)
         else:
@@ -451,6 +456,7 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
 
         histogram.fig = fig
         histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        histogram.save_json()
         histogram.save(settings)
 
         log_histogram = Plot(
@@ -502,6 +508,7 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
 
         log_histogram.fig = fig
         log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        log_histogram.save_json()
         log_histogram.save(settings)
 
         plots.extend([histogram, log_histogram])
@@ -573,6 +580,7 @@ def yield_by_minimal_length_plot(array, name, path, settings, title=None, color=
 
     yield_by_length.fig = fig
     yield_by_length.html = yield_by_length.fig.to_html(full_html=False, include_plotlyjs="cdn")
+    yield_by_length.save_json()
     yield_by_length.save(settings)
 
     return yield_by_length
