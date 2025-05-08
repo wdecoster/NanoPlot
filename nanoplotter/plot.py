@@ -5,6 +5,7 @@ from urllib.parse import quote as urlquote
 import sys
 from kaleido.scopes.plotly import PlotlyScope
 import logging
+import plotly.io as pio
 
 
 class Plot(object):
@@ -47,7 +48,7 @@ class Plot(object):
                 if not settings["no_static"]:
                     try:
                         for fmt in settings["format"]:
-                            self.save_static(fmt)
+                            self.save_static2(fmt)
                     except (AttributeError, ValueError) as e:
                         p = os.path.splitext(self.path)[0] + ".png"
                         if os.path.exists(p):
@@ -83,3 +84,40 @@ class Plot(object):
             logging.info(
                 f"Saved {self.path.replace('.html', '')}  as {figformat} (or png for --legacy)"
             )
+    
+    
+    def save_static2(self, figformat):
+        json_fig = pio.read_json(self.path.replace("html", "json"))
+        json_fig.write_image(self.path.replace("html", figformat), format=figformat)
+        logging.info(
+                f"Saved {self.path.replace('.html', '')}  as {figformat} (or png for --legacy)"
+            )
+
+
+    
+    def save_json(self, json_path=None):
+        """
+        将 fig 对象保存为 JSON 文件。
+        
+        参数:
+            json_path (str): JSON 文件的路径。如果未指定，则基于 self.path 构造路径。
+        """
+        if not self.fig:
+            logging.error("无法保存 JSON 文件：fig 对象为空")
+            return
+        
+        # 如果未指定 json_path，则基于 self.path 构造默认路径
+        if json_path is None:
+            json_path = self.path.replace(".html", ".json")  # 替换 .html 为 .json
+        
+        try:
+            # 将 fig 对象导出为 JSON 数据
+            json_data = self.fig.to_json()
+
+            # 写入 JSON 文件
+            with open(json_path, "w", encoding="utf-8") as f:
+                f.write(json_data)
+
+            logging.info(f"成功保存 JSON 文件: {json_path}")
+        except Exception as e:
+            logging.error(f"保存 JSON 文件失败: {e}")
