@@ -13,17 +13,8 @@ Input data can be given as one or multiple of:
 
 from os import path
 import logging
-import numpy as np
-from scipy import stats
 import nanoplot.utils as utils
-import nanoplot.report as report
-from nanoget import get_input
-from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
-from nanoplotter.plot import Plot
-import nanoplotter
-import nanomath
-import pickle
 import sys
 
 
@@ -36,10 +27,15 @@ def main():
     """
     settings, args = utils.get_args()
     try:
+        import nanoplot.report as report
+        from nanoget import get_input
+        from nanoplot.filteroptions import filter_and_transform_data
+        from nanoplotter.plot import Plot
         utils.make_output_dir(args.outdir)
         utils.init_logs(args)
         # args.format = nanoplotter.check_valid_format(args.format)
         if args.pickle:
+            import pickle
             datadf = pickle.load(open(args.pickle, "rb"))
         elif args.feather:
             from nanoget import combine_dfs
@@ -121,6 +117,7 @@ def main():
 
 
 def make_stats(datadf, settings, suffix, tsv_stats=True):
+    import nanomath
     statsfile = settings["path"] + "NanoStats" + suffix + ".txt"
     stats_df = nanomath.write_stats(datadfs=[datadf], outputfile=statsfile, as_tsv=tsv_stats)
     logging.info("Calculated statistics")
@@ -141,6 +138,10 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     """
+    import numpy as np
+    from scipy import stats
+    import nanoplotter
+    import nanomath
     color = nanoplotter.check_valid_color(settings["color"])
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
 
@@ -381,6 +382,7 @@ def make_report(plots, settings):
     which is parsed to a table (rather dodgy) or nicely if it's a pandas/tsv
     """
     logging.info("Writing html report.")
+    from nanoplot import report
 
     html_content = [
         '<body class="grid">',

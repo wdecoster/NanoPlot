@@ -10,3 +10,9 @@ tests/
 .idea
 nanomath/__pycache__/__init__.cpython-39.pyc
 nanomath/__pycache__/nanomath.cpython-39.pyc
+nanoplot.egg-info/dependency_links.txt
+nanoplot.egg-info/entry_points.txt
+nanoplot.egg-info/PKG-INFO
+nanoplot.egg-info/requires.txt
+nanoplot.egg-info/SOURCES.txt
+nanoplot.egg-info/top_level.txt

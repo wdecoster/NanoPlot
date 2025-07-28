@@ -6,7 +6,6 @@ import logging
 from nanoplot.version import __version__
 from argparse import HelpFormatter, Action, ArgumentParser
 import textwrap as _textwrap
-import pandas as pd
 
 
 class CustomHelpFormatter(HelpFormatter):
@@ -346,6 +345,7 @@ def init_logs(args, tool="NanoPlot"):
 
 
 def subsample_datasets(df, minimal=10000):
+    import pandas as pd
     if "dataset" in df:
         list_df = []
 
