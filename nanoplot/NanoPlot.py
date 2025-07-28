@@ -32,10 +32,10 @@ def main():
         from nanoplot.filteroptions import filter_and_transform_data
         from nanoplotter.plot import Plot
         utils.make_output_dir(args.outdir)
+        import pickle
         utils.init_logs(args)
         # args.format = nanoplotter.check_valid_format(args.format)
         if args.pickle:
-            import pickle
             datadf = pickle.load(open(args.pickle, "rb"))
         elif args.feather:
             from nanoget import combine_dfs
@@ -157,7 +157,7 @@ def make_plots(datadf, settings):
         plotdict_legacy = {}
     plots = []
 
-    subdf = utils.subsample_datasets(datadf)
+    subdf = utils.subsample_datasets(datadf) if "start_time" in datadf else None
     if settings["N50"]:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
     else:
