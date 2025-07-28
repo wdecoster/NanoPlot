@@ -9,7 +9,7 @@ here = path.abspath(path.dirname(__file__))
 exec(open("nanoplot/version.py").read())
 
 setup(
-    name="NanoPlot",
+    name="nanoplot",
     version=__version__,  # noqa: F821
     description="Plotting suite for Oxford Nanopore sequencing data and alignments",
     long_description=open(path.join(here, "README.md"), encoding="utf-8").read(),
@@ -39,9 +39,9 @@ setup(
         "scipy",
         "python-dateutil",
         "nanoget>=1.19.1",
-        "plotly>=5.4.0",
+        "plotly>=6.1.1",
         "pyarrow",
-        "kaleido",
+        "kaleido>=1.0.0",
     ],
     package_data={"NanoPlot": []},
     package_dir={"nanoplot": "nanoplot"},

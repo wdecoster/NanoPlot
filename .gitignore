@@ -8,3 +8,5 @@ build/
 nanotest/
 tests/
 .idea
+nanomath/__pycache__/__init__.cpython-39.pyc
+nanomath/__pycache__/nanomath.cpython-39.pyc
