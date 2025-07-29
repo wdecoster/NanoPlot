@@ -280,7 +280,6 @@ def scatter_legacy(
 
     sns.set(style="darkgrid")
     if plots["dot"]:
-        print("we here")
         if log:
             dot_plot = Plot(
                 path=path + "_loglength_dot." + figformat[0],
@@ -359,31 +358,6 @@ def scatter_legacy(
             logging.info("NanoPlot: Not enough observations (reads) to create a kde plot")
     plt.close("all")
     return plots_made
-
-
-# def pauvre_plot():
-#     from pauvre.marginplot import margin_plot
-#     if plots["pauvre"] and names == ['Read lengths', 'Average read quality'] and log is False:
-#         pauvre_plot = Plot(
-#             path=path + "_pauvre." + figformat,
-#             title="{} vs {} plot using pauvre-style @conchoecia".format(names[0], names[1]))
-#         sns.set(style="white")
-#         margin_plot(df=pd.DataFrame({"length": x, "meanQual": y}),
-#                     Y_AXES=False,
-#                     title=title or "Length vs Quality in Pauvre-style",
-#                     plot_maxlen=None,
-#                     plot_minlen=0,
-#                     plot_maxqual=None,
-#                     plot_minqual=0,
-#                     lengthbin=None,
-#                     qualbin=None,
-#                     BASENAME="whatever",
-#                     path=pauvre_plot.path,
-#                     fileform=[figformat],
-#                     dpi=600,
-#                     TRANSPARENT=True,
-#                     QUIET=True)
-#         plots_made.append(pauvre_plot)
 
 
 def contains_variance(arrays, names):
@@ -558,11 +532,13 @@ def yield_by_minimal_length_plot(array, name, path, settings, title=None, color=
     logging.info(f"NanoPlot: Creating yield by minimal length plot for {name}.")
     df = pd.DataFrame(data={"lengths": np.sort(array)[::-1]})
     df["cumyield_gb"] = df["lengths"].cumsum() / 10**9
-    idx = np.random.choice(array.index, min(10000, len(array)), replace=False)
+    
+    # Sample the DataFrame directly instead of using reindex
+    sampled_df = df.sample(n=min(10000, len(df)), replace=False)
 
     yield_by_length = Plot(path=path + "Yield_By_Length.html", title="Yield by length")
 
-    fig = px.scatter(x=df.reindex(idx)["lengths"], y=df.reindex(idx)["cumyield_gb"])
+    fig = px.scatter(x=sampled_df["lengths"], y=sampled_df["cumyield_gb"])
     fig.update_traces(marker=dict(color=color))
     fig.update_layout(
         xaxis_title="Read length",
