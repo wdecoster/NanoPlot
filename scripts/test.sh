@@ -30,11 +30,16 @@ NanoPlot --summary nanotest/sequencing_summary.txt --loglength --verbose -o test
 echo "testing fastq_rich with downsample, store, and custom prefix:"
 NanoPlot --fastq_rich nanotest/reads.fastq.gz --verbose --downsample 500 -o tests --store --prefix test_
 
-echo "testing fastq_minimal with plots, color, and threads:"
-NanoPlot --fastq_minimal nanotest/reads.fastq.gz --verbose --plots dot -o tests --color red --threads 2
+echo "testing fastq_minimal with plots, color, threads, and only-report:"
+NanoPlot --fastq_minimal nanotest/reads.fastq.gz --verbose --plots dot -o tests --color red --threads 2  --only-report
 
-echo "testing cram with multiple formats, length filtering, and only_report:"
-NanoPlot --cram nanotest/alignment.cram --verbose -o tests --format png jpeg --minlength 1000 --maxlength 40000 --only_report
+# Check if CRAM file exists before testing
+if [ -f "nanotest/alignment.cram" ]; then
+    echo "testing cram with multiple formats, length filtering:"
+    NanoPlot --cram nanotest/alignment.cram --verbose -o tests --format png jpeg --minlength 1000 --maxlength 40000
+else
+    echo "CRAM file not found, skipping CRAM test (run make_cram.sh to create it)"
+fi
 
 echo "testing summary with barcoded (warning expected) and raw export:"
 NanoPlot --summary nanotest/sequencing_summary.txt --barcoded --verbose -o tests --raw
