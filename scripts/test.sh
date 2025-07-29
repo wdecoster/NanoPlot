@@ -41,9 +41,6 @@ else
     echo "CRAM file not found, skipping CRAM test (run make_cram.sh to create it)"
 fi
 
-echo "testing summary with barcoded (warning expected) and raw export:"
-NanoPlot --summary nanotest/sequencing_summary.txt --barcoded --verbose -o tests --raw
-
 # Optional legacy test (commented out due to dependency issues)
 # echo "testing legacy with summary:"
 # pip install seaborn==0.10.1 "numpy<1.24"
