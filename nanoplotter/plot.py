@@ -5,13 +5,16 @@ from urllib.parse import quote as urlquote
 import sys
 import logging
 
-# bring in kaleido and ensure Chrome is installed
-import kaleido
-# this will download a small headless Chrome build the first time you run it
-kaleido.get_chrome_sync()
-
-from kaleido import write_fig_sync
-
+# Use Plotly's Chrome bootstrapper instead of kaleido
+import plotly.io as pio
+try:
+    # This should find  or install a compatible Chrome in a user-writable location
+    pio.get_chrome()
+except Exception as e:
+    logging.warning(
+        "Plotly could not fetch or find Chrome automatically. "
+        "Static exports may fail unless BROWSER_PATH is set. Details: %s", e
+    )
 
 class Plot(object):
     """A Plot object is defined by a path to the output file and the title of the plot."""
@@ -56,7 +59,7 @@ class Plot(object):
                         p = os.path.splitext(self.path)[0] + ".png"
                         if os.path.exists(p):
                             os.remove(p)
-                        logging.warning("No static plots are saved due to some kaleido problem:")
+                        logging.warning("No static plots are saved due to an export problem:")
                         logging.warning(e)
 
             elif self.fig:
@@ -84,13 +87,13 @@ class Plot(object):
 
     def save_static(self, figformat):
         """
-        Export a Plotly figure via Kaleido v1’s write_fig_sync.
+        Export a Plotly figure using Plotly's image writer.
         """
         output_path = self.path.replace(".html", f".{figformat}")
         try:
-            write_fig_sync(self.fig, path=output_path)
+            pio.write_image(self.fig, output_path, format=figformat)
             logging.info(f"Saved {output_path} as {figformat}")
         except Exception as e:
-            logging.warning("No static plots are saved due to some kaleido problem:")
+            logging.warning("No static plots are saved due to an export problem:")
             logging.warning(e)
 
