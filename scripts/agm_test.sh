@@ -12,5 +12,5 @@
 
 source /path/to/nanoplot_env/bin/activate
 
-# test fresh nanoplot with kaleido update
-NanoPlot --fastq /path/to/test_file.fastq.gz --verbose --minqual 4 --color red -o scripts/agm_tests
+# test fresh nanoplot with update
+python /path/to/NanoPlot/nanoplot/NanoPlot.py --fastq /path/to/test_file.fastq.gz --verbose --minqual 4 --color red -o scripts/agm_tests
