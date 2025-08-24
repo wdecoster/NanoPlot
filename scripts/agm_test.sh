@@ -2,7 +2,7 @@
 
 #SBATCH --time=04-00:00:00
 #SBATCH --partition=defq
-#SBATCH --mail-user=myemail@email.org
+#SBATCH --mail-user=email@email.org
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --ntasks-per-node=64
 #SBATCH --mem=128GB
@@ -10,7 +10,24 @@
 #SBATCH --job-name=nplot
 #SBATCH --comment=nplot
 
-source /path/to/nanoplot_env/bin/activate
+source /home/tmhagm8/scratch/nanoplot_env/bin/activate
 
-# test fresh nanoplot with update
-python /path/to/NanoPlot/nanoplot/NanoPlot.py --fastq /path/to/test_file.fastq.gz --verbose --minqual 4 --color red -o scripts/agm_tests
+# Go to the repo root
+cd /home/tmhagm8/scratch/NanoPlot
+
+# Make sure to use right Python imports
+export PYTHONPATH="$PWD:$PYTHONPATH"
+
+# Double check imports
+python - <<'PY'
+import nanoplotter.plot as p
+import nanoplot.utils as u
+print("USING nanoplotter.plot:", p.__file__)
+print("USING nanoplot.utils :", u.__file__)
+PY
+
+# check it 
+python -m nanoplot.NanoPlot \
+  --fastq /home/tmhagm8/scratch/SOMAteM_bckp/SOMAteM/examples/data/B011_2.fastq.gz \
+  -t 14 --verbose --minqual 4 --dpi 600 --color red \
+  -o /home/tmhagm8/scratch/NanoPlot/scripts/agm_tests -f png

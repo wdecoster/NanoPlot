@@ -6,6 +6,7 @@ import logging
 from nanoplot.version import __version__
 from argparse import HelpFormatter, Action, ArgumentParser
 import textwrap as _textwrap
+import plotly.io as pio
 
 
 class CustomHelpFormatter(HelpFormatter):
@@ -229,7 +230,8 @@ def get_args():
     visual.add_argument(
         "--font_scale", help="Scale the font of the plots by a factor", type=float, default=1
     )
-    visual.add_argument("--dpi", help="Set the dpi for saving images", type=int, default=100)
+    # CHANGED: default dpi to 300
+    visual.add_argument("--dpi", help="Set the dpi for saving images", type=int, default=300)
     visual.add_argument(
         "--hide_stats",
         help="Not adding Pearson R stats in some bivariate plots",
@@ -368,3 +370,20 @@ def subsample_datasets(df, minimal=10000):
             subsampled_df = df.sample(minimal)
 
     return subsampled_df
+
+
+# NEW: DPI-aware Plotly static export helper
+def write_static_image(fig, outpath, dpi=300, default_inches=(6.4, 4.8)):
+    width_px  = int(default_inches[0] * dpi)
+    height_px = int(default_inches[1] * dpi)
+
+    pio.write_image(fig, outpath, width=width_px, height=height_px, scale=1)
+
+    lower = outpath.lower()
+    if lower.endswith((".png", ".jpg", ".jpeg", ".tif", ".tiff", ".webp")):
+        try:
+            from PIL import Image
+            im = Image.open(outpath)
+            im.save(outpath, dpi=(dpi, dpi))
+        except Exception as e:
+            logging.warning("Could not set DPI metadata for %s: %s", outpath, e)
