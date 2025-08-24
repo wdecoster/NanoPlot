@@ -13,7 +13,7 @@ except Exception as e:
         "Plotly could not fetch or find Chrome automatically. "
         "Static exports may fail unless BROWSER_PATH is set. Details: %s", e
     )
-
+    
 # DPI-aware writer
 try:
     from nanoplot.utils import write_static_image
