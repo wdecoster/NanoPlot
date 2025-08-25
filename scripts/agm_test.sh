@@ -29,5 +29,5 @@ PY
 # check it 
 python -m nanoplot.NanoPlot \
   --fastq /home/tmhagm8/scratch/SOMAteM_bckp/SOMAteM/examples/data/B011_2.fastq.gz \
-  -t 14 --verbose --minqual 4 --dpi 600 --color red \
-  -o /home/tmhagm8/scratch/NanoPlot/scripts/agm_tests -f png
+  -t 14 --verbose --minqual 4 --dpi 600  \
+  -o /home/tmhagm8/scratch/NanoPlot/scripts/agm_test -f png

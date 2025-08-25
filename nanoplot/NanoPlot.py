@@ -13,18 +13,10 @@ Input data can be given as one or multiple of:
 
 from os import path
 import logging
-import numpy as np
-from scipy import stats
+import sys
 import nanoplot.utils as utils
-import nanoplot.report as report
-from nanoget import get_input
-from nanoplot.filteroptions import filter_and_transform_data
 from nanoplot.version import __version__
 from nanoplotter.plot import Plot
-import nanoplotter
-import nanomath
-import pickle
-import sys
 
 
 def main():
@@ -35,10 +27,15 @@ def main():
     -calls plotting function
     """
     settings, args = utils.get_args()
+    # Thread CLI --dpi into settings so static export honors it
     if hasattr(args, "dpi") and args.dpi:
         settings["dpi"] = int(args.dpi)
+    import nanoplot.report as report
+    from nanoget import get_input
+    from nanoplot.filteroptions import filter_and_transform_data
     try:
         utils.make_output_dir(args.outdir)
+        import pickle
         utils.init_logs(args)
         # args.format = nanoplotter.check_valid_format(args.format)
         if args.pickle:
@@ -80,7 +77,8 @@ def main():
 
         settings["statsfile"] = [make_stats(datadf, settings, suffix="", tsv_stats=args.tsv_stats)]
         datadf, settings = filter_and_transform_data(datadf, settings)
-        if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
+        # Bool set when filter was applied in filter_and_transform_data()
+        if settings["filtered"]:
             settings["statsfile"].append(
                 make_stats(
                     datadf[datadf["length_filter"]],
@@ -91,8 +89,7 @@ def main():
             )
 
         if args.only_report:
-                Plot.only_report = True
-                
+            Plot.only_report = True
         if args.barcoded:
             main_path = settings["path"]
             for barc in list(datadf["barcode"].unique()):
@@ -123,6 +120,7 @@ def main():
 
 
 def make_stats(datadf, settings, suffix, tsv_stats=True):
+    import nanomath
     statsfile = settings["path"] + "NanoStats" + suffix + ".txt"
     stats_df = nanomath.write_stats(datadfs=[datadf], outputfile=statsfile, as_tsv=tsv_stats)
     logging.info("Calculated statistics")
@@ -143,6 +141,10 @@ def make_plots(datadf, settings):
     Call plotting functions from nanoplotter
     settings["lengths_pointer"] is a column in the DataFrame specifying which lengths to use
     """
+    import numpy as np
+    from scipy import stats
+    import nanoplotter
+    import nanomath
     color = nanoplotter.check_valid_color(settings["color"])
     colormap = nanoplotter.check_valid_colormap(settings["colormap"])
 
@@ -158,7 +160,7 @@ def make_plots(datadf, settings):
         plotdict_legacy = {}
     plots = []
 
-    subdf = utils.subsample_datasets(datadf)
+    subdf = utils.subsample_datasets(datadf) if "start_time" in datadf else None
     if settings["N50"]:
         n50 = nanomath.get_N50(np.sort(datadf["lengths"]))
     else:
@@ -383,6 +385,7 @@ def make_report(plots, settings):
     which is parsed to a table (rather dodgy) or nicely if it's a pandas/tsv
     """
     logging.info("Writing html report.")
+    import nanoplot.report as report
 
     html_content = [
         '<body class="grid">',
