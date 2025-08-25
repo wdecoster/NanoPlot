@@ -13,9 +13,10 @@ Input data can be given as one or multiple of:
 
 from os import path
 import logging
+import sys
 import nanoplot.utils as utils
 from nanoplot.version import __version__
-import sys
+from nanoplotter.plot import Plot
 
 
 def main():
@@ -26,11 +27,13 @@ def main():
     -calls plotting function
     """
     settings, args = utils.get_args()
+    # Thread CLI --dpi into settings so static export honors it
+    if hasattr(args, "dpi") and args.dpi:
+        settings["dpi"] = int(args.dpi)
+    import nanoplot.report as report
+    from nanoget import get_input
+    from nanoplot.filteroptions import filter_and_transform_data
     try:
-        import nanoplot.report as report
-        from nanoget import get_input
-        from nanoplot.filteroptions import filter_and_transform_data
-        from nanoplotter.plot import Plot
         utils.make_output_dir(args.outdir)
         import pickle
         utils.init_logs(args)
@@ -74,7 +77,8 @@ def main():
 
         settings["statsfile"] = [make_stats(datadf, settings, suffix="", tsv_stats=args.tsv_stats)]
         datadf, settings = filter_and_transform_data(datadf, settings)
-        if settings["filtered"]:  # Bool set when filter was applied in filter_and_transform_data()
+        # Bool set when filter was applied in filter_and_transform_data()
+        if settings["filtered"]:
             settings["statsfile"].append(
                 make_stats(
                     datadf[datadf["length_filter"]],
@@ -85,8 +89,7 @@ def main():
             )
 
         if args.only_report:
-                Plot.only_report = True
-                
+            Plot.only_report = True
         if args.barcoded:
             main_path = settings["path"]
             for barc in list(datadf["barcode"].unique()):
@@ -382,7 +385,7 @@ def make_report(plots, settings):
     which is parsed to a table (rather dodgy) or nicely if it's a pandas/tsv
     """
     logging.info("Writing html report.")
-    from nanoplot import report
+    import nanoplot.report as report
 
     html_content = [
         '<body class="grid">',
