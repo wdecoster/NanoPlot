@@ -14,6 +14,7 @@ Input data can be given as one or multiple of:
 from os import path
 import logging
 import sys
+import concurrent.futures
 import nanoplot.utils as utils
 from nanoplot.version import __version__
 from nanoplotter.plot import Plot
@@ -109,6 +110,11 @@ def main():
             plots = make_plots(datadf, settings)
             make_report(plots, settings)
         logging.info("Finished!")
+    except concurrent.futures.BrokenExecutor:
+        logging.error("Worker process crashed during file processing", exc_info=True)
+        print("\n\n\nA worker process crashed, likely due to insufficient memory.")
+        print("If you are working with a very large file, please try running NanoPlot with the --huge flag.\n")
+        raise
     except Exception as e:
         logging.error(e, exc_info=True)
         print(f"\n\n\nIf you read this then NanoPlot {__version__} has crashed :-(")
