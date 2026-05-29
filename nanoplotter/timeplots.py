@@ -51,16 +51,18 @@ def time_plots(df, subsampled_df, path, settings, title=None, color="#4CB391", l
                                            title=title,
                                            color=color,
                                            settings=settings)
+    was_downsampled = len(df) > len(subsampled_df)
     violins = violin_plots_over_time(dfs=check_valid_time_and_sort(subsampled_df),
                                      path=path,
                                      title=title,
                                      log_length=log_length,
                                      color=color,
-                                     settings=settings)
+                                     settings=settings,
+                                     downsampled=was_downsampled)
     return cumyields + reads_pores_over_time + violins
 
 
-def violin_plots_over_time(dfs, path, title, settings, log_length=False, color="#4CB391"):
+def violin_plots_over_time(dfs, path, title, settings, log_length=False, color="#4CB391", downsampled=False):
 
     dfs['timebin'] = add_time_bins(dfs)
     plots = []
@@ -72,29 +74,33 @@ def violin_plots_over_time(dfs, path, title, settings, log_length=False, color="
                                   title=title,
                                   log_length=log_length,
                                   color=color,
-                                  settings=settings))
+                                  settings=settings,
+                                  downsampled=downsampled))
     if "quals" in dfs:
         plots.append(quality_over_time(dfs=dfs,
                                        path=path,
                                        title=title,
                                        color=color,
-                                       settings=settings))
+                                       settings=settings,
+                                       downsampled=downsampled))
     if "duration" in dfs:
         plots.append(sequencing_speed_over_time(dfs=dfs,
                                                 path=path,
                                                 title=title,
                                                 color=color,
-                                                settings=settings))
+                                                settings=settings,
+                                                downsampled=downsampled))
     return plots
 
 
-def length_over_time(dfs, path, title, settings, log_length=False, color="#4CB391"):
+def length_over_time(dfs, path, title, settings, log_length=False, color="#4CB391", downsampled=False):
+    suffix = " (downsampled)" if downsampled else ""
     if log_length:
         time_length = Plot(path=path + "TimeLogLengthViolinPlot.html",
-                           title="Violin plot of log read lengths over time")
+                           title=f"Violin plot of log read lengths over time{suffix}")
     else:
         time_length = Plot(path=path + "TimeLengthViolinPlot.html",
-                           title="Violin plot of read lengths over time")
+                           title=f"Violin plot of read lengths over time{suffix}")
 
     length_column = "log_lengths" if log_length else "lengths"
 
@@ -136,9 +142,9 @@ def length_over_time(dfs, path, title, settings, log_length=False, color="#4CB39
     return time_length
 
 
-def quality_over_time(dfs, path, settings, title=None, color="#4CB391"):
+def quality_over_time(dfs, path, settings, title=None, color="#4CB391", downsampled=False):
     time_qual = Plot(path=path + "TimeQualityViolinPlot.html",
-                     title="Violin plot of quality over time")
+                     title="Violin plot of quality over time" + (" (downsampled)" if downsampled else ""))
 
     fig = go.Figure()
 
@@ -163,9 +169,9 @@ def quality_over_time(dfs, path, settings, title=None, color="#4CB391"):
     return time_qual
 
 
-def sequencing_speed_over_time(dfs, path, title, settings, color="#4CB391"):
+def sequencing_speed_over_time(dfs, path, title, settings, color="#4CB391", downsampled=False):
     time_duration = Plot(path=path + "TimeSequencingSpeed_ViolinPlot.html",
-                         title="Violin plot of sequencing speed over time")
+                         title="Violin plot of sequencing speed over time" + (" (downsampled)" if downsampled else ""))
 
     mask = dfs['duration'] != 0
 

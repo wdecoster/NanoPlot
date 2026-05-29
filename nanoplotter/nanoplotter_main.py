@@ -105,6 +105,7 @@ def scatter(
         return []
     plots_made = []
     idx = np.random.choice(x.index, min(10000, len(x)), replace=False)
+    downsampled = len(x) > 10000
     maxvalx = xmax or np.amax(x[idx])
     maxvaly = ymax or np.amax(y[idx])
 
@@ -112,12 +113,14 @@ def scatter(
         if log:
             dot_plot = Plot(
                 path=path + "_loglength_dot.html",
-                title=f"{names[0]} vs {names[1]} plot using dots "
-                "after log transformation of read lengths",
+                title=f"{names[0]} vs {names[1]} dot plot "
+                + ("(log-transformed, downsampled)" if downsampled else "(log-transformed)"),
             )
         else:
             dot_plot = Plot(
-                path=path + "_dot.html", title=f"{names[0]} vs {names[1]} plot using dots"
+                path=path + "_dot.html",
+                title=f"{names[0]} vs {names[1]} dot plot"
+                + (" (downsampled)" if downsampled else ""),
             )
 
         fig = px.scatter(
@@ -150,7 +153,8 @@ def scatter(
     if plots["kde"]:
         kde_plot = Plot(
             path=path + "_loglength_kde.html" if log else path + "_kde.html",
-            title=f"{names[0]} vs {names[1]} kde plot",
+            title=f"{names[0]} vs {names[1]} kde plot"
+            + (" (downsampled)" if downsampled else ""),
         )
 
         col = hex_to_rgb_scale_0_1(color)
@@ -317,17 +321,19 @@ def scatter_legacy(
 
     if plots["kde"]:
         if len(x) > 2:
+            kde_downsampled = len(x) > 2000
             idx = np.random.choice(x.index, min(2000, len(x)), replace=False)
             if log:
                 kde_plot = Plot(
                     path=path + "_loglength_kde." + figformat[0],
-                    title="{} vs {} plot using a kernel density estimation "
-                    "after log transformation of read lengths".format(names[0], names[1]),
+                    title=f"{names[0]} vs {names[1]} kde plot "
+                    + ("(log-transformed, downsampled)" if kde_downsampled else "(log-transformed)"),
                 )
             else:
                 kde_plot = Plot(
                     path=path + "_kde." + figformat[0],
-                    title=f"{names[0]} vs {names[1]} plot using a kernel density estimation",
+                    title=f"{names[0]} vs {names[1]} kde plot"
+                    + (" (downsampled)" if kde_downsampled else ""),
                 )
             plot = sns.jointplot(
                 x=x[idx],
@@ -349,7 +355,10 @@ def scatter_legacy(
                 plot.ax_marg_x.set_xticks(np.log10(ticks))
                 plot.ax_joint.set_xticklabels(ticks)
             plt.subplots_adjust(top=0.90)
-            plot.fig.suptitle(title or "{} vs {} plot".format(names[0], names[1]), fontsize=25)
+            _suptitle = "{} vs {} plot{}".format(
+                names[0], names[1], " (downsampled)" if kde_downsampled else ""
+            )
+            plot.fig.suptitle(title or _suptitle, fontsize=25)
             kde_plot.fig = plot
             kde_plot.save(settings)
             plots_made.append(kde_plot)
@@ -494,11 +503,14 @@ def dynamic_histogram(array, name, path, settings, title=None, color="#4CB391"):
     Use plotly to a histogram
     Return html code, but also save as png
     """
+    is_downsampled = len(array) > 10000
     dynhist = Plot(
         path=path + f"Dynamic_Histogram_{name[0].lower() + name[1:].replace(' ', '_')}.html",
-        title="Dynamic histogram of {}".format(name[0].lower() + name[1:]),
+        title="Dynamic histogram of {}{}".format(
+            name[0].lower() + name[1:], " (downsampled)" if is_downsampled else ""
+        ),
     )
-    ylabel = "Number of reads" if len(array) <= 10000 else "Downsampled number of reads"
+    ylabel = "Number of reads" if not is_downsampled else "Downsampled number of reads"
     dynhist.html, dynhist.fig = plotly_histogram(
         array=array.sample(min(len(array), 10000)),
         color=color,
