@@ -398,7 +398,7 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
     plots = []
 
     HistType = [
-        {"weight": array, "name": "Weighted", "ylabel": "Number of bases"},
+        {"weight": array, "name": "Weighted", "ylabel": "Number of reads"},
         {"weight": None, "name": "Non weighted", "ylabel": "Number of reads"},
     ]
 
