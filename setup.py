@@ -38,7 +38,7 @@ setup(
         "numpy>=1.16.5",
         "scipy",
         "python-dateutil",
-        "nanoget>=1.19.4",
+        "nanoget>=1.19.5",
         "plotly>=6.1.1",
         "pyarrow",
         "kaleido>=1.0.0",
