@@ -1,0 +1,46 @@
+# Dependabot configuration.
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# Per GitHub's "tame Dependabot" guidance: batch version updates into a few
+# grouped PRs on a slow (monthly) cadence, with a release cooldown. Security
+# updates ignore groups/schedule and still open immediately.
+
+version: 2
+updates:
+  # Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    # Minor+patch land together; majors are grouped separately so one breaking
+    # bump can't wedge the routine batch.
+    groups:
+      pip-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      pip-major:
+        patterns: ["*"]
+        update-types: ["major"]
+    # Wait a few days after a release before opening a version-update PR, so a
+    # compromised fresh release has time to be flagged.
+    cooldown:
+      default-days: 7
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      github-actions:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
