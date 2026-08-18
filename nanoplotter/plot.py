@@ -6,14 +6,7 @@ import sys
 import logging
 
 import plotly.io as pio
-try:
-    pio.get_chrome()
-except Exception as e:
-    logging.warning(
-        "Plotly could not fetch or find Chrome automatically. "
-        "Static exports may fail unless BROWSER_PATH is set. Details: %s", e
-    )
-    
+
 # DPI-aware writer
 try:
     from nanoplot.utils import write_static_image
@@ -122,6 +115,17 @@ class Plot(object):
                 logging.info("Saved %s as JSON", output_path)
             except Exception as e:
                 logging.warning("Failed to write JSON for %s: %s", output_path, e)
+            return
+
+        # Check if Chrome/Chromium is available or download it, this is needed
+        # for both write_static_image and the fallback rendering
+        try:
+            pio.get_chrome()
+        except Exception as e:
+            logging.warning(
+                "Plotly could not fetch or find Chrome automatically. "
+                "Static exports may fail unless BROWSER_PATH is set. Details: %s", e
+            )
             return
 
         # Preferred path: DPI-aware helper
