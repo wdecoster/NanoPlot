@@ -110,6 +110,12 @@ def get_args():
     general.add_argument(
         "--info_in_report", help="Add NanoPlot run info in the report.", action="store_true"
     )
+    general.add_argument(
+        "--include-js",
+        choices=["cdn", "True"],
+        help="Either cdn or True. If cdn (the default) is specified, the javascript for plotly images will be sourced from the web. If True is specified, then the javascript will be directly put in the html file.",
+        default="cdn",
+    )
     filtering = parser.add_argument_group(
         title="Options for filtering or transforming input prior to plotting"
     )
