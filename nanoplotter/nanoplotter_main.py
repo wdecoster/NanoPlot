@@ -146,7 +146,7 @@ def scatter(
             )
 
         dot_plot.fig = fig
-        dot_plot.html = dot_plot.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        dot_plot.html = dot_plot.fig.to_html(full_html=False, include_plotlyjs=settings["include_js"])
         dot_plot.save(settings)
         plots_made.append(dot_plot)
 
@@ -177,7 +177,7 @@ def scatter(
             )
 
         kde_plot.fig = fig
-        kde_plot.html = kde_plot.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        kde_plot.html = kde_plot.fig.to_html(full_html=False, include_plotlyjs=settings["include_js"])
         kde_plot.save(settings)
         plots_made.append(kde_plot)
 
@@ -433,7 +433,7 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
         )
 
         histogram.fig = fig
-        histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        histogram.html = histogram.fig.to_html(full_html=False, include_plotlyjs=settings["include_js"])
         histogram.save(settings)
 
         log_histogram = Plot(
@@ -484,7 +484,7 @@ def length_plots(array, name, path, settings, title=None, n50=None, color="#4CB3
             fig.update_annotations(font_size=8)
 
         log_histogram.fig = fig
-        log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        log_histogram.html = log_histogram.fig.to_html(full_html=False, include_plotlyjs=settings["include_js"])
         log_histogram.save(settings)
 
         plots.extend([histogram, log_histogram])
@@ -560,7 +560,7 @@ def yield_by_minimal_length_plot(array, name, path, settings, title=None, color=
     )
 
     yield_by_length.fig = fig
-    yield_by_length.html = yield_by_length.fig.to_html(full_html=False, include_plotlyjs="cdn")
+    yield_by_length.html = yield_by_length.fig.to_html(full_html=False, include_plotlyjs=settings["include_js"])
     yield_by_length.save(settings)
 
     return yield_by_length

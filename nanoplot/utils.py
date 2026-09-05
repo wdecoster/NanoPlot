@@ -110,6 +110,12 @@ def get_args():
     general.add_argument(
         "--info_in_report", help="Add NanoPlot run info in the report.", action="store_true"
     )
+    general.add_argument(
+        "--include-js",
+        choices=["cdn", "embedded"],
+        help="Either cdn or embedded. If cdn (the default) is specified, the javascript for plotly images will be sourced from the web. If embedded is specified, then the javascript will be directly put into the html file, resulting in a larger but self-contained HTML file.",
+        default="cdn",
+    )
     filtering = parser.add_argument_group(
         title="Options for filtering or transforming input prior to plotting"
     )
@@ -298,6 +304,8 @@ def get_args():
         sys.exit("ARGUMENT ERROR: --barcoded only works with data provided as --summary!")
     settings = vars(args)
     settings["path"] = os.path.join(args.outdir, args.prefix)
+    if settings["include_js"] == "embedded":
+        settings["include_js"] = False
     return settings, args
 
 
