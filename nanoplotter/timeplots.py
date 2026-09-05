@@ -136,7 +136,7 @@ def length_over_time(dfs, path, title, settings, log_length=False, color="#4CB39
 
     time_length.fig = fig
     time_length.html = time_length.fig.to_html(
-        full_html=False, include_plotlyjs=settings.include_js)
+        full_html=False, include_plotlyjs=settings["include_js"])
     time_length.save(settings)
 
     return time_length
@@ -163,7 +163,7 @@ def quality_over_time(dfs, path, settings, title=None, color="#4CB391", downsamp
 
     time_qual.fig = fig
     time_qual.html = time_qual.fig.to_html(
-        full_html=False, include_plotlyjs=settings.include_js)
+        full_html=False, include_plotlyjs=settings["include_js"])
     time_qual.save(settings)
 
     return time_qual
@@ -226,7 +226,7 @@ def plot_over_time(dfs, path, title, settings, color="#4CB391"):
 
     num_reads.fig = fig
     num_reads.html = num_reads.fig.to_html(
-        full_html=False, include_plotlyjs=settings.include_js)
+        full_html=False, include_plotlyjs=settings["include_js"])
     num_reads.save(settings)
 
     plots = [num_reads]
@@ -249,7 +249,7 @@ def plot_over_time(dfs, path, title, settings, color="#4CB391"):
 
         pores_over_time.fig = fig
         pores_over_time.html = pores_over_time.fig.to_html(
-            full_html=False, include_plotlyjs=settings.include_js)
+            full_html=False, include_plotlyjs=settings["include_js"])
         pores_over_time.save(settings)
 
         plots.append(pores_over_time)
@@ -274,7 +274,7 @@ def cumulative_yield(dfs, path, title, color, settings):
 
     cum_yield_gb.fig = fig
     cum_yield_gb.html = cum_yield_gb.fig.to_html(
-        full_html=False, include_plotlyjs=settings.include_js)
+        full_html=False, include_plotlyjs=settings["include_js"])
     cum_yield_gb.save(settings)
 
     cum_yield_reads = Plot(path=path + "CumulativeYieldPlot_NumberOfReads.html",
@@ -294,7 +294,7 @@ def cumulative_yield(dfs, path, title, color, settings):
 
     cum_yield_reads.fig = fig
     cum_yield_reads.html = cum_yield_reads.fig.to_html(
-        full_html=False, include_plotlyjs=settings.include_js)
+        full_html=False, include_plotlyjs=settings["include_js"])
     cum_yield_reads.save(settings)
 
     return [cum_yield_gb, cum_yield_reads]

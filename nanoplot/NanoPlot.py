@@ -18,6 +18,7 @@ import concurrent.futures
 import nanoplot.utils as utils
 from nanoplot.version import __version__
 from nanoplotter.plot import Plot
+from plotly.offline import get_plotlyjs
 
 
 def main():
@@ -401,6 +402,8 @@ def make_report(plots, settings):
         report.run_info(settings) if settings["info_in_report"] else "",
         "</main></body></html>",
     ]
+    if settings["include_js"] == False:
+        html_content.insert(0, f'<script type="text/javascript">{get_plotlyjs()}</script>')
     with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
         html_file.write(report.html_head + "\n".join(html_content))
 
