@@ -193,7 +193,7 @@ def sequencing_speed_over_time(dfs, path, title, settings, color="#4CB391", down
 
     time_duration.fig = fig
     time_duration.html = time_duration.fig.to_html(
-        full_html=False, include_plotlyjs=settings.include_js)
+        full_html=False, include_plotlyjs=settings["include_js"])
     time_duration.save(settings)
 
     return time_duration

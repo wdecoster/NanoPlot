@@ -402,8 +402,9 @@ def make_report(plots, settings):
         report.run_info(settings) if settings["info_in_report"] else "",
         "</main></body></html>",
     ]
-    if settings["include_js"] == False:
-        html_content.insert(0, f'<script type="text/javascript">{get_plotlyjs()}</script>')
+    if settings["include_js"] is False:
+        # embed plotly.js once, at the start of the body, rather than in every plot
+        html_content.insert(1, f'<script type="text/javascript">{get_plotlyjs()}</script>')
     with open(settings["path"] + "NanoPlot-report.html", "w") as html_file:
         html_file.write(report.html_head + "\n".join(html_content))
 

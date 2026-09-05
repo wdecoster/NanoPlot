@@ -51,9 +51,15 @@ class Plot(object):
             return
 
         if self.html:
-            # Save the interactive HTML
+            # Save the interactive HTML. With embedded javascript self.html contains no
+            # javascript at all (it is added once to the combined report), so write a
+            # self-contained copy here to keep individual plot files usable on their own.
+            if settings.get("include_js", "cdn") is False and self.fig is not None:
+                standalone = self.fig.to_html(full_html=False, include_plotlyjs=True)
+            else:
+                standalone = self.html
             with open(self.path, "w") as html_out:
-                html_out.write(self.html)
+                html_out.write(standalone)
 
             # Also save static images unless suppressed
             if not settings.get("no_static", False):
