@@ -130,8 +130,12 @@ def filter_and_transform_data(df, settings):
         settings["filtered"] = True
 
     if settings.get("percentqual"):
-        df["quals"] = df["quals"].apply(phred_to_percent)
-        logging.info("Converting quality scores to theoretical percent identities.")
+        if "quals" in df:
+            df["quals"] = df["quals"].apply(phred_to_percent)
+            logging.info("Converting quality scores to theoretical percent identities.")
+        else:
+            sys.stderr.write("--percentqual is ignored since no quality information in the data.")
+            logging.info("--percentqual is ignored since no quality information in the data.")
 
     if len(df) == 0:
         sys.exit("\n\nFATAL: No reads left after filtering!. Exiting!\n")
