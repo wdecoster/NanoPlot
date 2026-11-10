@@ -10,10 +10,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-    - name: Set up Python 3.10
+    - name: Set up Python 3.13
       uses: actions/setup-python@v7
       with:
-        python-version: 3.13.3
+        python-version: "3.13"
     - name: Add conda to system path
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
